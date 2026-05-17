@@ -34,19 +34,21 @@ export default function LogPage() {
 
         <View style={styles.cardContainer}>
           <View style={styles.cardList}>
-            <ReceiptCard variant="goal" />
-            <View style={{ flexDirection: "row", gap: 9 }}>
-              <GoalButton
-                title="목표 중단"
-                icon={<StopIcon />}
-                onPress={() => {}}
-              />
+            <View>
+              <ReceiptCard variant="goal" />
+              <View style={{ flexDirection: "row", gap: 9 }}>
+                <GoalButton
+                  title="목표 중단"
+                  icon={<StopIcon />}
+                  onPress={() => {}}
+                />
 
-              <GoalButton
-                title="새 목표 설정"
-                icon={<FlagIcon />}
-                onPress={() => {}}
-              />
+                <GoalButton
+                  title="새 목표 설정"
+                  icon={<FlagIcon />}
+                  onPress={() => {}}
+                />
+              </View>
             </View>
             <View style={{ width: 335, gap: 12 }}>
               <Text
