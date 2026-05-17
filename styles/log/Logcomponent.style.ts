@@ -36,15 +36,6 @@ export const receiptCardStyles = StyleSheet.create({
     gap: 2,
   },
 
-  savedAmount: {
-    color: "#7EC985",
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    textShadowColor: "#FBFBF5",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 0,
-  },
-
   savedText: {
     fontFamily: "Galmuri9",
     fontSize: 14,
@@ -240,19 +231,84 @@ export const defenseCardStyles = StyleSheet.create({
     gap: 8,
   },
 
-  amount: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7EC985",
-    textShadowColor: "#FBFBF5",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 0,
-  },
-
   description: {
     fontFamily: "Galmuri9",
     fontSize: 12,
     color: "#7A5751",
+  },
+
+  openCard: {
+    paddingTop: 8,
+    paddingHorizontal: 0,
+    flexDirection: "column",
+    gap: 16,
+  },
+
+  detailHeader: {
+    gap: 8,
+  },
+
+  detailTitle: {
+    paddingHorizontal: 8,
+
+    fontFamily: "WantedSansMedium",
+    fontSize: 12,
+    color: "#787D79",
+  },
+
+  detailAmountRow: {
+    height: 41,
+    backgroundColor: "#E0F9BF",
+
+    paddingHorizontal: 18,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 8,
+  },
+
+  detailAmountLabel: {
+    fontFamily: "Galmuri9",
+    fontSize: 12,
+    color: "#7A5751",
+  },
+
+  detailList: {
+    paddingHorizontal: 13,
+    gap: 8,
+  },
+
+  detailRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+
+  detailImage: {
+    width: 22,
+    height: 22,
+  },
+
+  detailItem: {
+    fontFamily: "Galmuri9",
+    fontSize: 14,
+    color: "#5F6460",
+  },
+
+  flipContainer: {
+    width: 335,
+    height: 191,
+  },
+
+  flipFace: {
+    position: "absolute",
+    width: 335,
+    height: 191,
+    backfaceVisibility: "hidden",
+  },
+
+  flipBack: {
+    backfaceVisibility: "hidden",
   },
 });
 
@@ -310,28 +366,6 @@ export const topdayCardStyles = StyleSheet.create({
     fontFamily: "Galmuri9",
     fontSize: 12,
     color: "#464B47",
-  },
-
-  strokeTextWrap: {
-    position: "relative",
-    width: 42,
-    height: 34,
-  },
-
-  strokeText: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-
-    fontFamily: "GalmuriBold",
-    fontSize: 16,
-    lineHeight: 35,
-
-    includeFontPadding: false,
-  },
-
-  strokeTextFront: {
-    color: "#F0FFE5",
   },
 });
 

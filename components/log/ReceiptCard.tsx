@@ -1,3 +1,4 @@
+import StrokeText from "@/components/log/StrokeText";
 import { receiptCardStyles as styles } from "@/styles/log/Logcomponent.style";
 import { Text, View } from "react-native";
 
@@ -10,7 +11,13 @@ export default function ReceiptCard() {
         </Text>
 
         <View style={styles.savedRow}>
-          <Text style={styles.savedAmount}>325,500</Text>
+          <StrokeText
+            text="325,500"
+            color="#7EC985"
+            strokeColor="#FBFBF5"
+            fontSize={22}
+            strokeWidth={2}
+          />{" "}
           <Text style={styles.savedText}>원을 절약했어요!</Text>
         </View>
 
