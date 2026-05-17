@@ -1,5 +1,6 @@
 import { logPageStyles as styles } from "@/styles/log/Log.style";
-import { ScrollView, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 import DefenseCard from "@/components/log/DefenseCard";
 import ReceiptCard from "@/components/log/ReceiptCard";
@@ -10,6 +11,10 @@ import ArrowIcon from "@/assets/images/log/arrow_right.svg";
 import CalendarIcon from "@/assets/images/log/calendar.svg";
 
 export default function LogPage() {
+  const handleGoalPress = () => {
+    router.push("/goal");
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -22,10 +27,10 @@ export default function LogPage() {
         </View>
 
         <View style={styles.cardContainer}>
-          <View style={styles.goalManageWrap}>
+          <Pressable style={styles.goalManageWrap} onPress={handleGoalPress}>
             <Text style={styles.goalManageText}>목표 관리</Text>
             <ArrowIcon style={styles.arrowImage} />
-          </View>
+          </Pressable>
 
           <View style={styles.cardList}>
             <ReceiptCard />

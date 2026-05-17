@@ -21,6 +21,7 @@ export const receiptCardStyles = StyleSheet.create({
   },
 
   periodText: {
+    fontFamily: "WantedSansRegular",
     fontSize: 12,
     color: "#787D79",
   },
@@ -95,6 +96,7 @@ export const receiptCardStyles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     color: "#919692",
+    fontFamily: "WantedSansRegular",
   },
 
   headerCenter: {
@@ -102,6 +104,7 @@ export const receiptCardStyles = StyleSheet.create({
     fontSize: 12,
     color: "#919692",
     textAlign: "center",
+    fontFamily: "WantedSansRegular",
   },
 
   headerRight: {
@@ -109,6 +112,7 @@ export const receiptCardStyles = StyleSheet.create({
     fontSize: 12,
     color: "#919692",
     textAlign: "right",
+    fontFamily: "WantedSansRegular",
   },
 
   itemList: {
@@ -180,6 +184,18 @@ export const receiptCardStyles = StyleSheet.create({
     fontSize: 14,
     color: "#7A5751",
     includeFontPadding: false,
+  },
+
+  goalSummaryCard: {
+    backgroundColor: "#E8F9C7",
+    borderColor: "#E8F9C7",
+    borderWidth: 1,
+  },
+
+  goalTitle: {
+    color: "#7EC985",
+    fontFamily: "GalmuriBold",
+    fontSize: 24,
   },
 });
 

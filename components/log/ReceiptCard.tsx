@@ -2,24 +2,44 @@ import StrokeText from "@/components/log/StrokeText";
 import { receiptCardStyles as styles } from "@/styles/log/Logcomponent.style";
 import { Text, View } from "react-native";
 
-export default function ReceiptCard() {
+interface ReceiptCardProps {
+  variant?: "default" | "goal";
+}
+
+export default function ReceiptCard({ variant = "default" }: ReceiptCardProps) {
+  const isGoal = variant === "goal";
+
   return (
     <View style={styles.container}>
-      <View style={styles.summaryCard}>
-        <Text style={styles.periodText}>
-          도나카와랑 함께한 지 <Text style={styles.monthText}>+2개월</Text>
-        </Text>
+      <View style={[styles.summaryCard, isGoal && styles.goalSummaryCard]}>
+        {isGoal ? (
+          <View style={{ paddingLeft: 7, paddingTop: 11 }}>
+            <StrokeText
+              text="현재 목표"
+              color="#7EC985"
+              strokeColor="#FBFBF5"
+              fontSize={22}
+              strokeWidth={2}
+            />
+          </View>
+        ) : (
+          <>
+            <Text style={styles.periodText}>
+              도나카와랑 함께한 지 <Text style={styles.monthText}>+2개월</Text>
+            </Text>
 
-        <View style={styles.savedRow}>
-          <StrokeText
-            text="325,500"
-            color="#7EC985"
-            strokeColor="#FBFBF5"
-            fontSize={22}
-            strokeWidth={2}
-          />{" "}
-          <Text style={styles.savedText}>원을 절약했어요!</Text>
-        </View>
+            <View style={styles.savedRow}>
+              <StrokeText
+                text="325,500"
+                color="#7EC985"
+                strokeColor="#FBFBF5"
+                fontSize={22}
+                strokeWidth={2}
+              />
+              <Text style={styles.savedText}>원을 절약했어요!</Text>
+            </View>
+          </>
+        )}
 
         <View style={styles.receipt}>
           <View style={styles.receiptBar} />

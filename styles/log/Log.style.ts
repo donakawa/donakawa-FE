@@ -19,6 +19,7 @@ export const logPageStyles = StyleSheet.create({
 
   header: {
     width: 335,
+    height: 48,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
