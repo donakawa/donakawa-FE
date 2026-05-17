@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
 
+// ReceiptCard
 export const receiptCardStyles = StyleSheet.create({
   container: {
-    width: "100%",
-    paddingHorizontal: 24,
-    paddingTop: 12,
+    width: 335,
+    height: 250,
   },
 
   summaryCard: {
@@ -64,9 +64,10 @@ export const receiptCardStyles = StyleSheet.create({
 
   receiptBox: {
     width: 295,
-    minHeight: 166,
+    height: 166,
+
     marginTop: -4,
-    paddingVertical: 18,
+    paddingTop: 16,
     paddingHorizontal: 12,
     gap: 20,
 
@@ -184,6 +185,69 @@ export const receiptCardStyles = StyleSheet.create({
   todayPrice: {
     fontFamily: "Galmuri9",
     fontSize: 14,
+    color: "#7A5751",
+  },
+});
+
+// DefenseCard
+export const defenseCardStyles = StyleSheet.create({
+  card: {
+    width: 335,
+    height: 191,
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 7,
+    padding: 16,
+    justifyContent: "space-between",
+  },
+
+  shieldImage: {
+    position: "absolute",
+    width: 111,
+    height: 152,
+    right: 11,
+  },
+
+  badgeWrap: {
+    position: "relative",
+    alignSelf: "flex-start",
+  },
+
+  union: {
+    position: "absolute",
+    width: 70,
+    height: 16,
+  },
+
+  badge: {
+    alignSelf: "flex-start",
+    width: 70,
+    zIndex: 2,
+  },
+
+  badgeText: {
+    fontFamily: "WantedSansMedium",
+    fontSize: 12,
+    textAlign: "center",
+    color: "#7EC985",
+  },
+
+  content: {
+    gap: 8,
+  },
+
+  amount: {
+    fontFamily: "GalmuriBold",
+    fontSize: 22,
+    color: "#7EC985",
+    textShadowColor: "#FBFBF5",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 0,
+  },
+
+  description: {
+    fontFamily: "Galmuri9",
+    fontSize: 12,
     color: "#7A5751",
   },
 });

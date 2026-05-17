@@ -9,15 +9,14 @@ export default function Layout() {
     Galmuri: require("@/assets/fonts/Galmuri11.ttf"),
     GalmuriBold: require("@/assets/fonts/Galmuri11-Bold.ttf"),
 
-    // Pretendard
-    PretendardThin: require("@/assets/fonts/Pretendard-Thin.otf"),
-    PretendardExtraLight: require("@/assets/fonts/Pretendard-ExtraLight.otf"),
-    PretendardLight: require("@/assets/fonts/Pretendard-Light.otf"),
-    PretendardRegular: require("@/assets/fonts/Pretendard-Regular.otf"),
-    PretendardMedium: require("@/assets/fonts/Pretendard-Medium.otf"),
-    PretendardSemiBold: require("@/assets/fonts/Pretendard-SemiBold.otf"),
-    PretendardBold: require("@/assets/fonts/Pretendard-Bold.otf"),
-    PretendardExtraBold: require("@/assets/fonts/Pretendard-ExtraBold.otf"),
+    // WantedSans
+    WantedSansBlack: require("@/assets/fonts/WantedSans-Black.otf"),
+    WantedSansBold: require("@/assets/fonts/WantedSans-Bold.otf"),
+    WantedSansExtraBlack: require("@/assets/fonts/WantedSans-ExtraBlack.otf"),
+    WantedSansExtraBold: require("@/assets/fonts/WantedSans-ExtraBold.otf"),
+    WantedSansMedium: require("@/assets/fonts/WantedSans-Medium.otf"),
+    WantedSansRegular: require("@/assets/fonts/WantedSans-Regular.otf"),
+    WantedSansSemiBold: require("@/assets/fonts/WantedSans-SemiBold.otf"),
   });
 
   if (!loaded) {
