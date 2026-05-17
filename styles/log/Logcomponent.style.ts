@@ -334,3 +334,70 @@ export const topdayCardStyles = StyleSheet.create({
     color: "#F0FFE5",
   },
 });
+
+// ValueCard
+export const valueCardStyles = StyleSheet.create({
+  container: {
+    width: 335,
+    gap: 12,
+  },
+
+  title: {
+    fontFamily: "WantedSansMedium",
+    fontSize: 12,
+    color: "#787D79",
+  },
+
+  card: {
+    width: 335,
+
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    gap: 16,
+
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 7,
+
+    backgroundColor: "#FAFFF9",
+  },
+
+  valueRow: {
+    gap: 8,
+  },
+
+  valueLabel: {
+    fontFamily: "Galmuri9",
+    fontSize: 12,
+    color: "#2D322E",
+  },
+
+  valueContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  blockWrap: {
+    flexDirection: "row",
+    gap: 4,
+  },
+
+  valueBlock: {
+    width: 20,
+    height: 20,
+    backgroundColor: "#E8F9C7",
+  },
+
+  valueBlockActive: {
+    backgroundColor: "#7EC985",
+  },
+
+  valuePercent: {
+    textAlign: "center",
+
+    fontFamily: "Galmuri9",
+    fontSize: 12,
+    color: "#2D322E",
+  },
+});

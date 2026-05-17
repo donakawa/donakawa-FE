@@ -3,6 +3,7 @@ import { ScrollView, View } from "react-native";
 import DefenseCard from "@/components/log/DefenseCard";
 import ReceiptCard from "@/components/log/ReceiptCard";
 import TopDayCard from "@/components/log/TopDayCard";
+import ValueCard from "@/components/log/ValueCard";
 
 export default function LogPage() {
   return (
@@ -11,6 +12,7 @@ export default function LogPage() {
         <ReceiptCard />
         <DefenseCard />
         <TopDayCard />
+        <ValueCard />
       </View>
     </ScrollView>
   );
