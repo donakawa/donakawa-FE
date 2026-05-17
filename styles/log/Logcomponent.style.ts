@@ -359,7 +359,7 @@ export const topdayCardStyles = StyleSheet.create({
 
   dayText: {
     position: "absolute",
-    bottom: -6,
+    bottom: 3,
   },
 
   dayLabel: {

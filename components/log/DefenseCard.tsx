@@ -67,9 +67,9 @@ export default function DefenseCard() {
             <View style={styles.content}>
               <StrokeText
                 text="456,123원"
-                color="#FFFFFF"
-                strokeColor="#7EC985"
-                fontSize={16}
+                color="#7EC985"
+                strokeColor="#fff"
+                fontSize={22}
                 strokeWidth={2}
               />
 
