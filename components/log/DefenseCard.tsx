@@ -2,8 +2,8 @@ import { defenseCardStyles as styles } from "@/styles/log/Logcomponent.style";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 
-import ShieldIcon from "@/assets/images/shield.svg";
-import UnionIcon from "@/assets/images/Union.svg";
+import ShieldIcon from "@/assets/images/log/shield.svg";
+import UnionIcon from "@/assets/images/log/Union.svg";
 
 export default function DefenseCard() {
   return (

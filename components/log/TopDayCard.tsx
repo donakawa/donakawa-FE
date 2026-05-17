@@ -1,9 +1,9 @@
 import { topdayCardStyles as styles } from "@/styles/log/Logcomponent.style";
 import { Text, View } from "react-native";
 
-import CartIcon from "@/assets/images/cart.svg";
-import PayIcon from "@/assets/images/pay.svg";
-import TrashIcon from "@/assets/images/trash.svg";
+import CartIcon from "@/assets/images/log/cart.svg";
+import PayIcon from "@/assets/images/log/pay.svg";
+import TrashIcon from "@/assets/images/log/trash.svg";
 
 interface DayStrokeTextProps {
   text: string;

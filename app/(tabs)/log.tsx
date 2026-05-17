@@ -6,8 +6,8 @@ import ReceiptCard from "@/components/log/ReceiptCard";
 import TopDayCard from "@/components/log/TopDayCard";
 import ValueCard from "@/components/log/ValueCard";
 
-import ArrowIcon from "@/assets/images/arrow_right.svg";
-import CalendarIcon from "@/assets/images/calendar.svg";
+import ArrowIcon from "@/assets/images/log/arrow_right.svg";
+import CalendarIcon from "@/assets/images/log/calendar.svg";
 
 export default function LogPage() {
   return (
