@@ -64,10 +64,11 @@ export const receiptCardStyles = StyleSheet.create({
 
   receiptBox: {
     width: 295,
-    height: 166,
+    minHeight: 166,
 
     marginTop: -4,
     paddingTop: 16,
+    paddingBottom: 5,
     paddingHorizontal: 12,
     gap: 20,
 
@@ -180,12 +181,14 @@ export const receiptCardStyles = StyleSheet.create({
     fontFamily: "Galmuri9",
     fontSize: 14,
     color: "#2D322E",
+    includeFontPadding: false,
   },
 
   todayPrice: {
     fontFamily: "Galmuri9",
     fontSize: 14,
     color: "#7A5751",
+    includeFontPadding: false,
   },
 });
 
@@ -206,6 +209,7 @@ export const defenseCardStyles = StyleSheet.create({
     width: 111,
     height: 152,
     right: 11,
+    top: 16,
   },
 
   badgeWrap: {
@@ -249,5 +253,84 @@ export const defenseCardStyles = StyleSheet.create({
     fontFamily: "Galmuri9",
     fontSize: 12,
     color: "#7A5751",
+  },
+});
+
+// TopDay
+export const topdayCardStyles = StyleSheet.create({
+  container: {
+    width: 335,
+    gap: 12,
+  },
+
+  topText: {
+    fontFamily: "WantedSansMedium",
+    fontSize: 12,
+    color: "#787D79",
+  },
+
+  topdayBox: {
+    width: 335,
+    height: 113,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    paddingVertical: 21,
+    paddingHorizontal: 56,
+
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 7,
+
+    backgroundColor: "#FAFFF9",
+  },
+
+  dayItem: {
+    alignItems: "center",
+    gap: 8,
+    width: 42,
+  },
+
+  iconWrap: {
+    position: "relative",
+    width: 42,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  dayText: {
+    position: "absolute",
+    bottom: -6,
+  },
+
+  dayLabel: {
+    fontFamily: "Galmuri9",
+    fontSize: 12,
+    color: "#464B47",
+  },
+
+  strokeTextWrap: {
+    position: "relative",
+    width: 42,
+    height: 34,
+  },
+
+  strokeText: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+
+    fontFamily: "GalmuriBold",
+    fontSize: 16,
+    lineHeight: 35,
+
+    includeFontPadding: false,
+  },
+
+  strokeTextFront: {
+    color: "#F0FFE5",
   },
 });
