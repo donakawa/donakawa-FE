@@ -1,15 +1,14 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Layout() {
   const [loaded] = useFonts({
-    // Galmuri
     Galmuri9: require("@/assets/fonts/Galmuri9.ttf"),
     Galmuri: require("@/assets/fonts/Galmuri11.ttf"),
     GalmuriBold: require("@/assets/fonts/Galmuri11-Bold.ttf"),
 
-    // WantedSans
     WantedSansBlack: require("@/assets/fonts/WantedSans-Black.otf"),
     WantedSansBold: require("@/assets/fonts/WantedSans-Bold.otf"),
     WantedSansExtraBlack: require("@/assets/fonts/WantedSans-ExtraBlack.otf"),
@@ -19,14 +18,22 @@ export default function Layout() {
     WantedSansSemiBold: require("@/assets/fonts/WantedSans-SemiBold.otf"),
   });
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFDF8" }}>
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            maxWidth: 393,
+            alignSelf: "center",
+            backgroundColor: "#FFFDF8",
+          }}
+        >
+          <Stack screenOptions={{ headerShown: false }} />
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
