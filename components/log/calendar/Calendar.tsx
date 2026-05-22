@@ -28,7 +28,7 @@ export default function Calendar({
   const todayDate =
     today.getFullYear() === year && today.getMonth() + 1 === month
       ? today.getDate()
-      : 9;
+      : null;
 
   const days: (number | null)[] = [
     ...Array(firstDay).fill(null),

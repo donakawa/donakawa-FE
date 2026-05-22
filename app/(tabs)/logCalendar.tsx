@@ -14,6 +14,8 @@ import CloseIcon from "@/assets/images/log/close.svg";
 import TrashIcon from "@/assets/images/log/delete.svg";
 import TrashEmptyIcon from "@/assets/images/log/delete_empty.svg";
 
+type CalendarMode = "bag" | "trash";
+
 const purchaseItems = [
   {
     id: 1,
@@ -51,7 +53,7 @@ const giveUpItems = [
 export default function LogCalendarPage() {
   const today = new Date();
 
-  const [selectedMode, setSelectedMode] = useState<"bag" | "trash">("bag");
+  const [selectedMode, setSelectedMode] = useState<CalendarMode>("bag");
   const [currentDate, setCurrentDate] = useState(today);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
@@ -59,7 +61,6 @@ export default function LogCalendarPage() {
   const month = currentDate.getMonth() + 1;
 
   const currentItems = selectedMode === "bag" ? purchaseItems : giveUpItems;
-
   const listTitle =
     selectedMode === "bag" ? "구매한 아이템" : "구매 포기한 아이템";
 
@@ -72,10 +73,6 @@ export default function LogCalendarPage() {
           8: "+248,600",
         };
 
-  const handleClosePress = () => {
-    router.push("/log");
-  };
-
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
     setSelectedDate(null);
@@ -87,19 +84,16 @@ export default function LogCalendarPage() {
   };
 
   const handleTodayPress = () => {
-    const today = new Date();
+    const currentToday = new Date();
 
-    setCurrentDate(new Date(today.getFullYear(), today.getMonth(), 1));
-    setSelectedDate(today.getDate());
+    setCurrentDate(
+      new Date(currentToday.getFullYear(), currentToday.getMonth(), 1),
+    );
+    setSelectedDate(currentToday.getDate());
   };
 
-  const handleBagPress = () => {
-    setSelectedMode("bag");
-    setSelectedDate(null);
-  };
-
-  const handleTrashPress = () => {
-    setSelectedMode("trash");
+  const handleModePress = (mode: CalendarMode) => {
+    setSelectedMode(mode);
     setSelectedDate(null);
   };
 
@@ -115,7 +109,7 @@ export default function LogCalendarPage() {
             <Text style={styles.purchaseCount}>15회 구매</Text>
           </View>
 
-          <Pressable onPress={handleClosePress}>
+          <Pressable onPress={() => router.push("/log")}>
             <CloseIcon style={styles.closeImage} />
           </Pressable>
         </View>
@@ -168,7 +162,7 @@ export default function LogCalendarPage() {
                 styles.modeButton,
                 selectedMode === "bag" && styles.activeMode,
               ]}
-              onPress={handleBagPress}
+              onPress={() => handleModePress("bag")}
             >
               {selectedMode === "bag" ? <BagIcon /> : <BagEmptyIcon />}
             </Pressable>
@@ -178,7 +172,7 @@ export default function LogCalendarPage() {
                 styles.modeButton,
                 selectedMode === "trash" && styles.activeMode,
               ]}
-              onPress={handleTrashPress}
+              onPress={() => handleModePress("trash")}
             >
               {selectedMode === "trash" ? <TrashIcon /> : <TrashEmptyIcon />}
             </Pressable>
@@ -186,6 +180,7 @@ export default function LogCalendarPage() {
         </View>
 
         <View style={styles.divider} />
+
         {selectedDate && (
           <>
             <Text style={styles.dateTitle}>
