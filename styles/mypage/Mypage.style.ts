@@ -127,7 +127,9 @@ export const myPageStyles = StyleSheet.create({
 
   resetButton: {
     width: "100%",
-    height: 50,
+    height: 44,
+    paddingVertical: 12,
+    paddingHorizontal: 13,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: "#9CCCA0",
