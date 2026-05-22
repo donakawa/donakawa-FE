@@ -239,6 +239,10 @@ export const calendarStyles = StyleSheet.create({
   redText: {
     color: "#E4463C",
   },
+
+  greenText: {
+    color: "#7EC985",
+  },
 });
 
 // CalendarItemCard

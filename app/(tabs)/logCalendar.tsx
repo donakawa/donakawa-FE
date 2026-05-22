@@ -49,17 +49,28 @@ const giveUpItems = [
 ];
 
 export default function LogCalendarPage() {
-  const [selectedMode, setSelectedMode] = useState<"bag" | "trash">("bag");
   const today = new Date();
 
+  const [selectedMode, setSelectedMode] = useState<"bag" | "trash">("bag");
   const [currentDate, setCurrentDate] = useState(today);
-  const [selectedDate, setSelectedDate] = useState(today.getDate());
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
 
   const currentItems = selectedMode === "bag" ? purchaseItems : giveUpItems;
-  const listTitle = selectedMode === "bag";
+
+  const listTitle =
+    selectedMode === "bag" ? "구매한 아이템" : "구매 포기한 아이템";
+
+  const calendarAmountMap: Record<number, string> =
+    selectedMode === "bag"
+      ? {
+          1: "-171,900",
+        }
+      : {
+          8: "+248,600",
+        };
 
   const handleClosePress = () => {
     router.push("/log");
@@ -67,20 +78,29 @@ export default function LogCalendarPage() {
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
-    setSelectedDate(1);
+    setSelectedDate(null);
   };
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(year, month, 1));
-    setSelectedDate(1);
+    setSelectedDate(null);
   };
 
   const handleTodayPress = () => {
     const today = new Date();
 
     setCurrentDate(new Date(today.getFullYear(), today.getMonth(), 1));
-
     setSelectedDate(today.getDate());
+  };
+
+  const handleBagPress = () => {
+    setSelectedMode("bag");
+    setSelectedDate(null);
+  };
+
+  const handleTrashPress = () => {
+    setSelectedMode("trash");
+    setSelectedDate(null);
   };
 
   return (
@@ -131,6 +151,8 @@ export default function LogCalendarPage() {
           month={month}
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
+          mode={selectedMode}
+          amountMap={calendarAmountMap}
         />
 
         <View style={styles.bottomControl}>
@@ -146,7 +168,7 @@ export default function LogCalendarPage() {
                 styles.modeButton,
                 selectedMode === "bag" && styles.activeMode,
               ]}
-              onPress={() => setSelectedMode("bag")}
+              onPress={handleBagPress}
             >
               {selectedMode === "bag" ? <BagIcon /> : <BagEmptyIcon />}
             </Pressable>
@@ -156,7 +178,7 @@ export default function LogCalendarPage() {
                 styles.modeButton,
                 selectedMode === "trash" && styles.activeMode,
               ]}
-              onPress={() => setSelectedMode("trash")}
+              onPress={handleTrashPress}
             >
               {selectedMode === "trash" ? <TrashIcon /> : <TrashEmptyIcon />}
             </Pressable>
@@ -164,24 +186,27 @@ export default function LogCalendarPage() {
         </View>
 
         <View style={styles.divider} />
+        {selectedDate && (
+          <>
+            <Text style={styles.dateTitle}>
+              {month}월 {selectedDate}일 · {listTitle}
+            </Text>
 
-        <Text style={styles.dateTitle}>
-          {month}월 {selectedDate}일 · {listTitle}
-        </Text>
-
-        <View style={styles.dayPurchaseList}>
-          <View style={styles.itemList}>
-            {currentItems.map((item) => (
-              <CalendarItemCard
-                key={item.id}
-                image={item.image}
-                price={item.price}
-                name={item.name}
-                brand={item.brand}
-              />
-            ))}
-          </View>
-        </View>
+            <View style={styles.dayPurchaseList}>
+              <View style={styles.itemList}>
+                {currentItems.map((item) => (
+                  <CalendarItemCard
+                    key={item.id}
+                    image={item.image}
+                    price={item.price}
+                    name={item.name}
+                    brand={item.brand}
+                  />
+                ))}
+              </View>
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   );

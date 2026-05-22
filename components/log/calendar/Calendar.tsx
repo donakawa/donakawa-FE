@@ -2,11 +2,15 @@ import { Pressable, Text, View } from "react-native";
 
 import { calendarStyles as styles } from "@/styles/log/LogCalendar.style";
 
+type CalendarMode = "bag" | "trash";
+
 type CalendarProps = {
   year: number;
   month: number;
-  selectedDate: number;
+  selectedDate: number | null;
   onSelectDate: (date: number) => void;
+  mode: CalendarMode;
+  amountMap: Record<number, string>;
 };
 
 export default function Calendar({
@@ -14,16 +18,17 @@ export default function Calendar({
   month,
   selectedDate,
   onSelectDate,
+  mode,
+  amountMap,
 }: CalendarProps) {
   const firstDay = new Date(year, month - 1, 1).getDay();
   const lastDate = new Date(year, month, 0).getDate();
 
   const today = new Date();
-
   const todayDate =
     today.getFullYear() === year && today.getMonth() + 1 === month
       ? today.getDate()
-      : null;
+      : 9;
 
   const days: (number | null)[] = [
     ...Array(firstDay).fill(null),
@@ -39,6 +44,7 @@ export default function Calendar({
 
         const isSelected = day === selectedDate;
         const isToday = day === todayDate;
+        const amount = amountMap[day];
 
         return (
           <Pressable
@@ -56,8 +62,14 @@ export default function Calendar({
               <Text style={styles.dayText}>{day}</Text>
             </View>
 
-            <Text style={[styles.daySubText, isSelected && styles.redText]}>
-              {isSelected ? "-171,900" : "-"}
+            <Text
+              style={[
+                styles.daySubText,
+                isSelected && mode === "bag" && styles.redText,
+                isSelected && mode === "trash" && styles.greenText,
+              ]}
+            >
+              {isSelected ? (amount ?? "-") : "-"}
             </Text>
           </Pressable>
         );
