@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -56,7 +57,10 @@ export default function MyPage() {
         <View style={styles.header}>
           <Text style={styles.title}>My page</Text>
 
-          <Pressable style={styles.settingButton}>
+          <Pressable
+            style={styles.settingButton}
+            onPress={() => router.push("/settings")}
+          >
             <SettingIcon />
           </Pressable>
         </View>
