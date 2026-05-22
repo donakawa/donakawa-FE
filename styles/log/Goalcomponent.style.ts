@@ -148,3 +148,102 @@ export const goalCardStyles = StyleSheet.create({
     color: "#E4463C",
   },
 });
+
+// GoalModal
+export const goalModalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  modal: {
+    width: 335,
+    backgroundColor: "#FAFFF9",
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 7,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
+    gap: 28,
+    alignItems: "center",
+  },
+
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+  },
+
+  headerText: {
+    fontSize: 16,
+    fontFamily: "WantedSansMedium",
+    color: "#464B47",
+  },
+
+  doneText: {
+    fontSize: 16,
+    fontFamily: "WantedSansMedium",
+    color: "#7EC985",
+  },
+
+  form: {
+    width: 287,
+    gap: 28,
+  },
+
+  fieldGroup: {
+    gap: 28,
+  },
+
+  goalcontent: {
+    gap: 8,
+  },
+
+  label: {
+    fontSize: 12,
+    fontFamily: "WantedSansMedium",
+    color: "#787D79",
+  },
+
+  input: {
+    width: "100%",
+    height: 47,
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 3,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: "#2D322E",
+    fontFamily: "Galmuri9",
+  },
+
+  count: {
+    alignSelf: "flex-end",
+    fontSize: 12,
+    color: "#919692",
+    fontFamily: "WantedSansRegular",
+  },
+
+  carryOverBox: {
+    gap: 8,
+  },
+
+  radioRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  rolloverText: {
+    fontSize: 14,
+    color: "#7EC985",
+    fontFamily: "Galmuri9",
+  },
+});

@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import SimpleModal from "@/components/common/SimpleModal";
 import GoalButton from "@/components/log/GoalButton";
 import GoalCard from "@/components/log/GoalCard";
+import GoalModal from "@/components/log/GoalModal";
 import ReceiptCard from "@/components/log/ReceiptCard";
 
 import ArrowIcon from "@/assets/images/log/arrow_left.svg";
@@ -15,6 +16,10 @@ import StopIcon from "@/assets/images/log/stop.svg";
 export default function LogPage() {
   const [stopModalVisible, setStopModalVisible] = useState(false);
   const [newGoalModalVisible, setNewGoalModalVisible] = useState(false);
+  const [goalModalVisible, setGoalModalVisible] = useState(false);
+
+  const [goalName, setGoalName] = useState("");
+  const [amount, setAmount] = useState("");
 
   return (
     <View style={styles.container}>
@@ -110,7 +115,20 @@ export default function LogPage() {
         title="새 목표를 설정하시겠습니까?"
         description="중단한 목표의 금액을 이월할 수 있습니다."
         onCancel={() => setNewGoalModalVisible(false)}
-        onConfirm={() => setNewGoalModalVisible(false)}
+        onConfirm={() => {
+          setNewGoalModalVisible(false);
+          setGoalModalVisible(true);
+        }}
+      />
+
+      <GoalModal
+        visible={goalModalVisible}
+        goalName={goalName}
+        amount={amount}
+        onChangeGoalName={setGoalName}
+        onChangeAmount={setAmount}
+        onClose={() => setGoalModalVisible(false)}
+        onSubmit={() => setGoalModalVisible(false)}
       />
     </View>
   );
