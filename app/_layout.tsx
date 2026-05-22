@@ -16,6 +16,8 @@ export default function Layout() {
     WantedSansMedium: require("@/assets/fonts/WantedSans-Medium.otf"),
     WantedSansRegular: require("@/assets/fonts/WantedSans-Regular.otf"),
     WantedSansSemiBold: require("@/assets/fonts/WantedSans-SemiBold.otf"),
+
+    Roboto: require("@/assets/fonts/Roboto-Medium.ttf"),
   });
 
   if (!loaded) return null;

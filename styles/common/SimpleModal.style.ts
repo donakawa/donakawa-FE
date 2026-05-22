@@ -31,12 +31,15 @@ export const simpleModalStyles = StyleSheet.create({
     color: "#2D322E",
     fontFamily: "GalmuriBold",
     fontSize: 16,
+    textAlign: "center",
   },
 
   description: {
     color: "#787D79",
     fontFamily: "WantedSansMedium",
     fontSize: 14,
+    textAlign: "center",
+    lineHeight: 22,
   },
 
   buttonRow: {
@@ -66,6 +69,11 @@ export const simpleModalStyles = StyleSheet.create({
     alignItems: "center",
   },
 
+  dangerConfirmButton: {
+    borderColor: "#E67972",
+    backgroundColor: "#E4463C",
+  },
+
   cancelText: {
     color: "#464B47",
     fontFamily: "WantedSansMedium",
@@ -76,5 +84,9 @@ export const simpleModalStyles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "WantedSansMedium",
     fontSize: 16,
+  },
+
+  dangerConfirmText: {
+    color: "#FFFFFF",
   },
 });

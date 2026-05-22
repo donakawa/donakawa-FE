@@ -83,7 +83,11 @@ export default function SettingsPage() {
               <SettingRow title="개인정보 처리방침" />
               <SettingRow title="버전 정보" />
               <SettingRow title="오픈소스 라이선스" />
-              <SettingRow title="회원 탈퇴" danger />
+              <SettingRow
+                title="회원 탈퇴"
+                danger
+                onPress={() => router.push("/withdrawal")}
+              />
             </View>
           </View>
         </View>
