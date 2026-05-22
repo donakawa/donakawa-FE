@@ -15,6 +15,10 @@ export default function LogPage() {
     router.push("/goal");
   };
 
+  const handleCalendarPress = () => {
+    router.push("/logCalendar");
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -23,7 +27,9 @@ export default function LogPage() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Log</Text>
-          <CalendarIcon style={styles.calendarImage} />
+          <Pressable onPress={handleCalendarPress}>
+            <CalendarIcon style={styles.calendarImage} />
+          </Pressable>
         </View>
 
         <View style={styles.cardContainer}>
