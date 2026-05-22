@@ -252,7 +252,6 @@ export const withdrawalStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#fff",
     paddingLeft: 12,
-    paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
   },

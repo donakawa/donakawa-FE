@@ -78,16 +78,27 @@ export default function WithdrawalPage() {
                   placeholderTextColor="#C3C8C4"
                 />
                 {isLocal ? (
-                  <TextInput
-                    style={styles.input}
-                    placeholder="비밀번호를 입력하세요."
-                    placeholderTextColor="#C3C8C4"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                    textContentType="oneTimeCode"
-                    autoComplete="off"
-                  />
+                  <View style={styles.passwordInputWrap}>
+                    <TextInput
+                      style={styles.passwordInput}
+                      placeholder="비밀번호를 입력하세요."
+                      placeholderTextColor="#C3C8C4"
+                      secureTextEntry={secure}
+                      value={password}
+                      onChangeText={setPassword}
+                      textContentType="oneTimeCode"
+                      autoComplete="off"
+                    />
+
+                    {password.length > 0 && (
+                      <Pressable
+                        style={styles.eyeButton}
+                        onPress={() => setSecure((prev) => !prev)}
+                      >
+                        {secure ? <EyeOffIcon /> : <EyeIcon />}
+                      </Pressable>
+                    )}
+                  </View>
                 ) : (
                   <View style={styles.passwordInputWrap}>
                     <TextInput
