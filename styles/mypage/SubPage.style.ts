@@ -359,3 +359,66 @@ export const withdrawalStyles = StyleSheet.create({
     color: "#1F1F1F",
   },
 });
+
+export const openSourceLicenseStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FBFBF5",
+  },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 100,
+    gap: 20,
+  },
+
+  header: {
+    width: "100%",
+    height: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+
+  title: {
+    fontFamily: "GalmuriBold",
+    fontSize: 22,
+    color: "#7A5751",
+  },
+
+  card: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    borderRadius: 7,
+    backgroundColor: "#FAFFF9",
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    gap: 16,
+  },
+
+  licenseItem: {
+    gap: 8,
+  },
+
+  licenseTitle: {
+    fontFamily: "WantedSansSemiBold",
+    fontSize: 16,
+    color: "#2D322E",
+  },
+
+  licenseDescription: {
+    fontFamily: "WantedSansRegular",
+    fontSize: 14,
+    color: "#5F6460",
+  },
+
+  divider: {
+    width: "100%",
+    borderTopWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#9CCCA0",
+    marginTop: 6,
+  },
+});

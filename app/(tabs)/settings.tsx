@@ -82,7 +82,10 @@ export default function SettingsPage() {
               <SettingRow title="의견 보내기" />
               <SettingRow title="개인정보 처리방침" />
               <SettingRow title="버전 정보" />
-              <SettingRow title="오픈소스 라이선스" />
+              <SettingRow
+                title="오픈소스 라이선스"
+                onPress={() => router.push("/openSourceLicense")}
+              />
               <SettingRow
                 title="회원 탈퇴"
                 danger

@@ -59,20 +59,6 @@ export default function TabLayout() {
           href: null,
         }}
       />
-
-      <Tabs.Screen
-        name="changePassword"
-        options={{
-          href: null,
-        }}
-      />
-
-      <Tabs.Screen
-        name="withdrawal"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 }
