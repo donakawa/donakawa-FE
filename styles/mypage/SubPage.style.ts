@@ -6,18 +6,13 @@ export const changePasswordStyles = StyleSheet.create({
     backgroundColor: "#FBF9F5",
   },
 
-  content: {
-    flex: 1,
-    paddingHorizontal: 26,
-    paddingBottom: 100,
-  },
-
   header: {
     width: "100%",
     height: 48,
     flexDirection: "row",
     alignItems: "center",
     gap: 15,
+    paddingHorizontal: 20,
   },
 
   title: {
@@ -26,9 +21,19 @@ export const changePasswordStyles = StyleSheet.create({
     color: "#7A5751",
   },
 
+  content: {
+    flex: 1,
+    paddingHorizontal: 6,
+  },
+
+  formArea: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: 178,
+  },
+
   form: {
-    width: "100%",
-    marginTop: 178,
+    width: 307,
     gap: 28,
   },
 
@@ -48,20 +53,6 @@ export const changePasswordStyles = StyleSheet.create({
     gap: 28,
   },
 
-  input: {
-    width: "100%",
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#7EC985",
-    borderRadius: 5,
-    backgroundColor: "#fff",
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    fontFamily: "WantedSansRegular",
-    fontSize: 16,
-    color: "#2D322E",
-  },
-
   passwordInputWrap: {
     width: "100%",
     height: 48,
@@ -70,6 +61,7 @@ export const changePasswordStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#fff",
     paddingLeft: 12,
+    paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -96,12 +88,15 @@ export const changePasswordStyles = StyleSheet.create({
     color: "#787D79",
   },
 
+  buttonArea: {
+    width: "100%",
+    alignItems: "center",
+    paddingBottom: 100,
+  },
+
   submitButton: {
-    position: "absolute",
-    bottom: 100,
     width: 307,
     height: 48,
-    alignSelf: "center",
     borderRadius: 7,
     borderWidth: 1,
     borderColor: "#AAAFAB",
@@ -142,5 +137,23 @@ export const changePasswordStyles = StyleSheet.create({
 
   submitTextActive: {
     color: "#464B47",
+  },
+
+  successArea: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: 160,
+  },
+
+  successContent: {
+    alignItems: "center",
+    gap: 32,
+  },
+
+  successText: {
+    textAlign: "center",
+    fontFamily: "GalmuriBold",
+    fontSize: 22,
+    color: "#7A5751",
   },
 });
