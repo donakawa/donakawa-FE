@@ -31,7 +31,7 @@ export default function Layout() {
             width: "100%",
             maxWidth: 393,
             alignSelf: "center",
-            backgroundColor: "#FFFDF8",
+            backgroundColor: "#FBF9F5",
           }}
         >
           <Stack screenOptions={{ headerShown: false }} />

@@ -86,13 +86,16 @@ export default function MyPage() {
           </View>
         </View>
 
-        <View style={styles.resetCard}>
-          <Pressable style={styles.resetButton}>
+        <Pressable
+          style={styles.resetCard}
+          onPress={() => router.push("/budgetSettings")}
+        >
+          <View style={styles.resetButton}>
             <MoneyIcon />
             <Text style={styles.resetText}>예산 설정 다시 하기</Text>
             <ArrowIcon style={styles.arrow} />
-          </Pressable>
-        </View>
+          </View>
+        </Pressable>
 
         <Pressable style={styles.logoutButton}>
           <Text style={styles.logoutText}>로그아웃</Text>
