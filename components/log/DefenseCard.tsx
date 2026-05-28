@@ -70,7 +70,7 @@ export default function DefenseCard() {
                 color="#7EC985"
                 strokeColor="#fff"
                 fontSize={22}
-                strokeWidth={2}
+                strokeWidth={4}
               />
 
               <Text style={styles.description}>
@@ -103,11 +103,10 @@ export default function DefenseCard() {
 
                 <StrokeText
                   text="456,123원"
-                  color="#FFFFFF"
-                  strokeColor="#7EC985"
+                  color="#7EC985"
+                  strokeColor="#ffffff"
                   fontSize={16}
-                  strokeWidth={2}
-                  align="center"
+                  strokeWidth={4}
                 />
               </View>
             </View>
