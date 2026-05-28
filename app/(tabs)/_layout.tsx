@@ -42,6 +42,23 @@ export default function TabLayout() {
           href: null,
         }}
       />
+
+      <Tabs.Screen
+        name="mypage"
+        options={{
+          title: "마이",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -16,6 +16,8 @@ export default function Layout() {
     WantedSansMedium: require("@/assets/fonts/WantedSans-Medium.otf"),
     WantedSansRegular: require("@/assets/fonts/WantedSans-Regular.otf"),
     WantedSansSemiBold: require("@/assets/fonts/WantedSans-SemiBold.otf"),
+
+    Roboto: require("@/assets/fonts/Roboto-Medium.ttf"),
   });
 
   if (!loaded) return null;
@@ -29,7 +31,7 @@ export default function Layout() {
             width: "100%",
             maxWidth: 393,
             alignSelf: "center",
-            backgroundColor: "#FFFDF8",
+            backgroundColor: "#FBF9F5",
           }}
         >
           <Stack screenOptions={{ headerShown: false }} />

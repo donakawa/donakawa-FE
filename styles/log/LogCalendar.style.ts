@@ -64,7 +64,7 @@ export const logCalendarStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F0FFE5",
-    paddingVertical: 10,
+    // paddingVertical: 10,
   },
 
   yearBox: {
