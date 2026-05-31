@@ -6,8 +6,8 @@ import { homeStyles as styles } from "@/styles/home/Home.style";
 import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
-  const budget = 0;
-  const spent = 0;
+  const budget = 10000;
+  const spent = 5000;
 
   const hasBudget = budget > 0;
   const percent = hasBudget ? spent / budget : 0;
@@ -33,7 +33,7 @@ export default function Home() {
       >
         <HomeCharacter hasBudget={hasBudget} spent={spent} percent={percent} />
         <HomeGauge hasBudget={hasBudget} budget={budget} spent={spent} />
-        <HomeActionCards />
+        <HomeActionCards hasBudget={hasBudget} />
       </ScrollView>
     </View>
   );

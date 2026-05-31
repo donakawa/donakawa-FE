@@ -62,6 +62,10 @@ export const characterStyles = StyleSheet.create({
     textAlign: "center",
   },
 
+  speechTextHighlight: {
+    color: "#E67972",
+  },
+
   nameText: {
     marginTop: 14,
     paddingHorizontal: 6,
@@ -246,9 +250,9 @@ export const gaugeStyles = StyleSheet.create({
 
   amountText: {
     marginLeft: 14,
-    fontFamily: "Galmuri11-Bold",
+    fontFamily: "GalmuriBold",
     fontSize: 18,
-    lineHeight: 2,
+    lineHeight: 24,
     color: "#2D322E",
   },
 
@@ -401,5 +405,48 @@ export const actionStyles = StyleSheet.create({
     fontFamily: "Galmuri9",
     fontSize: 12,
     color: "#464B47",
+  },
+
+  actionOuterCard: {
+    flex: 1,
+    width: 164,
+    height: 116,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    backgroundColor: "#E8F9C7",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#7BA36E",
+    shadowOpacity: 0.45,
+    shadowRadius: 5,
+    elevation: 6,
+    position: "relative",
+    overflow: "hidden",
+  },
+
+  actionInnerCard: {
+    width: 120,
+    height: 80,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#9CCCA0",
+    backgroundColor: "#FAFFF9",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+
+  actionImageWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  actionTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
 });

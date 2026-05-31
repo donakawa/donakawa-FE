@@ -30,17 +30,25 @@ export default function HomeCharacter({
     return Dona6;
   };
 
-  const getMessage = () => {
-    if (!hasBudget) return "똥 쌌어요...";
-    if (percent > 1) return "장난해?\n이러다가 거지가 되겠어";
-    return `이번 달 ${spent.toLocaleString()}원을 참고\n홍콩 숙박비를 아꼈어요!`;
+  const renderMessage = () => {
+    if (!hasBudget)
+      return <Text style={styles.speechText}>똥 쌌어요...</Text>;
+    if (percent > 1)
+      return <Text style={styles.speechText}>{"장난해?\n이러다가 거지가 되겠어"}</Text>;
+    return (
+      <Text style={styles.speechText}>
+        {"이번 달 "}
+        <Text style={styles.speechTextHighlight}>{spent.toLocaleString()}원</Text>
+        {"을 참고\n홍콩 숙박비를 아꼈어요!"}
+      </Text>
+    );
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.topArea}>
         <View style={styles.speechBubble}>
-          <Text style={styles.speechText}>{getMessage()}</Text>
+          {renderMessage()}
           <View style={styles.tail} />
         </View>
 
