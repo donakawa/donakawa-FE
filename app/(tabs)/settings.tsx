@@ -93,6 +93,19 @@ export default function SettingsPage() {
               />
             </View>
           </View>
+
+          {__DEV__ && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>개발자</Text>
+
+              <View style={styles.card}>
+                <SettingRow
+                  title="🛠 공통 컴포넌트 뷰어"
+                  onPress={() => router.push("/dev")}
+                />
+              </View>
+            </View>
+          )}
         </View>
       </View>
     </View>

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ImageSourcePropType, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CustomizeHamsterButtonProps {
+  adornment?: ImageSourcePropType;
   onPress?: () => void;
 }
 
-export default function CustomizeHamsterButton({ onPress }: CustomizeHamsterButtonProps) {
+export default function CustomizeHamsterButton({ adornment, onPress }: CustomizeHamsterButtonProps) {
   const [pressed, setPressed] = useState(false);
 
   return (
@@ -17,6 +18,9 @@ export default function CustomizeHamsterButton({ onPress }: CustomizeHamsterButt
       activeOpacity={1}
     >
       <View style={styles.inner}>
+        {adornment && (
+          <Image source={adornment} style={styles.adornment} resizeMode="contain" />
+        )}
         <Text style={styles.label}>햄꾸</Text>
       </View>
       {pressed && <View style={styles.overlay} />}
@@ -45,6 +49,11 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignItems: "center",
     justifyContent: "center",
+    gap: 2,
+  },
+  adornment: {
+    width: 16,
+    height: 16,
   },
   label: {
     color: "#3D2B27",
