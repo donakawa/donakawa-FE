@@ -1,64 +1,21 @@
-import { Ionicons } from "@expo/vector-icons";
+import BottomNavigation from "@/components/common/BottomNavigation";
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {
   return (
     <Tabs
+      tabBar={(props) => <BottomNavigation {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#0B4112",
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="log"
-        options={{
-          title: "Log",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="goal"
-        options={{
-          href: null,
-        }}
-      />
-
-      <Tabs.Screen
-        name="logCalendar"
-        options={{
-          href: null,
-        }}
-      />
-
-      <Tabs.Screen
-        name="mypage"
-        options={{
-          title: "마이",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="settings"
-        options={{
-          href: null,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: "홈" }} />
+      <Tabs.Screen name="log" options={{ title: "로그" }} />
+      <Tabs.Screen name="wish" options={{ title: "위시" }} />
+      <Tabs.Screen name="goal" options={{ href: null }} />
+      <Tabs.Screen name="logCalendar" options={{ href: null }} />
+      <Tabs.Screen name="mypage" options={{ title: "마이" }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   );
 }
