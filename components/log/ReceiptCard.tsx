@@ -19,7 +19,7 @@ export default function ReceiptCard({ variant = "default" }: ReceiptCardProps) {
               color="#7EC985"
               strokeColor="#FBFBF5"
               fontSize={22}
-              strokeWidth={2}
+              strokeWidth={4}
             />
           </View>
         ) : (
@@ -34,7 +34,7 @@ export default function ReceiptCard({ variant = "default" }: ReceiptCardProps) {
                 color="#7EC985"
                 strokeColor="#FBFBF5"
                 fontSize={22}
-                strokeWidth={2}
+                strokeWidth={4}
               />
               <Text style={styles.savedText}>원을 절약했어요!</Text>
             </View>

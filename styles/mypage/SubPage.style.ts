@@ -188,6 +188,7 @@ export const withdrawalStyles = StyleSheet.create({
 
   innerContent: {
     gap: 56,
+    width: "100%",
   },
 
   innerBottomContent: {
@@ -196,7 +197,7 @@ export const withdrawalStyles = StyleSheet.create({
 
   noticeBox: {
     width: "100%",
-    height: 70,
+    minHeight: 70,
     borderWidth: 1,
     borderColor: "#9CCCA0",
     borderRadius: 7,
@@ -360,6 +361,7 @@ export const withdrawalStyles = StyleSheet.create({
   },
 });
 
+// 오픈 라이센스
 export const openSourceLicenseStyle = StyleSheet.create({
   container: {
     flex: 1,

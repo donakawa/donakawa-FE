@@ -10,6 +10,7 @@ export const budgetSettingStyles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     alignItems: "center",
+    width: "100%",
     // gap: 56,
   },
 
@@ -29,6 +30,7 @@ export const budgetSettingStyles = StyleSheet.create({
   headerContent: {
     paddingHorizontal: 20,
     alignItems: "center",
+    width: "100%",
   },
 
   header: {
@@ -86,6 +88,8 @@ export const budgetSettingStyles = StyleSheet.create({
   },
 
   formTop: {
+    width: "100%",
+    alignItems: "center",
     gap: 108,
   },
 
@@ -156,6 +160,7 @@ export const budgetSettingStyles = StyleSheet.create({
   dayRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 12,
   },
 
@@ -217,6 +222,7 @@ export const budgetSettingStyles = StyleSheet.create({
 
   strategyForm: {
     width: "100%",
+    alignItems: "center",
     gap: 28,
   },
 
@@ -422,7 +428,7 @@ export const budgetSettingStyles = StyleSheet.create({
   },
 
   editDayInput: {
-    width: 47,
+    minWidth: 47,
     borderWidth: 1,
     borderColor: "#9CCCA0",
     borderRadius: 7,
