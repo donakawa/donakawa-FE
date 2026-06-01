@@ -6,6 +6,7 @@ interface SimpleModalProps {
   title: string;
   description: string;
   danger?: boolean;
+  confirmText?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -15,6 +16,7 @@ export default function SimpleModal({
   title,
   description,
   danger,
+  confirmText = "네",
   onCancel,
   onConfirm,
 }: SimpleModalProps) {
@@ -42,7 +44,7 @@ export default function SimpleModal({
               <Text
                 style={[styles.confirmText, danger && styles.dangerConfirmText]}
               >
-                탈퇴
+                {confirmText}
               </Text>
             </Pressable>
           </View>

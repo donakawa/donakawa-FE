@@ -174,6 +174,7 @@ export default function WithdrawalPage() {
             "회원탈퇴 시 계정의 모든 정보가 삭제되며,\n복구할 수 없습니다."
           }
           danger
+          confirmText="탈퇴"
           onCancel={() => setModalVisible(false)}
           onConfirm={handleWithdrawal}
         />
