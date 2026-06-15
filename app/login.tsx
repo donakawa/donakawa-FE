@@ -35,7 +35,10 @@ export default function Login() {
 
         <Text style={styles.findText}>아이디/비밀번호 찾기</Text>
 
-        <AuthButton title="로그인" />
+        <AuthButton
+          title="로그인"
+          onPress={() => router.replace("/(tabs)")}
+        />
 
         <View style={styles.socialSection}>
           <View style={styles.dividerWrap}>

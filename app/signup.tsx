@@ -317,7 +317,7 @@ export default function Signup() {
 
           <AuthButton
             title="도나카와 시작하기"
-            onPress={() => router.replace("/")}
+            onPress={() => router.replace("/(tabs)")}
           />
         </View>
       )}
