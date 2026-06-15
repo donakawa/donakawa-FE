@@ -10,6 +10,11 @@ export const homeStyles = StyleSheet.create({
     alignItems: "center",
   },
 
+  heroSection: {
+    width: "100%",
+    backgroundColor: "#F0FFE5",
+  },
+
   headerWrap: {
     width: "100%",
     backgroundColor: "#F0FFE5",

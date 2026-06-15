@@ -122,13 +122,24 @@ export const characterStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 4,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    borderColor: "rgba(255, 255, 255, 0.55)",
-    borderRightWidth: 4,
-    borderBottomWidth: 4,
-    borderRightColor: "rgba(104, 171, 110, 0.22)",
-    borderBottomColor: "rgba(104, 171, 110, 0.22)",
+    boxShadow: [
+      {
+        offsetX: 4,
+        offsetY: 4,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(255,255,255,0.30)",
+        inset: true,
+      },
+      {
+        offsetX: -4,
+        offsetY: -4,
+        blurRadius: 4,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.30)",
+        inset: true,
+      },
+    ],
   },
 
   hamInnerButton: {
@@ -139,6 +150,15 @@ export const characterStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 2,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.15)",
+      },
+    ],
   },
 
   pawCircle: {
@@ -171,16 +191,24 @@ export const characterStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 4,
-
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    borderColor: "rgba(255,255,255,0.3)",
-
-    borderRightWidth: 4,
-    borderBottomWidth: 4,
-
-    borderRightColor: "rgba(230,121,114,0.25)",
-    borderBottomColor: "rgba(230,121,114,0.25)",
+    boxShadow: [
+      {
+        offsetX: 4,
+        offsetY: 4,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(255,255,255,0.30)",
+        inset: true,
+      },
+      {
+        offsetX: -4,
+        offsetY: -4,
+        blurRadius: 4,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.30)",
+        inset: true,
+      },
+    ],
   },
 
   decorateInnerButton: {
@@ -192,6 +220,15 @@ export const characterStyles = StyleSheet.create({
     justifyContent: "center",
 
     zIndex: 2,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.15)",
+      },
+    ],
   },
 
 
@@ -268,7 +305,7 @@ export const gaugeStyles = StyleSheet.create({
 export const actionStyles = StyleSheet.create({
   container: {
     width: 335,
-    height: 130,
+    height: 136,
     marginTop: 10,
     flexDirection: "row",
     gap: 8,
@@ -276,7 +313,7 @@ export const actionStyles = StyleSheet.create({
 
   leftArea: {
     width: 120,
-    height: 130,
+    height: 136,
   },
 
   tooltip: {
@@ -316,17 +353,13 @@ export const actionStyles = StyleSheet.create({
 
   budgetOuterCard: {
     width: 120,
-    height: 130,
+    height: 136,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#9CCCA0",
     backgroundColor: "#E8F9C7",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#7BA36E",
-    shadowOpacity: 0.45,
-    shadowRadius: 5,
-    elevation: 6,
     position: "relative",
     overflow: "hidden",
   },
@@ -338,13 +371,24 @@ export const actionStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 5,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    borderColor: "rgba(255, 255, 255, 0.55)",
-    borderRightWidth: 4,
-    borderBottomWidth: 4,
-    borderRightColor: "rgba(104, 171, 110, 0.22)",
-    borderBottomColor: "rgba(104, 171, 110, 0.22)",
+    boxShadow: [
+      {
+        offsetX: 4,
+        offsetY: 4,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(255,255,255,0.30)",
+        inset: true,
+      },
+      {
+        offsetX: -4,
+        offsetY: -4,
+        blurRadius: 4,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.30)",
+        inset: true,
+      },
+    ],
   },
 
   innerCard: {
@@ -357,6 +401,15 @@ export const actionStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.15)",
+      },
+    ],
   },
 
   budgetText: {
@@ -380,10 +433,6 @@ export const actionStyles = StyleSheet.create({
     backgroundColor: "#E8F9C7",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#7BA36E",
-    shadowOpacity: 0.45,
-    shadowRadius: 5,
-    elevation: 6,
     position: "relative",
     overflow: "hidden",
   },
@@ -399,6 +448,15 @@ export const actionStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.15)",
+      },
+    ],
   },
 
   wideText: {
@@ -417,10 +475,6 @@ export const actionStyles = StyleSheet.create({
     backgroundColor: "#E8F9C7",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#7BA36E",
-    shadowOpacity: 0.45,
-    shadowRadius: 5,
-    elevation: 6,
     position: "relative",
     overflow: "hidden",
   },
@@ -436,6 +490,15 @@ export const actionStyles = StyleSheet.create({
     justifyContent: "flex-start",
     paddingVertical: 8,
     paddingHorizontal: 8,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blurRadius: 2,
+        spreadDistance: 0,
+        color: "rgba(104,171,110,0.15)",
+      },
+    ],
   },
 
   actionImageWrap: {
