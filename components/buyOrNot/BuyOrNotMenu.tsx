@@ -15,6 +15,7 @@ import SearchIcon from "@/assets/images/buyOrNot/search.svg";
 import ArrowIcon from "@/assets/images/log/arrow_mini.svg";
 
 import SimpleModal from "@/components/common/SimpleModal";
+import Toast from "@/components/common/Toast";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const ANIMATION_DURATION_MS = 220;
@@ -34,6 +35,7 @@ export default function BuyOrNotMenu({
 }: BuyOrNotMenuProps) {
   const [isMounted, setIsMounted] = useState(visible);
   const [items, setItems] = useState(historyItemNames);
+  const [toastVisible, setToastVisible] = useState(false);
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
 
   useEffect(() => {
@@ -101,13 +103,21 @@ export default function BuyOrNotMenu({
               <HistoryRow
                 key={`${name}-${index}`}
                 name={name}
-                onDelete={() =>
-                  setItems((prev) => prev.filter((_, i) => i !== index))
-                }
+                onDelete={() => {
+                  setItems((prev) => prev.filter((_, i) => i !== index));
+                  setToastVisible(true);
+                }}
               />
             ))}
           </View>
         </Animated.View>
+
+        <Toast
+          visible={toastVisible}
+          message="기록이 삭제되었습니다."
+          onHide={() => setToastVisible(false)}
+          bottom={75}
+        />
       </View>
     </Modal>
   );
@@ -314,13 +324,23 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    zIndex: 1000,
+    zIndex: 100,
     borderWidth: 1,
     borderColor: "#9CCCA0",
-    borderRadius: 8,
-    backgroundColor: "#FFFFFF",
+    borderRadius: 4,
+    backgroundColor: "#FBFBF5",
     paddingHorizontal: 14,
     paddingVertical: 8,
+
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 0,
+        blurRadius: 4,
+        spreadDistance: 0,
+        color: "rgba(0,0,0,0.10)",
+      },
+    ],
   },
 
   deleteButtonText: {
