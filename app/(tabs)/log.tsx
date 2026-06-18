@@ -2,6 +2,7 @@ import { logPageStyles as styles } from "@/styles/log/Log.style";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import Header from "@/components/common/Header";
 import DefenseCard from "@/components/log/DefenseCard";
 import ReceiptCard from "@/components/log/ReceiptCard";
 import TopDayCard from "@/components/log/TopDayCard";
@@ -25,12 +26,14 @@ export default function LogPage() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Log</Text>
-          <Pressable onPress={handleCalendarPress}>
-            <CalendarIcon style={styles.calendarImage} />
-          </Pressable>
-        </View>
+        <Header
+          title="Log"
+          rightElement={
+            <Pressable onPress={handleCalendarPress}>
+              <CalendarIcon style={styles.calendarImage} />
+            </Pressable>
+          }
+        />
 
         <View style={styles.cardContainer}>
           <Pressable style={styles.goalManageWrap} onPress={handleGoalPress}>

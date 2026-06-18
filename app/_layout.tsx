@@ -24,7 +24,10 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFDF8" }}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: "#FFFDF8" }}
+        edges={["top"]}
+      >
         <View
           style={{
             flex: 1,

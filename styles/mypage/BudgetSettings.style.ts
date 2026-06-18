@@ -33,30 +33,10 @@ export const budgetSettingStyles = StyleSheet.create({
     width: "100%",
   },
 
-  header: {
-    width: 335,
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  title: {
-    flex: 1,
-    marginLeft: 14,
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
-  },
-
   editText: {
     fontSize: 18,
     fontFamily: "WantedSansSemiBold",
     color: "#7EC985",
-  },
-
-  headerBlank: {
-    width: 32,
   },
 
   progressBar: {

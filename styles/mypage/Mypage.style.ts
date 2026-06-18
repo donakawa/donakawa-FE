@@ -15,20 +15,6 @@ export const myPageStyles = StyleSheet.create({
     alignItems: "center",
   },
 
-  header: {
-    width: 335,
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
-  },
-
   settingButton: {
     alignItems: "center",
     justifyContent: "center",

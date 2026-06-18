@@ -9,11 +9,11 @@ import {
   View,
 } from "react-native";
 
+import Header from "@/components/common/Header";
 import SimpleModal from "@/components/common/SimpleModal";
 
 import { withdrawalStyles as styles } from "@/styles/mypage/SubPage.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import GoogleIcon from "@/assets/images/mypage/google.svg";
 import ShieldIcon from "@/assets/images/mypage/security.svg";
 import EyeIcon from "@/assets/images/mypage/visibility-eye.svg";
@@ -52,13 +52,7 @@ export default function WithdrawalPage() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.content}>
-          <View style={styles.header}>
-            <Pressable onPress={() => router.back()} hitSlop={10}>
-              <ArrowIcon />
-            </Pressable>
-
-            <Text style={styles.title}>회원 탈퇴</Text>
-          </View>
+          <Header title="회원 탈퇴" onBackPress={() => router.back()} />
 
           <View style={styles.innerContent}>
             <View style={styles.noticeBox}>
