@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import MenuIcon from "@/assets/images/common/menu.svg";
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 
 import BuyOrNotCharacter from "@/components/buyOrNot/BuyOrNotCharacter";
+import Header from "@/components/common/Header";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import ChoiceButton from "@/components/buyOrNot/ChoiceButton";
 import SpeechBubble from "@/components/buyOrNot/SpeechBubble";
@@ -34,15 +34,15 @@ export default function BuyOrNotPage() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topHeader}>
-        <Pressable onPress={() => router.back()} hitSlop={10}>
-          <ArrowIcon />
-        </Pressable>
-
-        <Pressable hitSlop={10} onPress={() => setIsMenuVisible(true)}>
-          <MenuIcon />
-        </Pressable>
-      </View>
+      <Header
+        onBackPress={() => router.back()}
+        rightElement={
+          <Pressable hitSlop={10} onPress={() => setIsMenuVisible(true)}>
+            <MenuIcon />
+          </Pressable>
+        }
+        style={styles.topHeader}
+      />
 
       <View style={styles.banner}>
         <View style={styles.dotLine}>

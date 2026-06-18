@@ -11,9 +11,10 @@ import {
   View,
 } from "react-native";
 
+import Header from "@/components/common/Header";
+
 import { changePasswordStyles as styles } from "@/styles/mypage/SubPage.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import PasswordSuccessIcon from "@/assets/images/mypage/shield-lock.svg";
 import EyeIcon from "@/assets/images/mypage/visibility-eye.svg";
 import EyeOffIcon from "@/assets/images/mypage/visibility-off-eye.svg";
@@ -64,13 +65,11 @@ export default function ChangePasswordPage() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
-            <ArrowIcon />
-          </Pressable>
-
-          <Text style={styles.title}>비밀번호 변경</Text>
-        </View>
+        <Header
+          title="비밀번호 변경"
+          onBackPress={() => router.back()}
+          style={styles.header}
+        />
 
         <View style={styles.content}>
           {step !== 3 ? (

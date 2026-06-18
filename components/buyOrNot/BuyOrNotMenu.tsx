@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -65,61 +64,59 @@ export default function BuyOrNotMenu({
   if (!isMounted) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+    <View style={styles.overlay}>
+      <Pressable style={styles.backdrop} onPress={onClose} />
 
-        <Animated.View style={[styles.panel, { transform: [{ translateX }] }]}>
-          <View style={styles.searchBar}>
-            <SearchIcon style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="검색..."
-              placeholderTextColor="#B5B5B5"
+      <Animated.View style={[styles.panel, { transform: [{ translateX }] }]}>
+        <View style={styles.searchBar}>
+          <SearchIcon style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="검색..."
+            placeholderTextColor="#B5B5B5"
+          />
+        </View>
+
+        <Pressable
+          style={styles.newRecommendCard}
+          onPress={onPressNewRecommendation}
+        >
+          <View style={styles.newRecommendButton}>
+            <Ionicons name="pricetag" size={14} color="#2D322E" />
+            <Text style={styles.newRecommendText}>새로 살말 추천 받기</Text>
+            <ArrowIcon style={styles.arrow} />
+          </View>
+        </Pressable>
+
+        <View style={styles.divider}>
+          {Array.from({ length: 32 }).map((_, index) => (
+            <View key={index} style={styles.dividerDash} />
+          ))}
+        </View>
+
+        <View style={styles.historyList}>
+          <Text style={styles.sectionTitle}>추천 기록</Text>
+
+          {items.map((name, index) => (
+            <HistoryRow
+              key={`${name}-${index}`}
+              name={name}
+              onDelete={() => {
+                setItems((prev) => prev.filter((_, i) => i !== index));
+                setToastVisible(true);
+              }}
             />
-          </View>
+          ))}
+        </View>
+      </Animated.View>
 
-          <Pressable
-            style={styles.newRecommendCard}
-            onPress={onPressNewRecommendation}
-          >
-            <View style={styles.newRecommendButton}>
-              <Ionicons name="pricetag" size={14} color="#2D322E" />
-              <Text style={styles.newRecommendText}>새로 살말 추천 받기</Text>
-              <ArrowIcon style={styles.arrow} />
-            </View>
-          </Pressable>
-
-          <View style={styles.divider}>
-            {Array.from({ length: 32 }).map((_, index) => (
-              <View key={index} style={styles.dividerDash} />
-            ))}
-          </View>
-
-          <View style={styles.historyList}>
-            <Text style={styles.sectionTitle}>추천 기록</Text>
-
-            {items.map((name, index) => (
-              <HistoryRow
-                key={`${name}-${index}`}
-                name={name}
-                onDelete={() => {
-                  setItems((prev) => prev.filter((_, i) => i !== index));
-                  setToastVisible(true);
-                }}
-              />
-            ))}
-          </View>
-        </Animated.View>
-
-        <Toast
-          visible={toastVisible}
-          message="기록이 삭제되었습니다."
-          onHide={() => setToastVisible(false)}
-          bottom={75}
-        />
-      </View>
-    </Modal>
+      <Toast
+        visible={toastVisible}
+        message="기록이 삭제되었습니다."
+        onHide={() => setToastVisible(false)}
+        bottom={75}
+      />
+    </View>
   );
 }
 
@@ -184,12 +181,13 @@ function HistoryRow({ name, onDelete }: HistoryRowProps) {
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 999,
   },
 
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(60, 50, 58, 0.55)",
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
   },
 
   panel: {

@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
+import Header from "@/components/common/Header";
 import { openSourceLicenseStyle as styles } from "@/styles/mypage/SubPage.style";
-
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 
 type LicenseItemProps = {
   title: string;
@@ -26,13 +25,7 @@ export default function OpenSourceLicensePage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
-            <ArrowIcon />
-          </Pressable>
-
-          <Text style={styles.title}>오픈소스 라이선스</Text>
-        </View>
+        <Header title="오픈소스 라이선스" onBackPress={() => router.back()} />
 
         <View style={styles.card}>
           <LicenseItem

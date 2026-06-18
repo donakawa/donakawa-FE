@@ -231,7 +231,6 @@ export const characterStyles = StyleSheet.create({
     ],
   },
 
-
   smallButtonText: {
     fontFamily: "Galmuri9",
     fontSize: 11,

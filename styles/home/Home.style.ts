@@ -18,12 +18,11 @@ export const homeStyles = StyleSheet.create({
   headerWrap: {
     width: "100%",
     backgroundColor: "#F0FFE5",
-    paddingTop: 42,
-    alignItems: "center",
+    paddingHorizontal: 20,
   },
 
   header: {
-    width: 335,
+    width: "100%",
     height: 48,
     flexDirection: "row",
     alignItems: "center",
@@ -56,7 +55,6 @@ export const homeStyles = StyleSheet.create({
   coinText: {
     fontFamily: "Galmuri9",
     fontSize: 12,
-    color: "#464B47",
+    color: "#2D322E",
   },
-
 });

@@ -1,5 +1,6 @@
 import AuthButton from "@/components/auth/AuthButton";
 import AuthInput from "@/components/auth/AuthInput";
+import Header from "@/components/common/Header";
 import { signupStyles as styles } from "@/styles/auth/Auth.style";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -84,15 +85,11 @@ export default function Signup() {
     <View style={styles.container}>
       {step < 5 && (
         <>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => (step === 1 ? router.back() : setStep(step - 1))}
-            >
-              <Ionicons name="chevron-back" size={26} color="#464B47" />
-            </TouchableOpacity>
-
-            <Text style={styles.headerTitle}>회원가입</Text>
-          </View>
+          <Header
+            title="회원가입"
+            onBackPress={() => (step === 1 ? router.back() : setStep(step - 1))}
+            style={styles.header}
+          />
 
           <View style={styles.progressBack}>
             <View style={[styles.progressFill, { width: progressWidth }]} />

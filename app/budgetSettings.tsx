@@ -11,9 +11,9 @@ import {
   View,
 } from "react-native";
 
+import Header from "@/components/common/Header";
 import { budgetSettingStyles as styles } from "@/styles/mypage/BudgetSettings.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import DollarIcon from "@/assets/images/mypage/attach-money.svg";
 import CardIcon from "@/assets/images/mypage/credit-card.svg";
 import MoneyIcon from "@/assets/images/mypage/money-bag-green.svg";
@@ -550,21 +550,17 @@ export default function BudgetSettings() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.headerContent}>
-          <View style={styles.header}>
-            <Pressable onPress={handleBack} hitSlop={10}>
-              <ArrowIcon />
-            </Pressable>
-
-            <Text style={styles.title}>목표 예산 설정</Text>
-
-            {step === 7 ? (
-              <Pressable onPress={() => setStep(8)}>
-                <Text style={styles.editText}>수정</Text>
-              </Pressable>
-            ) : (
-              <View style={styles.headerBlank} />
-            )}
-          </View>
+          <Header
+            title="목표 예산 설정"
+            onBackPress={handleBack}
+            rightElement={
+              step === 7 ? (
+                <Pressable onPress={() => setStep(8)}>
+                  <Text style={styles.editText}>수정</Text>
+                </Pressable>
+              ) : undefined
+            }
+          />
         </View>
 
         {renderProgress()}

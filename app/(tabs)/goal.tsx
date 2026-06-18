@@ -1,15 +1,15 @@
 import { logPageStyles as styles } from "@/styles/log/Log.style";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
+import Header from "@/components/common/Header";
 import SimpleModal from "@/components/common/SimpleModal";
 import GoalButton from "@/components/log/GoalButton";
 import GoalCard from "@/components/log/GoalCard";
 import GoalModal from "@/components/log/GoalModal";
 import ReceiptCard from "@/components/log/ReceiptCard";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import FlagIcon from "@/assets/images/log/flag.svg";
 import StopIcon from "@/assets/images/log/stop.svg";
 
@@ -27,21 +27,7 @@ export default function LogPage() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View
-          style={{
-            width: "100%",
-            height: 48,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 15,
-          }}
-        >
-          <Pressable onPress={() => router.navigate("/log")}>
-            <ArrowIcon />
-          </Pressable>
-
-          <Text style={styles.title}>Log</Text>
-        </View>
+        <Header title="Log" onBackPress={() => router.navigate("/log")} />
 
         <View style={styles.cardContainer}>
           <View style={styles.cardList}>

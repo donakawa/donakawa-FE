@@ -8,6 +8,7 @@ import {
   type ImageSourcePropType,
 } from "react-native";
 
+import Header from "@/components/common/Header";
 import ProfileSettingModal from "@/components/mypage/ProfileSettingModal";
 import { myPageStyles as styles } from "@/styles/mypage/Mypage.style";
 
@@ -54,16 +55,17 @@ export default function MyPage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>My page</Text>
-
-          <Pressable
-            style={styles.settingButton}
-            onPress={() => router.push("/settings")}
-          >
-            <SettingIcon />
-          </Pressable>
-        </View>
+        <Header
+          title="My page"
+          rightElement={
+            <Pressable
+              style={styles.settingButton}
+              onPress={() => router.push("/settings")}
+            >
+              <SettingIcon />
+            </Pressable>
+          }
+        />
 
         <View style={styles.profileCard}>
           <Pressable style={styles.editButton} onPress={openProfileModal}>
@@ -95,21 +97,6 @@ export default function MyPage() {
             <Text style={styles.resetText}>예산 설정 다시 하기</Text>
             <ArrowIcon style={styles.arrow} />
           </View>
-        </Pressable>
-
-        {/* 살말추천 버튼 잠깐 숨겨두기... */}
-        <Pressable
-          style={{
-            marginTop: 20,
-            alignSelf: "center",
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: "#E8F9C7",
-          }}
-          onPress={() => router.push("/buyOrNot" as never)}
-        >
-          <Text>살말추천</Text>
         </Pressable>
 
         <Pressable style={styles.logoutButton}>

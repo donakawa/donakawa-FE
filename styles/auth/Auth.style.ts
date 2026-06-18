@@ -108,16 +108,7 @@ export const signupStyles = StyleSheet.create({
     backgroundColor: "#FBFBF5",
   },
   header: {
-    height: 60,
-    paddingHorizontal: 2,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
-    marginLeft: 10,
+    paddingHorizontal: 20,
   },
   progressBack: {
     width: "100%",
