@@ -1,10 +1,12 @@
 import { router } from "expo-router";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import MenuIcon from "@/assets/images/common/menu.svg";
 import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 
 import BuyOrNotCharacter from "@/components/buyOrNot/BuyOrNotCharacter";
+import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import ChoiceButton from "@/components/buyOrNot/ChoiceButton";
 import SpeechBubble from "@/components/buyOrNot/SpeechBubble";
 
@@ -23,6 +25,8 @@ export default function BuyOrNotPage() {
     restart,
   } = useBuyOrNotFlow(BUY_OR_NOT_MOCK_SESSION);
 
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
   const isResult = phase === "RESULT";
   const isLoading = phase === "LOADING";
   const isQuestion = phase === "QUESTION";
@@ -35,7 +39,7 @@ export default function BuyOrNotPage() {
           <ArrowIcon />
         </Pressable>
 
-        <Pressable hitSlop={10}>
+        <Pressable hitSlop={10} onPress={() => setIsMenuVisible(true)}>
           <MenuIcon />
         </Pressable>
       </View>
@@ -123,6 +127,16 @@ export default function BuyOrNotPage() {
           )}
         </View>
       </View>
+
+      <BuyOrNotMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        historyItemNames={[BUY_OR_NOT_MOCK_SESSION.wishItem.name]}
+        onPressNewRecommendation={() => {
+          setIsMenuVisible(false);
+          restart();
+        }}
+      />
     </View>
   );
 }
