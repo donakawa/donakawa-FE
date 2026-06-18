@@ -97,6 +97,21 @@ export default function MyPage() {
           </View>
         </Pressable>
 
+        {/* 살말추천 버튼 잠깐 숨겨두기... */}
+        <Pressable
+          style={{
+            marginTop: 20,
+            alignSelf: "center",
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "#E8F9C7",
+          }}
+          onPress={() => router.push("/buyOrNot" as never)}
+        >
+          <Text>살말추천</Text>
+        </Pressable>
+
         <Pressable style={styles.logoutButton}>
           <Text style={styles.logoutText}>로그아웃</Text>
         </Pressable>
