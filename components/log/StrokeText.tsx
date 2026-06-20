@@ -1,4 +1,4 @@
-import { Canvas, Text, useFont } from "@shopify/react-native-skia";
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 interface StrokeTextProps {
   text: string;
@@ -6,6 +6,9 @@ interface StrokeTextProps {
   strokeColor: string;
   fontSize: number;
   strokeWidth?: number;
+  align?: "left" | "center" | "right";
+  fontFamily?: string;
+  lineHeight?: number;
 }
 
 export default function StrokeText({
@@ -14,34 +17,80 @@ export default function StrokeText({
   strokeColor,
   fontSize,
   strokeWidth = 2,
+  align = "left",
+  fontFamily = "GalmuriBold",
+  lineHeight,
 }: StrokeTextProps) {
-  const font = useFont(require("@/assets/fonts/Galmuri11-Bold.ttf"), fontSize);
+  const shadowPositions = [
+    [-strokeWidth, 0],
+    [strokeWidth, 0],
+    [0, -strokeWidth],
+    [0, strokeWidth],
+    [-strokeWidth, -strokeWidth],
+    [strokeWidth, -strokeWidth],
+    [-strokeWidth, strokeWidth],
+    [strokeWidth, strokeWidth],
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ];
 
-  if (!font) return null;
+  const containerStyle: ViewStyle = {
+    alignSelf:
+      align === "center"
+        ? "center"
+        : align === "right"
+          ? "flex-end"
+          : "flex-start",
+  };
 
-  const textWidth = font.getTextWidth(text);
-  const ascent = Math.abs(font.getMetrics().ascent);
-  const width = textWidth + strokeWidth * 2 + 4;
-  const height = fontSize + strokeWidth * 2;
+  const textStyle: TextStyle = {
+    fontSize,
+    lineHeight: lineHeight ?? fontSize + 6,
+    fontFamily,
+  };
 
   return (
-    <Canvas style={{ width, height }}>
-      <Text
-        x={strokeWidth}
-        y={ascent + strokeWidth}
-        text={text}
-        font={font}
-        color={strokeColor}
-        style="stroke"
-        strokeWidth={strokeWidth}
-      />
-      <Text
-        x={strokeWidth}
-        y={ascent + strokeWidth}
-        text={text}
-        font={font}
-        color={color}
-      />
-    </Canvas>
+    <View style={[styles.container, containerStyle]}>
+      {shadowPositions.map(([x, y], index) => (
+        <Text
+          key={index}
+          style={[
+            styles.strokeText,
+            textStyle,
+            {
+              color: strokeColor,
+              transform: [{ translateX: x }, { translateY: y }],
+            },
+          ]}
+        >
+          {text}
+        </Text>
+      ))}
+
+      <Text style={[styles.frontText, textStyle, { color }]}>{text}</Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+  },
+
+  strokeText: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    includeFontPadding: false,
+  },
+
+  frontText: {
+    includeFontPadding: false,
+  },
+});

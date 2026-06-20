@@ -17,13 +17,18 @@ import MonthPickerSheet from "@/components/common/MonthPickerSheet";
 import MonthSelectButton from "@/components/common/MonthSelectButton";
 import PixelButton from "@/components/common/PixelButton";
 import SortDropdown, { SortOption } from "@/components/common/SortDropdown";
+import SpeechBubble from "@/components/common/SpeechBubble";
 import Toast from "@/components/common/Toast";
 import WishAddContainer from "@/components/common/WishAddContainer";
 import WishAddMenuDropdown from "@/components/common/WishAddMenuDropdown";
+import WishFlowBottomBar from "@/components/wish/WishFlowBottomBar";
+import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
+import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 import WishCreateFolderModal from "@/components/wish/WishCreateFolderModal";
+import { Ionicons } from "@expo/vector-icons";
 import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 if (!__DEV__) {
@@ -112,6 +117,11 @@ export default function DevComponentsPage() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={24} color="#464B47" />
+        </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.pageTitle}>공통 컴퍼넌트</Text>
 
@@ -259,7 +269,7 @@ export default function DevComponentsPage() {
         <Section title="FloatingActionButton">
           <Row>
             <FloatingActionButton
-              image={require("@/assets/images/wish-button.png")}
+              image={require("@/assets/images/wish/wish-button.png")}
               onPress={() => setFabVisible(true)}
             />
           </Row>
@@ -413,6 +423,108 @@ export default function DevComponentsPage() {
           />
         </Section>
 
+        {/* SpeechBubble */}
+        <Section title="SpeechBubble — text">
+          <SpeechBubble text={"위시템을 살지 말지\n고민이 되니?\n내가 한 번 봐주마"} />
+        </Section>
+
+        <Section title="SpeechBubble — 단일 라인">
+          <SpeechBubble text="안녕하세요!" />
+        </Section>
+
+        {/* WishFlowTopBar */}
+        <Section title="WishFlowTopBar — rightVariant: menu">
+          <View style={styles.tournamentPreview}>
+            <WishFlowTopBar
+              onBack={() => {}}
+              rightVariant="menu"
+              onRightPress={() => {}}
+            />
+          </View>
+        </Section>
+
+        <Section title="WishFlowTopBar — rightVariant: close">
+          <View style={styles.tournamentPreview}>
+            <WishFlowTopBar
+              onBack={() => {}}
+              rightVariant="close"
+              onRightPress={() => {}}
+            />
+          </View>
+        </Section>
+
+        {/* WishFlowTitleBanner */}
+        <Section title="WishFlowTitleBanner — 기본">
+          <View style={styles.tournamentPreview}>
+            <WishFlowTitleBanner title="후보를 선택" />
+          </View>
+        </Section>
+
+        <Section title="WishFlowTitleBanner — subtitle 포함">
+          <View style={styles.tournamentPreview}>
+            <WishFlowTitleBanner
+              title="토너먼트"
+              subtitle="당신의 최종선택은?"
+            />
+          </View>
+        </Section>
+
+        <Section title="WishFlowTitleBanner — title 스타일 override">
+          <View style={styles.tournamentPreview}>
+            <WishFlowTitleBanner
+              title="커스텀"
+              titleStyle={{ fontSize: 18, color: "#0B4112" }}
+              bangStyle={{ fontSize: 18, color: "#7EC985" }}
+            />
+          </View>
+        </Section>
+
+        {/* WishFlowBottomBar */}
+        <Section title="WishFlowBottomBar — 비활성">
+          <View style={styles.bottomBarPreview}>
+            <WishFlowBottomBar
+              notice="*최소 4개의 위시템을 선택해 주세요."
+              current={0}
+              max={16}
+              canConfirm={false}
+              onConfirm={() => {}}
+            />
+          </View>
+        </Section>
+
+        <Section title="WishFlowBottomBar — 활성">
+          <View style={styles.bottomBarPreview}>
+            <WishFlowBottomBar
+              notice="*최소 4개의 위시템을 선택해 주세요."
+              current={5}
+              max={16}
+              canConfirm
+              onConfirm={() => {}}
+            />
+          </View>
+        </Section>
+
+        <Section title="WishFlowBottomBar — 버튼만 (notice/counter 생략)">
+          <View style={styles.bottomBarPreview}>
+            <WishFlowBottomBar canConfirm onConfirm={() => {}} />
+          </View>
+        </Section>
+
+        <Section title="WishFlowBottomBar — leftSlot (전체 선택 토글)">
+          <View style={styles.bottomBarPreview}>
+            <WishFlowBottomBar
+              canConfirm
+              onConfirm={() => {}}
+              leftSlot={
+                <View style={styles.leftSlotDemo}>
+                  <View style={styles.leftSlotCircle} />
+                  <Text style={styles.leftSlotText}>전체 선택</Text>
+                </View>
+              }
+            />
+          </View>
+        </Section>
+
         {/* WishAddMenuDropdown */}
         <Section title="WishAddMenuDropdown">
           <Button
@@ -438,6 +550,17 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#F5F5F5",
+  },
+  header: {
+    height: 48,
+    paddingHorizontal: 8,
+    justifyContent: "center",
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     padding: 20,
@@ -499,5 +622,33 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     columnGap: 11,
     rowGap: 16,
+  },
+  tournamentPreview: {
+    marginHorizontal: -16,
+    backgroundColor: "#FBFBF5",
+    overflow: "hidden",
+  },
+  bottomBarPreview: {
+    marginHorizontal: -16,
+    height: 84,
+    position: "relative",
+    overflow: "hidden",
+  },
+  leftSlotDemo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  leftSlotCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.5,
+    borderColor: "#9CCCA0",
+  },
+  leftSlotText: {
+    color: "#7A5751",
+    fontSize: 14,
+    fontFamily: "Galmuri9",
   },
 });
