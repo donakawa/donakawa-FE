@@ -7,6 +7,8 @@ interface StrokeTextProps {
   fontSize: number;
   strokeWidth?: number;
   align?: "left" | "center" | "right";
+  fontFamily?: string;
+  lineHeight?: number;
 }
 
 export default function StrokeText({
@@ -16,6 +18,8 @@ export default function StrokeText({
   fontSize,
   strokeWidth = 2,
   align = "left",
+  fontFamily = "GalmuriBold",
+  lineHeight,
 }: StrokeTextProps) {
   const shadowPositions = [
     [-strokeWidth, 0],
@@ -47,7 +51,8 @@ export default function StrokeText({
 
   const textStyle: TextStyle = {
     fontSize,
-    lineHeight: fontSize + 6,
+    lineHeight: lineHeight ?? fontSize + 6,
+    fontFamily,
   };
 
   return (
@@ -82,12 +87,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    fontFamily: "GalmuriBold",
     includeFontPadding: false,
   },
 
   frontText: {
-    fontFamily: "GalmuriBold",
     includeFontPadding: false,
   },
 });

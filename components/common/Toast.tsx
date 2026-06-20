@@ -25,14 +25,16 @@ export default function Toast({
       Animated.delay(duration),
       Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }),
     ]).start(() => onHide());
-  }, [visible]);
+  }, [duration, onHide, opacity, visible]);
 
   if (!visible) return null;
 
   return (
     <Animated.View style={[styles.container, { bottom, opacity }]} pointerEvents="none">
       <View style={styles.pill}>
-        <Text style={styles.text}>{message}</Text>
+        <Text style={styles.text} numberOfLines={1}>
+          {message}
+        </Text>
       </View>
     </Animated.View>
   );
@@ -46,15 +48,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   pill: {
-    paddingVertical: 8,
-    paddingHorizontal: 24,
+    width: 222,
+    height: 37,
+    paddingHorizontal: 45,
     backgroundColor: "#2D322E",
     borderRadius: 37.5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     textAlign: "center",
     color: "#FAFFF9",
     fontSize: 14,
+    fontFamily: "WantedSansMedium",
     fontWeight: "500",
     lineHeight: 21,
   },

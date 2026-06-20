@@ -6,6 +6,7 @@ interface ConfirmModalProps {
   description?: string;
   cancelLabel?: string;
   confirmLabel?: string;
+  danger?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -16,6 +17,7 @@ export default function ConfirmModal({
   description,
   cancelLabel = "아니오",
   confirmLabel = "네",
+  danger,
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -23,17 +25,25 @@ export default function ConfirmModal({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <Pressable style={styles.backdrop} onPress={onCancel}>
         <Pressable style={styles.card} onPress={() => {}}>
-          <View style={styles.textWrap}>
-            <Text style={styles.title}>{title}</Text>
-            {description ? <Text style={styles.description}>{description}</Text> : null}
-          </View>
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={onCancel} activeOpacity={0.85}>
-              <Text style={styles.cancelText}>{cancelLabel}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.confirmBtn} onPress={onConfirm} activeOpacity={0.85}>
-              <Text style={styles.confirmText}>{confirmLabel}</Text>
-            </TouchableOpacity>
+          <View style={styles.content}>
+            <View style={styles.textWrap}>
+              <Text style={styles.title}>{title}</Text>
+              {description ? <Text style={styles.description}>{description}</Text> : null}
+            </View>
+            <View style={styles.buttons}>
+              <TouchableOpacity style={styles.cancelBtn} onPress={onCancel} activeOpacity={0.85}>
+                <Text style={styles.cancelText}>{cancelLabel}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.confirmBtn, danger && styles.dangerConfirmBtn]}
+                onPress={onConfirm}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.confirmText, danger && styles.dangerConfirmText]}>
+                  {confirmLabel}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Pressable>
       </Pressable>
@@ -54,6 +64,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
     backgroundColor: "#FBFBF5",
     borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
+  },
+  content: {
+    width: 264,
     alignItems: "center",
     gap: 24,
   },
@@ -67,8 +83,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#2D322E",
     fontSize: 16,
-    fontFamily: "Galmuri11",
-    fontWeight: "700",
+    fontFamily: "GalmuriBold",
     lineHeight: 24,
   },
   description: {
@@ -76,7 +91,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#787D79",
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "WantedSansMedium",
     lineHeight: 21,
   },
   buttons: {
@@ -97,7 +112,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#464B47",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "WantedSansSemiBold",
     lineHeight: 24,
   },
   confirmBtn: {
@@ -110,11 +125,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#9CCCA0",
   },
+  dangerConfirmBtn: {
+    backgroundColor: "#E4463C",
+    borderColor: "#E67972",
+  },
   confirmText: {
     textAlign: "center",
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "WantedSansSemiBold",
     lineHeight: 24,
+  },
+  dangerConfirmText: {
+    color: "#FFFFFF",
   },
 });
