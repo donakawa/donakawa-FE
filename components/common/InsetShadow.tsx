@@ -1,39 +1,53 @@
-import { StyleSheet, View, ViewProps } from "react-native";
+import { StyleSheet } from "react-native";
+import { ShadowView, type InnerShadowProps } from "react-native-inner-shadow";
 
-interface InsetShadowProps extends ViewProps {
+interface InsetShadowProps
+  extends Omit<InnerShadowProps, "backgroundColor" | "children" | "inset"> {
+  backgroundColor?: string;
   borderRadius?: number;
   children: React.ReactNode;
 }
 
-export default function InsetShadow({ borderRadius = 0, style, children, ...rest }: InsetShadowProps) {
-  const r = { borderRadius };
+export default function InsetShadow({
+  backgroundColor,
+  borderRadius,
+  style,
+  children,
+  shadowColor = "rgba(104, 171, 110, 0.30)",
+  shadowOffset = { width: -4, height: -4 },
+  shadowBlur = 4,
+  reflectedLightColor = "rgba(255, 255, 255, 0.30)",
+  reflectedLightOffset = { width: 4, height: 4 },
+  reflectedLightBlur = 2,
+  isReflectedLightEnabled = true,
+  ...rest
+}: InsetShadowProps) {
   const flattenedStyle = StyleSheet.flatten(style);
+  const styleBackground =
+    typeof flattenedStyle?.backgroundColor === "string"
+      ? flattenedStyle.backgroundColor
+      : undefined;
+  const styleBorderRadius =
+    typeof flattenedStyle?.borderRadius === "number"
+      ? flattenedStyle.borderRadius
+      : 0;
+  const resolvedBorderRadius = borderRadius ?? styleBorderRadius;
 
   return (
-    <View style={[styles.container, flattenedStyle]} {...rest}>
+    <ShadowView
+      inset
+      backgroundColor={backgroundColor ?? styleBackground ?? "#FFFFFF"}
+      shadowColor={shadowColor}
+      shadowOffset={shadowOffset}
+      shadowBlur={shadowBlur}
+      reflectedLightColor={reflectedLightColor}
+      reflectedLightOffset={reflectedLightOffset}
+      reflectedLightBlur={reflectedLightBlur}
+      isReflectedLightEnabled={isReflectedLightEnabled}
+      style={[flattenedStyle, { borderRadius: resolvedBorderRadius, overflow: "hidden" }]}
+      {...rest}
+    >
       {children}
-      <View style={[StyleSheet.absoluteFill, styles.topLeft, r]} />
-      <View style={[StyleSheet.absoluteFill, styles.bottomRight, r]} />
-    </View>
+    </ShadowView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: "relative",
-  },
-  topLeft: {
-    pointerEvents: "none",
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    borderTopColor: "rgba(104, 171, 110, 0.30)",
-    borderLeftColor: "rgba(104, 171, 110, 0.30)",
-  },
-  bottomRight: {
-    pointerEvents: "none",
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    borderBottomColor: "rgba(255, 255, 255, 0.30)",
-    borderRightColor: "rgba(255, 255, 255, 0.30)",
-  },
-});

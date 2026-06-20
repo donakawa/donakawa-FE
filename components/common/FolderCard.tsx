@@ -1,14 +1,27 @@
 import { useRef, useState } from "react";
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  type ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+type FolderImageSource = ImageSourcePropType | string;
 
 interface FolderCardProps {
   title: string;
-  images?: string[];
+  images?: FolderImageSource[];
   onPress?: () => void;
   onTitleEdit?: (newTitle: string) => void;
 }
 
 const CELL = 80;
+
+const toImageSource = (source: FolderImageSource): ImageSourcePropType =>
+  typeof source === "string" ? { uri: source } : source;
 
 export default function FolderCard({ title, images = [], onPress, onTitleEdit }: FolderCardProps) {
   const cells = Array.from({ length: 4 }, (_, i) => images[i] ?? null);
@@ -42,10 +55,10 @@ export default function FolderCard({ title, images = [], onPress, onTitleEdit }:
     <View style={styles.wrapper}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
         <View style={styles.grid}>
-          {cells.map((uri, i) => (
+          {cells.map((source, i) => (
             <View key={i} style={[styles.cell, cellStyle(i)]}>
-              {uri ? (
-                <Image source={{ uri }} style={[styles.cell, cellStyle(i)]} />
+              {source ? (
+                <Image source={toImageSource(source)} style={[styles.cell, cellStyle(i)]} />
               ) : (
                 <View style={[styles.cell, styles.placeholder, cellStyle(i)]} />
               )}

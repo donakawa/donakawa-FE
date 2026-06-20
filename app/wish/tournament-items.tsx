@@ -68,13 +68,7 @@ export default function TournamentItemsScreen() {
         max={MAX_SELECT}
         canConfirm={canConfirm}
         onConfirm={() => {
-          router.push({
-            pathname: "/wish/tournament-play",
-            params: {
-              folderId,
-              itemIds: Array.from(selectedIds).join(","),
-            },
-          });
+          // TODO: 토너먼트 진행(8강) 페이지 연결 — 다음 PR
         }}
       />
     </View>
