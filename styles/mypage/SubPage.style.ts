@@ -7,18 +7,7 @@ export const changePasswordStyles = StyleSheet.create({
   },
 
   header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
     paddingHorizontal: 20,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
   },
 
   content: {
@@ -172,22 +161,9 @@ export const withdrawalStyles = StyleSheet.create({
     alignItems: "center",
   },
 
-  header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
-  },
-
   innerContent: {
     gap: 56,
+    width: "100%",
   },
 
   innerBottomContent: {
@@ -196,7 +172,7 @@ export const withdrawalStyles = StyleSheet.create({
 
   noticeBox: {
     width: "100%",
-    height: 70,
+    minHeight: 70,
     borderWidth: 1,
     borderColor: "#9CCCA0",
     borderRadius: 7,
@@ -360,6 +336,7 @@ export const withdrawalStyles = StyleSheet.create({
   },
 });
 
+// 오픈 라이센스
 export const openSourceLicenseStyle = StyleSheet.create({
   container: {
     flex: 1,
@@ -371,20 +348,6 @@ export const openSourceLicenseStyle = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 100,
     gap: 20,
-  },
-
-  header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
   },
 
   card: {

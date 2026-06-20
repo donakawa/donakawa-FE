@@ -1,12 +1,12 @@
-import ConfirmModal from "@/components/common/ConfirmModal";
+import { simpleModalStyles as styles } from "@/styles/common/SimpleModal.style";
+import { Modal, Pressable, Text, View } from "react-native";
 
 interface SimpleModalProps {
   visible: boolean;
   title: string;
   description: string;
   danger?: boolean;
-  cancelLabel?: string;
-  confirmLabel?: string;
+  confirmText?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -16,21 +16,40 @@ export default function SimpleModal({
   title,
   description,
   danger,
-  cancelLabel = "아니오",
-  confirmLabel,
+  confirmText = "네",
   onCancel,
   onConfirm,
 }: SimpleModalProps) {
   return (
-    <ConfirmModal
-      visible={visible}
-      title={title}
-      description={description}
-      cancelLabel={cancelLabel}
-      confirmLabel={confirmLabel ?? (danger ? "탈퇴" : "네")}
-      danger={danger}
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-    />
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.overlay}>
+        <View style={styles.modalBox}>
+          <View style={styles.textArea}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.description}>{description}</Text>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <Pressable style={styles.cancelButton} onPress={onCancel}>
+              <Text style={styles.cancelText}>아니오</Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.confirmButton,
+                danger && styles.dangerConfirmButton,
+              ]}
+              onPress={onConfirm}
+            >
+              <Text
+                style={[styles.confirmText, danger && styles.dangerConfirmText]}
+              >
+                {confirmText}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }

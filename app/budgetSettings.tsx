@@ -3,15 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Easing,
+  Keyboard,
   Pressable,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
+import Header from "@/components/common/Header";
 import { budgetSettingStyles as styles } from "@/styles/mypage/BudgetSettings.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import DollarIcon from "@/assets/images/mypage/attach-money.svg";
 import CardIcon from "@/assets/images/mypage/credit-card.svg";
 import MoneyIcon from "@/assets/images/mypage/money-bag-green.svg";
@@ -432,7 +434,6 @@ export default function BudgetSettings() {
         <View style={styles.iconContainer}>
           <MoneyIcon />
         </View>
-
         <View style={styles.infoContent}>
           <Text style={styles.infoTitle}>월 수입</Text>
           <Text style={styles.infoValue}>{form.income}</Text>
@@ -443,7 +444,6 @@ export default function BudgetSettings() {
         <View style={styles.iconContainer}>
           <PaymentIcon />
         </View>
-
         <View style={styles.infoContent}>
           <Text style={styles.infoTitle}>월 고정 생활비</Text>
           <Text style={styles.infoValue}>{form.fixedCost}</Text>
@@ -454,7 +454,6 @@ export default function BudgetSettings() {
         <View style={styles.iconContainer}>
           <CardIcon />
         </View>
-
         <View style={styles.infoContent}>
           <Text style={styles.infoTitle}>저축 · 투자액</Text>
           <Text style={styles.infoValue}>{form.saving}</Text>
@@ -548,58 +547,59 @@ export default function BudgetSettings() {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContent}>
-        <View style={styles.header}>
-          <Pressable onPress={handleBack} hitSlop={10}>
-            <ArrowIcon />
-          </Pressable>
-
-          <Text style={styles.title}>목표 예산 설정</Text>
-
-          {step === 7 ? (
-            <Pressable onPress={() => setStep(8)}>
-              <Text style={styles.editText}>수정</Text>
-            </Pressable>
-          ) : (
-            <View style={styles.headerBlank} />
-          )}
-        </View>
-      </View>
-
-      {renderProgress()}
-
-      <View style={styles.bodyContent}>
-        <View
-          style={[styles.formArea, isSummaryOrEditStep && styles.formAreaTop]}
-        >
-          {step <= 5 && (
-            <Pressable style={styles.skipButton} onPress={handleSkip}>
-              <Text style={styles.skipText}>SKIP</Text>
-            </Pressable>
-          )}
-
-          {step <= 4 && renderInputStep()}
-          {step === 5 && renderStrategyStep()}
-          {step === 6 && renderGoalStep()}
-          {step === 7 && renderSummaryStep()}
-          {step === 8 && renderEditStep()}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <View style={styles.headerContent}>
+          <Header
+            title="목표 예산 설정"
+            onBackPress={handleBack}
+            rightElement={
+              step === 7 ? (
+                <Pressable onPress={() => setStep(8)}>
+                  <Text style={styles.editText}>수정</Text>
+                </Pressable>
+              ) : undefined
+            }
+          />
         </View>
 
-        <View style={styles.buttonArea}>
-          <Pressable
-            style={[styles.submitButton, isValid && styles.submitButtonActive]}
-            onPress={handleSubmit}
-            disabled={!isValid}
+        {renderProgress()}
+
+        <View style={styles.bodyContent}>
+          <View
+            style={[styles.formArea, isSummaryOrEditStep && styles.formAreaTop]}
           >
-            <Text
-              style={[styles.submitText, isValid && styles.submitTextActive]}
+            {step <= 5 && (
+              <Pressable style={styles.skipButton} onPress={handleSkip}>
+                <Text style={styles.skipText}>SKIP</Text>
+              </Pressable>
+            )}
+
+            {step <= 4 && renderInputStep()}
+            {step === 5 && renderStrategyStep()}
+            {step === 6 && renderGoalStep()}
+            {step === 7 && renderSummaryStep()}
+            {step === 8 && renderEditStep()}
+          </View>
+
+          <View style={styles.buttonArea}>
+            <Pressable
+              style={[
+                styles.submitButton,
+                isValid && styles.submitButtonActive,
+              ]}
+              onPress={handleSubmit}
+              disabled={!isValid}
             >
-              {step <= 5 ? "다음" : "완료"}
-            </Text>
-          </Pressable>
+              <Text
+                style={[styles.submitText, isValid && styles.submitTextActive]}
+              >
+                {step <= 5 ? "다음" : "완료"}
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }

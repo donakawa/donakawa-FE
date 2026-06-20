@@ -1,17 +1,20 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
+import Header from "@/components/common/Header";
+
 import { changePasswordStyles as styles } from "@/styles/mypage/SubPage.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import PasswordSuccessIcon from "@/assets/images/mypage/shield-lock.svg";
 import EyeIcon from "@/assets/images/mypage/visibility-eye.svg";
 import EyeOffIcon from "@/assets/images/mypage/visibility-off-eye.svg";
@@ -60,55 +63,25 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={10}>
-          <ArrowIcon />
-        </Pressable>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Header
+          title="비밀번호 변경"
+          onBackPress={() => router.back()}
+          style={styles.header}
+        />
 
-        <Text style={styles.title}>비밀번호 변경</Text>
-      </View>
+        <View style={styles.content}>
+          {step !== 3 ? (
+            <View style={styles.formArea}>
+              <View style={styles.form}>
+                <Text style={styles.label}>
+                  {step === 1
+                    ? "현재 비밀번호를 입력해주세요."
+                    : "비밀번호를 설정해 주세요."}
+                </Text>
 
-      <View style={styles.content}>
-        {step !== 3 ? (
-          <View style={styles.formArea}>
-            <View style={styles.form}>
-              <Text style={styles.label}>
-                {step === 1
-                  ? "현재 비밀번호를 입력해주세요."
-                  : "비밀번호를 설정해 주세요."}
-              </Text>
-
-              {step === 1 && (
-                <View style={styles.inputBox}>
-                  <View style={styles.passwordInputWrap}>
-                    <TextInput
-                      style={styles.passwordInput}
-                      placeholder="비밀번호 입력"
-                      placeholderTextColor="#CDD2CE"
-                      secureTextEntry={secure}
-                      textContentType="oneTimeCode"
-                      autoComplete="off"
-                      value={currentPassword}
-                      onChangeText={setCurrentPassword}
-                    />
-
-                    {currentPassword.length > 0 && (
-                      <Pressable
-                        style={styles.eyeButton}
-                        onPress={() => setSecure((prev) => !prev)}
-                      >
-                        {secure ? <EyeOffIcon /> : <EyeIcon />}
-                      </Pressable>
-                    )}
-                  </View>
-
-                  <Text style={styles.helper}>영문과 숫자 조합, 8~12자리</Text>
-                </View>
-              )}
-
-              {step === 2 && (
-                <View style={styles.inputGroup}>
+                {step === 1 && (
                   <View style={styles.inputBox}>
                     <View style={styles.passwordInputWrap}>
                       <TextInput
@@ -118,11 +91,11 @@ export default function ChangePasswordPage() {
                         secureTextEntry={secure}
                         textContentType="oneTimeCode"
                         autoComplete="off"
-                        value={newPassword}
-                        onChangeText={setNewPassword}
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
                       />
 
-                      {newPassword.length > 0 && (
+                      {currentPassword.length > 0 && (
                         <Pressable
                           style={styles.eyeButton}
                           onPress={() => setSecure((prev) => !prev)}
@@ -136,22 +109,24 @@ export default function ChangePasswordPage() {
                       영문과 숫자 조합, 8~12자리
                     </Text>
                   </View>
+                )}
 
-                  {isConfirmVisible && (
+                {step === 2 && (
+                  <View style={styles.inputGroup}>
                     <View style={styles.inputBox}>
                       <View style={styles.passwordInputWrap}>
                         <TextInput
                           style={styles.passwordInput}
-                          placeholder="비밀번호 확인"
-                          placeholderTextColor="#C3C8C4"
+                          placeholder="비밀번호 입력"
+                          placeholderTextColor="#CDD2CE"
                           secureTextEntry={secure}
                           textContentType="oneTimeCode"
                           autoComplete="off"
-                          value={confirmPassword}
-                          onChangeText={setConfirmPassword}
+                          value={newPassword}
+                          onChangeText={setNewPassword}
                         />
 
-                        {confirmPassword.length > 0 && (
+                        {newPassword.length > 0 && (
                           <Pressable
                             style={styles.eyeButton}
                             onPress={() => setSecure((prev) => !prev)}
@@ -160,47 +135,80 @@ export default function ChangePasswordPage() {
                           </Pressable>
                         )}
                       </View>
+
+                      <Text style={styles.helper}>
+                        영문과 숫자 조합, 8~12자리
+                      </Text>
                     </View>
-                  )}
-                </View>
-              )}
-            </View>
-          </View>
-        ) : (
-          <View style={styles.successArea}>
-            <View style={styles.successContent}>
-              <Text style={styles.successText}>
-                비밀번호 변경이{"\n"}
-                완료되었습니다.
-              </Text>
 
-              <PasswordSuccessIcon />
-            </View>
-          </View>
-        )}
+                    {isConfirmVisible && (
+                      <View style={styles.inputBox}>
+                        <View style={styles.passwordInputWrap}>
+                          <TextInput
+                            style={styles.passwordInput}
+                            placeholder="비밀번호 확인"
+                            placeholderTextColor="#C3C8C4"
+                            secureTextEntry={secure}
+                            textContentType="oneTimeCode"
+                            autoComplete="off"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                          />
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={20}
-        >
-          <View style={styles.buttonArea}>
-            <Pressable
-              style={[
-                styles.submitButton,
-                isValid && styles.submitButtonActive,
-              ]}
-              onPress={handleSubmit}
-              disabled={!isValid}
-            >
-              <Text
-                style={[styles.submitText, isValid && styles.submitTextActive]}
+                          {confirmPassword.length > 0 && (
+                            <Pressable
+                              style={styles.eyeButton}
+                              onPress={() => setSecure((prev) => !prev)}
+                            >
+                              {secure ? <EyeOffIcon /> : <EyeIcon />}
+                            </Pressable>
+                          )}
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                )}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.successArea}>
+              <View style={styles.successContent}>
+                <Text style={styles.successText}>
+                  비밀번호 변경이{"\n"}
+                  완료되었습니다.
+                </Text>
+
+                <PasswordSuccessIcon />
+              </View>
+            </View>
+          )}
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={20}
+          >
+            <View style={styles.buttonArea}>
+              <Pressable
+                style={[
+                  styles.submitButton,
+                  isValid && styles.submitButtonActive,
+                ]}
+                onPress={handleSubmit}
+                disabled={!isValid}
               >
-                {step === 3 ? "로그인 화면으로 돌아가기" : "완료"}
-              </Text>
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
+                <Text
+                  style={[
+                    styles.submitText,
+                    isValid && styles.submitTextActive,
+                  ]}
+                >
+                  {step === 3 ? "로그인 화면으로 돌아가기" : "완료"}
+                </Text>
+              </Pressable>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }

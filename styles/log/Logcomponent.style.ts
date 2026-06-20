@@ -161,8 +161,8 @@ export const receiptCardStyles = StyleSheet.create({
   },
 
   dotLine: {
-    borderBottomWidth: 2,
-    borderStyle: "dotted",
+    borderBottomWidth: 1,
+    borderStyle: "dashed",
     borderColor: "#787D79",
   },
 

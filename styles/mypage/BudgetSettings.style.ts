@@ -10,6 +10,7 @@ export const budgetSettingStyles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     alignItems: "center",
+    width: "100%",
     // gap: 56,
   },
 
@@ -29,32 +30,13 @@ export const budgetSettingStyles = StyleSheet.create({
   headerContent: {
     paddingHorizontal: 20,
     alignItems: "center",
-  },
-
-  header: {
-    width: 335,
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  title: {
-    flex: 1,
-    marginLeft: 14,
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
+    width: "100%",
   },
 
   editText: {
     fontSize: 18,
     fontFamily: "WantedSansSemiBold",
     color: "#7EC985",
-  },
-
-  headerBlank: {
-    width: 32,
   },
 
   progressBar: {
@@ -86,6 +68,8 @@ export const budgetSettingStyles = StyleSheet.create({
   },
 
   formTop: {
+    width: "100%",
+    alignItems: "center",
     gap: 108,
   },
 
@@ -156,6 +140,7 @@ export const budgetSettingStyles = StyleSheet.create({
   dayRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 12,
   },
 
@@ -217,6 +202,7 @@ export const budgetSettingStyles = StyleSheet.create({
 
   strategyForm: {
     width: "100%",
+    alignItems: "center",
     gap: 28,
   },
 
@@ -422,7 +408,7 @@ export const budgetSettingStyles = StyleSheet.create({
   },
 
   editDayInput: {
-    width: 47,
+    minWidth: 47,
     borderWidth: 1,
     borderColor: "#9CCCA0",
     borderRadius: 7,
