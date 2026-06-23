@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "donakawa-FE",
-    "slug": "donakawa-FE",
+    "slug": "donakawa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -62,9 +62,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b2df5c5f-3c4c-48e8-945a-a732a1cf7c79"
+        "projectId": "7d50a2f4-18bd-4803-9169-5c71ad487b73"
       }
     },
-    "owner": "5925"
+    "owner": "donakawa"
   }
 }
