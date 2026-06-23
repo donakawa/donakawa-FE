@@ -1,15 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { Stack, usePathname, useRouter } from "expo-router";
+import { Redirect, Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ONBOARDING_STORAGE_KEY } from "@/constants/onboarding";
 
+type OnboardingState = "loading" | "seen" | "unseen";
+
 export default function Layout() {
   const pathname = usePathname();
-  const router = useRouter();
   const isWishItemPage = pathname === "/wish/item";
   const [loaded] = useFonts({
     Galmuri9: require("@/assets/fonts/Galmuri9.ttf"),
@@ -25,24 +26,21 @@ export default function Layout() {
     WantedSansSemiBold: require("@/assets/fonts/WantedSans-SemiBold.otf"),
   });
 
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [onboardingState, setOnboardingState] = useState<OnboardingState>("loading");
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const seen = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
-      if (cancelled) return;
-      if (seen !== "true") {
-        router.replace("/onboarding");
-      }
-      setOnboardingChecked(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
+    AsyncStorage.getItem(ONBOARDING_STORAGE_KEY)
+      .then((seen) => setOnboardingState(seen === "true" ? "seen" : "unseen"))
+      .catch((e) => {
+        console.warn("[layout] onboarding check failed", e);
+        setOnboardingState("seen");
+      });
+  }, []);
 
-  if (!loaded || !onboardingChecked) return null;
+  if (!loaded || onboardingState === "loading") return null;
+  if (onboardingState === "unseen" && pathname !== "/onboarding") {
+    return <Redirect href="/onboarding" />;
+  }
 
   return (
     <SafeAreaProvider>
