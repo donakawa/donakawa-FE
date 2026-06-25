@@ -2,13 +2,12 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import MenuIcon from "@/assets/images/common/menu.svg";
-
 import BuyOrNotCharacter from "@/components/buyOrNot/BuyOrNotCharacter";
-import Header from "@/components/common/Header";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import ChoiceButton from "@/components/buyOrNot/ChoiceButton";
 import SpeechBubble from "@/components/buyOrNot/SpeechBubble";
+import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
+import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 
 import { BUY_OR_NOT_MOCK_SESSION } from "@/constants/buyOrNot.mock";
 import { useBuyOrNotFlow } from "@/hooks/useBuyOrNotFlow";
@@ -34,29 +33,13 @@ export default function BuyOrNotPage() {
 
   return (
     <View style={styles.container}>
-      <Header
-        onBackPress={() => router.back()}
-        rightElement={
-          <Pressable hitSlop={10} onPress={() => setIsMenuVisible(true)}>
-            <MenuIcon />
-          </Pressable>
-        }
-        style={styles.topHeader}
+      <WishFlowTopBar
+        onBack={() => router.back()}
+        rightVariant="menu"
+        onRightPress={() => setIsMenuVisible(true)}
       />
 
-      <View style={styles.banner}>
-        <View style={styles.dotLine}>
-          {Array.from({ length: 9 }).map((_, index) => (
-            <View key={index} style={styles.dot} />
-          ))}
-        </View>
-
-        <Text style={styles.subTitle}>프리더챔톨의</Text>
-
-        <View style={styles.titleBox}>
-          <Text style={styles.title}>!! 살말추천 !!</Text>
-        </View>
-      </View>
+      <WishFlowTitleBanner title="살말추천" subtitle="프리더햄톨의" />
 
       <View style={styles.mainArea}>
         <View style={styles.itemInfo}>
@@ -145,68 +128,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FBFAF4",
-  },
-
-  topHeader: {
-    paddingHorizontal: 20,
-    height: 48,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
-
-  banner: {
-    height: 104,
-    backgroundColor: "#DDFBB9",
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: "#B6D7A0",
-
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  dotLine: {
-    position: "absolute",
-    top: 58,
-    left: 25,
-    right: 25,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-
-  dot: {
-    width: 6,
-    height: 6,
-    backgroundColor: "#FFC9E1",
-  },
-
-  subTitle: {
-    fontFamily: "GalmuriBold",
-    fontSize: 12,
-    color: "#FF7C8A",
-    textDecorationLine: "underline",
-    marginBottom: 4,
-  },
-
-  titleBox: {
-    width: 188,
-    height: 45,
-    borderWidth: 3,
-    borderRadius: 5,
-    borderColor: "#FFD3E5",
-    backgroundColor: "#FFFDF8",
-
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 20,
-    color: "#6D514B",
   },
 
   mainArea: {

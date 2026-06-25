@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { ShadowView, type InnerShadowProps } from "react-native-inner-shadow";
 
 interface InsetShadowProps
@@ -32,6 +32,17 @@ export default function InsetShadow({
       ? flattenedStyle.borderRadius
       : 0;
   const resolvedBorderRadius = borderRadius ?? styleBorderRadius;
+
+  if (Platform.OS === "web") {
+    return (
+      <View
+        style={[flattenedStyle, { borderRadius: resolvedBorderRadius, overflow: "hidden" }]}
+        {...rest}
+      >
+        {children}
+      </View>
+    );
+  }
 
   return (
     <ShadowView
