@@ -8,6 +8,7 @@ import DirtyIcon from "@/assets/images/home/dirty.svg";
 import PawIcon from "@/assets/images/home/Union.svg";
 import RibbonIcon from "@/assets/images/home/Union_2.svg";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
+import { router } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 interface HomeCharacterProps {
@@ -66,7 +67,13 @@ export default function HomeCharacter({
         <Image source={getDonaImage()} style={styles.donaImage} />
 
         <View style={styles.sideButtons}>
-          <TouchableOpacity style={styles.hamOuterButton}>
+          <TouchableOpacity
+            style={styles.hamOuterButton}
+            onPress={() => router.push("/attendance")}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="출첵"
+          >
             <View style={styles.hamHighlight} />
             <View style={styles.hamInnerButton}>
               <View style={styles.pawCircle}>

@@ -21,7 +21,10 @@ export default function BottomNavigation({
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom || 16 }]}>
       {state.routes.map((route, index) => {
-        const isFocused = state.index === index;
+        const activeRoute = state.routes[state.index]?.name;
+        const isFocused =
+          state.index === index ||
+          (route.name === "index" && activeRoute === "attendance");
         const color = isFocused ? ACTIVE_COLOR : INACTIVE_COLOR;
         const config = TAB_CONFIG[route.name];
 
