@@ -14,20 +14,6 @@ export const settingsStyles = StyleSheet.create({
     alignItems: "center",
   },
 
-  header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
-  },
-
   settingContent: {
     width: "100%",
     gap: 28,

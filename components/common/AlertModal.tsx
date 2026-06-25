@@ -48,8 +48,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#2D322E",
     fontSize: 16,
-    fontFamily: "Galmuri11",
-    fontWeight: "700",
+    fontFamily: "GalmuriBold",
     lineHeight: 24,
   },
   button: {
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "WantedSansSemiBold",
     lineHeight: 24,
   },
 });

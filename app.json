@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "donakawa-FE",
-    "slug": "donakawa-FE",
+    "slug": "donakawa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.donakawaFE"
+      "bundleIdentifier": "com.anonymous.donakawaFE",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +24,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.donakawaFE"
+      "package": "com.anonymous.donakawaFE",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -40,11 +46,25 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "위시 상품 이미지를 등록하기 위해 사진 보관함 접근 권한이 필요합니다."
+        }
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7d50a2f4-18bd-4803-9169-5c71ad487b73"
+      }
+    },
+    "owner": "donakawa"
   }
 }

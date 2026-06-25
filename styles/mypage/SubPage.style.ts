@@ -7,18 +7,7 @@ export const changePasswordStyles = StyleSheet.create({
   },
 
   header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
     paddingHorizontal: 20,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
   },
 
   content: {
@@ -170,20 +159,6 @@ export const withdrawalStyles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 20,
     alignItems: "center",
-  },
-
-  header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
   },
 
   innerContent: {
@@ -373,20 +348,6 @@ export const openSourceLicenseStyle = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 100,
     gap: 20,
-  },
-
-  header: {
-    width: "100%",
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-
-  title: {
-    fontFamily: "GalmuriBold",
-    fontSize: 22,
-    color: "#7A5751",
   },
 
   card: {

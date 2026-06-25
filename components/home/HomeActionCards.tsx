@@ -1,10 +1,10 @@
-import { actionStyles as styles } from "@/styles/home/Homecomponent.style";
 import BudgetIcon from "@/assets/images/home/budget.svg";
-import PricetagIcon from "@/assets/images/home/pricetag.svg";
-import TournamentIcon from "@/assets/images/home/tournament.svg";
 import NextIcon from "@/assets/images/home/next.svg";
+import PricetagIcon from "@/assets/images/home/pricetag.svg";
 import SoraIcon from "@/assets/images/home/sora.svg";
+import TournamentIcon from "@/assets/images/home/tournament.svg";
 import VsIcon from "@/assets/images/home/vsicon.svg";
+import { actionStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -16,7 +16,10 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
   if (hasBudget) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.actionOuterCard}>
+        <TouchableOpacity
+          style={styles.actionOuterCard}
+          onPress={() => router.push("/buyOrNot" as never)}
+        >
           <View style={styles.cardHighlight} />
           <View style={styles.actionInnerCard}>
             <View style={styles.actionTopRow}>
@@ -51,7 +54,9 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
     <View style={styles.container}>
       <View style={styles.leftArea}>
         <View style={styles.tooltip}>
-          <Text style={styles.tooltipText}>예산 설정하고{"\n"}리포트 확인하기</Text>
+          <Text style={styles.tooltipText}>
+            예산 설정하고{"\n"}리포트 확인하기
+          </Text>
           <View style={styles.tooltipTail} />
         </View>
 
@@ -68,7 +73,10 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
       </View>
 
       <View style={styles.rightArea}>
-        <TouchableOpacity style={styles.wideOuterCard}>
+        <TouchableOpacity
+          style={styles.wideOuterCard}
+          onPress={() => router.push("/buyOrNot")}
+        >
           <View style={styles.cardHighlight} />
           <View style={styles.wideInnerCard}>
             <PricetagIcon />

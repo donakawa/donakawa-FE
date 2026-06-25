@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import Header from "@/components/common/Header";
 import { settingsStyles as styles } from "@/styles/mypage/Settings.style";
 
-import ArrowIcon from "@/assets/images/log/arrow_left.svg";
 import ArrowRightIcon from "@/assets/images/log/arrow_right_gray.svg";
 import CheckIcon from "@/assets/images/mypage/check-circle.svg";
 
@@ -49,13 +49,7 @@ export default function SettingsPage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.navigate("/mypage")}>
-            <ArrowIcon />
-          </Pressable>
-
-          <Text style={styles.title}>Setting</Text>
-        </View>
+        <Header title="Setting" onBackPress={() => router.navigate("/mypage")} />
 
         <View style={styles.settingContent}>
           <View style={styles.section}>
