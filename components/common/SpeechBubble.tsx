@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import {
-  StyleSheet,
   type StyleProp,
+  StyleSheet,
   Text,
   type TextStyle,
   View,
@@ -32,11 +32,7 @@ export default function SpeechBubble({
   return (
     <View style={[styles.container, style]}>
       <View style={[styles.bubble, bubbleStyle]}>
-        {text ? (
-          <Text style={[styles.text, textStyle]}>{text}</Text>
-        ) : (
-          children
-        )}
+        {text ? <Text style={[styles.text, textStyle]}>{text}</Text> : children}
       </View>
       <View style={styles.tailWrap}>
         <View style={styles.tailOuter} />
@@ -59,7 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   text: {
-    color: "#7A5751",
+    color: "#141915",
     fontSize: 14,
     fontFamily: "Galmuri9",
     lineHeight: 21,

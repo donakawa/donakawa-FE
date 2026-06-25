@@ -2,12 +2,12 @@ import SpeechBubble from "@/components/common/SpeechBubble";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
-import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function TournamentIntroScreen() {
+export default function BuyOrNotStartScreen() {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -21,21 +21,17 @@ export default function TournamentIntroScreen() {
         onRightPress={() => setIsMenuVisible(true)}
       />
 
-      {/* Rounded main panel */}
       <View style={styles.mainPanel}>
         <WishFlowTitleBanner
-          title="토너먼트"
-          subtitle="당신의 최종선택은?"
+          title="살말추천"
+          subtitle="프리더햄톨의"
           topRadius
         />
 
-        {/* Body */}
         <View style={styles.body}>
-          <Text style={styles.noticeText}>*최대 16개의 위시템으로 비교할 수 있습니다.</Text>
-
           <View style={styles.bubbleWrap}>
             <SpeechBubble
-              text={"여러 위시 중에서\n고민이 되니?\n토너먼트를 해 봐!"}
+              text={"위시템을 살지 말지\n고민이 되니?\n내가 한 번 봐주마"}
             />
           </View>
 
@@ -51,10 +47,10 @@ export default function TournamentIntroScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               style={styles.ctaTouchable}
-              onPress={() => router.push("/wish/tournament-select")}
+              onPress={() => router.push("/wish/buyornot-select")}
             >
               <View style={styles.ctaButton}>
-                <Text style={styles.ctaText}>후보 선택</Text>
+                <Text style={styles.ctaText}>위시 선택</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -88,13 +84,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 32,
-  },
-  noticeText: {
-    textAlign: "right",
-    color: "#AAAFAB",
-    fontSize: 12,
-    fontFamily: "Galmuri9",
-    lineHeight: 18,
   },
   bubbleWrap: {
     marginTop: 44,
@@ -146,8 +135,5 @@ const styles = StyleSheet.create({
     fontFamily: "GalmuriBold",
     fontWeight: "700",
     lineHeight: 24,
-    textShadowColor: "#7A5751",
-    textShadowOffset: { width: 0.6, height: 0 },
-    textShadowRadius: 0,
   },
 });

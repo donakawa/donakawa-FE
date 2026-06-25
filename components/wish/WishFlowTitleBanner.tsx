@@ -1,18 +1,17 @@
 import StrokeText from "@/components/log/StrokeText";
 import {
-  StyleSheet,
   type StyleProp,
+  StyleSheet,
   Text,
   type TextStyle,
   View,
 } from "react-native";
 
-const DOT_COUNT = 3;
-
 interface WishFlowTitleBannerProps {
   title: string;
   subtitle?: string;
   topRadius?: boolean;
+  dotCount?: number;
   titleStyle?: StyleProp<TextStyle>;
   subtitleStyle?: StyleProp<TextStyle>;
   bangStyle?: StyleProp<TextStyle>;
@@ -25,6 +24,7 @@ export default function WishFlowTitleBanner({
   title,
   subtitle,
   topRadius = false,
+  dotCount = 3,
   titleStyle,
   subtitleStyle,
   bangStyle,
@@ -36,7 +36,7 @@ export default function WishFlowTitleBanner({
     <View style={styles.titleChip}>
       <View style={styles.titleChipRow}>
         <Text style={[styles.bangText, bangStyle]}>!!</Text>
-        <Text style={[styles.titleText, titleStyle]}>{title}</Text>
+        <Text numberOfLines={1} style={[styles.titleText, titleStyle]}>{title}</Text>
         <Text style={[styles.bangText, bangStyle]}>!!</Text>
       </View>
     </View>
@@ -44,33 +44,29 @@ export default function WishFlowTitleBanner({
 
   return (
     <View style={[styles.banner, topRadius && styles.bannerTopRadius]}>
+      {subtitle && (
+        <StrokeText
+          text={subtitle}
+          color={subtitleColor}
+          strokeColor={subtitleStrokeColor}
+          fontSize={14}
+          strokeWidth={subtitleStrokeWidth}
+          lineHeight={21}
+          align="center"
+          fontFamily="Galmuri9"
+        />
+      )}
       <View style={styles.bannerRow}>
         <View style={styles.dotsGroup}>
-          {Array.from({ length: DOT_COUNT }).map((_, i) => (
+          {Array.from({ length: dotCount }).map((_, i) => (
             <View key={`dot-l-${i}`} style={styles.dot} />
           ))}
         </View>
 
-        {subtitle ? (
-          <View style={styles.titleColumn}>
-            <StrokeText
-              text={subtitle}
-              color={subtitleColor}
-              strokeColor={subtitleStrokeColor}
-              fontSize={14}
-              strokeWidth={subtitleStrokeWidth}
-              lineHeight={21}
-              align="center"
-              fontFamily="Galmuri9"
-            />
-            {titleChip}
-          </View>
-        ) : (
-          titleChip
-        )}
+        {titleChip}
 
         <View style={styles.dotsGroup}>
-          {Array.from({ length: DOT_COUNT }).map((_, i) => (
+          {Array.from({ length: dotCount }).map((_, i) => (
             <View key={`dot-r-${i}`} style={styles.dot} />
           ))}
         </View>
@@ -86,6 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E0F9BF",
     paddingHorizontal: 20,
     justifyContent: "center",
+    alignItems: "center",
   },
   bannerTopRadius: {
     borderTopLeftRadius: 20,
@@ -95,6 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    alignSelf: "stretch",
   },
   dotsGroup: {
     flexDirection: "row",
@@ -105,11 +103,6 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     backgroundColor: "#FFDBEB",
-  },
-  titleColumn: {
-    width: 174,
-    alignItems: "center",
-    gap: 1,
   },
   subtitle: {
     color: "#E67972",
@@ -139,9 +132,8 @@ const styles = StyleSheet.create({
   },
   bangText: {
     color: "#E67972",
-    fontSize: 26,
+    fontSize: 22,
     fontFamily: "GalmuriBold",
-    fontWeight: "700",
     textAlign: "center",
     textShadowColor: "#E67972",
     textShadowOffset: { width: 0.6, height: 0 },
@@ -149,9 +141,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: "#7A5751",
-    fontSize: 26,
+    fontSize: 22,
     fontFamily: "GalmuriBold",
-    fontWeight: "700",
     textAlign: "center",
     textShadowColor: "#7A5751",
     textShadowOffset: { width: 0.6, height: 0 },
