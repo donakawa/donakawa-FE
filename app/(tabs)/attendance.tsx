@@ -22,17 +22,6 @@ const REWARDS = [
 const getDateKey = (year: number, month: number, day: number) =>
   `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-const getMockAttendanceDates = (today: Date) =>
-  Array.from({ length: 5 }, (_, index) => {
-    const date = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - index,
-    );
-
-    return getDateKey(date.getFullYear(), date.getMonth() + 1, date.getDate());
-  });
-
 const getMonthDays = (year: number, month: number) => {
   const firstDay = new Date(year, month - 1, 1).getDay();
   const lastDate = new Date(year, month, 0).getDate();
@@ -73,9 +62,7 @@ export default function Attendance() {
   const [currentDate, setCurrentDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  const [attendanceDates, setAttendanceDates] = useState<string[]>(
-    () => getMockAttendanceDates(today),
-  );
+  const [attendanceDates, setAttendanceDates] = useState<string[]>([]);
   const { claimedRewardKeys } = useAttendanceStore();
   const [pickerVisible, setPickerVisible] = useState(false);
   const [receivedRewardPoints, setReceivedRewardPoints] = useState<
