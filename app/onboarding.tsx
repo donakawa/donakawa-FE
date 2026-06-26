@@ -34,9 +34,18 @@ export default function Onboarding() {
   const lastIndex = ONBOARDING_PAGES.length - 1;
   const isLastPage = pageIndex === lastIndex;
 
-  const scrollToIndex = useCallback((index: number) => {
-    listRef.current?.scrollToIndex({ index, animated: true });
-  }, []);
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const nextIndex = Math.max(0, Math.min(index, lastIndex));
+
+      setPageIndex(nextIndex);
+      listRef.current?.scrollToOffset({
+        offset: nextIndex * pageWidth,
+        animated: true,
+      });
+    },
+    [lastIndex, pageWidth],
+  );
 
   const handleMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
