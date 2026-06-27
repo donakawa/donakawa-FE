@@ -104,7 +104,7 @@ export default function BuyOrNotPage() {
 
               <ChoiceButton
                 text={result.secondaryButtonText}
-                onPress={restart}
+                onPress={() => router.push("/wish/buyornot-select")}
               />
             </View>
           )}
