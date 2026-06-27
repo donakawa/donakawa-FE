@@ -18,7 +18,7 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.actionOuterCard}
-          onPress={() => router.push("/buyOrNot" as never)}
+          onPress={() => router.push("/wish/buyornot-start" as never)}
         >
           <View style={styles.cardHighlight} />
           <View style={styles.actionInnerCard}>
@@ -75,7 +75,7 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
       <View style={styles.rightArea}>
         <TouchableOpacity
           style={styles.wideOuterCard}
-          onPress={() => router.push("/buyOrNot")}
+          onPress={() => router.push("/wish/buyornot-start")}
         >
           <View style={styles.cardHighlight} />
           <View style={styles.wideInnerCard}>
