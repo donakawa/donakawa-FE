@@ -74,6 +74,8 @@ export default function BuyOrNotMenu({
             style={styles.searchInput}
             placeholder="검색..."
             placeholderTextColor="#B5B5B5"
+            autoCapitalize="none"
+            autoCorrect={false}
           />
         </View>
 

@@ -1,11 +1,12 @@
 import { router } from "expo-router";
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { BackHandler, Pressable, StyleSheet, Text, View } from "react-native";
 
 import BuyOrNotCharacter from "@/components/buyOrNot/BuyOrNotCharacter";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import ChoiceButton from "@/components/buyOrNot/ChoiceButton";
 import SpeechBubble from "@/components/buyOrNot/SpeechBubble";
+import SimpleModal from "@/components/common/SimpleModal";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 
@@ -25,6 +26,15 @@ export default function BuyOrNotPage() {
   } = useBuyOrNotFlow(BUY_OR_NOT_MOCK_SESSION);
 
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      setIsExitModalVisible(true);
+      return true;
+    });
+    return () => sub.remove();
+  }, []);
 
   const isResult = phase === "RESULT";
   const isLoading = phase === "LOADING";
@@ -34,7 +44,7 @@ export default function BuyOrNotPage() {
   return (
     <View style={styles.container}>
       <WishFlowTopBar
-        onBack={() => router.back()}
+        onBack={() => setIsExitModalVisible(true)}
         rightVariant="menu"
         onRightPress={() => setIsMenuVisible(true)}
       />
@@ -110,6 +120,18 @@ export default function BuyOrNotPage() {
           )}
         </View>
       </View>
+
+      <SimpleModal
+        visible={isExitModalVisible}
+        title="종료하시겠습니까?"
+        description={"현재 단계에서 나가면\n진행사항이 모두 취소됩니다."}
+        confirmText="네"
+        onCancel={() => setIsExitModalVisible(false)}
+        onConfirm={() => {
+          setIsExitModalVisible(false);
+          router.navigate("/(tabs)");
+        }}
+      />
 
       <BuyOrNotMenu
         visible={isMenuVisible}

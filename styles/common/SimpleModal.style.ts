@@ -11,7 +11,6 @@ export const simpleModalStyles = StyleSheet.create({
 
   modalBox: {
     width: 336,
-    height: 195,
     borderRadius: 8,
     backgroundColor: "#FBFBF5",
 
