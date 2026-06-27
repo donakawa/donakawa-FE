@@ -101,13 +101,15 @@ export default function DefenseCard() {
               <View style={styles.detailAmountRow}>
                 <Text style={styles.detailAmountLabel}>방어 지출</Text>
 
-                <StrokeText
-                  text="456,123원"
-                  color="#7EC985"
-                  strokeColor="#ffffff"
-                  fontSize={16}
-                  strokeWidth={4}
-                />
+                <View>
+                  <StrokeText
+                    text="456,123원"
+                    color="#7EC985"
+                    strokeColor="#ffffff"
+                    fontSize={16}
+                    strokeWidth={4}
+                  />
+                </View>
               </View>
             </View>
 

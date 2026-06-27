@@ -22,7 +22,7 @@ export default function TopDayCard() {
                 color="#FFFFFF"
                 strokeColor="#E37E7E"
                 fontSize={16}
-                strokeWidth={5}
+                strokeWidth={2}
               />
             </View>
           </View>
@@ -40,7 +40,7 @@ export default function TopDayCard() {
                 color="#FFFFFF"
                 strokeColor="#E67972"
                 fontSize={16}
-                strokeWidth={5}
+                strokeWidth={2}
               />
             </View>
           </View>
@@ -58,7 +58,7 @@ export default function TopDayCard() {
                 color="#FFFFFF"
                 strokeColor="#E67972"
                 fontSize={16}
-                strokeWidth={5}
+                strokeWidth={2}
               />
             </View>
           </View>
