@@ -1,17 +1,12 @@
-import Dona1 from "@/assets/images/home/dona_1.png";
-import Dona2 from "@/assets/images/home/dona_2.png";
-import Dona3 from "@/assets/images/home/dona_3.png";
-import Dona4 from "@/assets/images/home/dona_4.png";
 import DirtyIcon from "@/assets/images/home/dirty.svg";
 import PawIcon from "@/assets/images/home/Union.svg";
 import RibbonIcon from "@/assets/images/home/Union_2.svg";
-import Dona5 from "@/assets/images/mypage/dona_5.png";
-import Dona6 from "@/assets/images/mypage/dona_6.png";
+import { getDonaSvg, type DonaExpression } from "@/constants/dona";
 import { getHamkkuItem } from "@/constants/hamkku";
 import { useAttendanceStore } from "@/stores/attendanceStore";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface HomeCharacterProps {
   hasBudget: boolean;
@@ -29,17 +24,15 @@ export default function HomeCharacter({
   const appliedAccessory = getHamkkuItem(appliedHamkku.accessory);
   const appliedWall = getHamkkuItem(appliedHamkku.wall);
   const appliedFloor = getHamkkuItem(appliedHamkku.floor);
-  const AppliedSkinSvg = appliedSkin?.Svg;
   const AppliedAccessorySvg = appliedAccessory?.Svg;
 
-  const getDonaImage = () => {
-    if (!hasBudget) return Dona1;
-    if (percent <= 0.3) return Dona2;
-    if (percent <= 0.6) return Dona3;
-    if (percent <= 0.8) return Dona4;
-    if (percent <= 1) return Dona5;
-    return Dona6;
+  const getDonaExpression = (): DonaExpression => {
+    if (!hasBudget) return 5;
+    if (percent > 0.5) return 4;
+    return 1;
   };
+
+  const DonaSvg = getDonaSvg(appliedSkin?.skinVariant, getDonaExpression());
 
   const renderAccessory = () => {
     if (!AppliedAccessorySvg) return null;
@@ -89,11 +82,7 @@ export default function HomeCharacter({
       </View>
 
       <View style={styles.donaWrap}>
-        {AppliedSkinSvg ? (
-          <AppliedSkinSvg width={120} height={120} />
-        ) : (
-          <Image source={getDonaImage()} style={styles.donaImage} />
-        )}
+        <DonaSvg width={120} height={120} />
         {renderAccessory()}
       </View>
 

@@ -20,6 +20,7 @@ export type HamkkuItem = {
   price: number;
   defaultOwned?: boolean;
   Svg?: ComponentType<SvgProps>;
+  skinVariant?: 1 | 2 | 3 | 4;
   color?: string;
 };
 
@@ -38,6 +39,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     price: 0,
     defaultOwned: true,
     Svg: Skin1,
+    skinVariant: 1,
   },
   {
     id: "skin-gray",
@@ -46,6 +48,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     price: 0,
     defaultOwned: true,
     Svg: Skin2,
+    skinVariant: 2,
   },
   {
     id: "skin-gold",
@@ -53,6 +56,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "블랙아이햄스터",
     price: 350,
     Svg: Skin3,
+    skinVariant: 3,
   },
   {
     id: "skin-black",
@@ -60,6 +64,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "블루사파이어",
     price: 350,
     Svg: Skin4,
+    skinVariant: 4,
   },
   {
     id: "skin-brown",

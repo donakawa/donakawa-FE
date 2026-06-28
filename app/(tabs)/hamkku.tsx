@@ -3,6 +3,7 @@ import CheckIcon from "@/assets/images/hamkku/check.svg";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import DoneButton from "@/components/common/DoneButton";
 import Toast from "@/components/common/Toast";
+import { getDonaSvg } from "@/constants/dona";
 import {
   DEFAULT_HAMKKU_SELECTION,
   getHamkkuItem,
@@ -19,7 +20,7 @@ import {
 } from "@/stores/attendanceStore";
 import { hamkkuStyles } from "@/styles/hamkku/Hamkku.style";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -31,12 +32,6 @@ import {
 
 const styles = hamkkuStyles as Record<keyof typeof hamkkuStyles, any>;
 
-const getMessage = (activeCategory: HamkkuCategory, selectedItem?: HamkkuItem) => {
-  if (activeCategory === "floor" && selectedItem?.id === "floor-yellow") return "와우";
-  if (activeCategory === "floor" && selectedItem?.defaultOwned) return "맘에 들어용!!!";
-  return "예쁘게 꾸며주세요!!!";
-};
-
 export default function Hamkku() {
   const { points, ownedHamkkuItemIds, appliedHamkku, hamkkuNickname } =
     useAttendanceStore();
@@ -47,6 +42,12 @@ export default function Hamkku() {
   const [pendingPurchaseItem, setPendingPurchaseItem] = useState<HamkkuItem | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [isApplyMode, setIsApplyMode] = useState(false);
+  const [showIntroSpeech, setShowIntroSpeech] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntroSpeech(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const selectedItem = getHamkkuItem(draftHamkku[activeCategory]);
   const selectedOwned = selectedItem
@@ -66,7 +67,10 @@ export default function Hamkku() {
     [draftHamkku],
   );
 
-  const PreviewSkinSvg = previewItems.skin?.Svg;
+  const PreviewDonaSvg = getDonaSvg(
+    previewItems.skin?.skinVariant,
+    showIntroSpeech ? 1 : 2,
+  );
   const activeItems = HAMKKU_ITEMS.filter((item) => item.category === activeCategory);
 
   const handleSelectItem = (item: HamkkuItem) => {
@@ -210,10 +214,12 @@ export default function Hamkku() {
 
       <View style={styles.preview}>
         <View style={[styles.previewWall, { backgroundColor: previewItems.wall?.color }]}>
-          <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>{getMessage(activeCategory, selectedItem)}</Text>
-            <View style={styles.speechTail} />
-          </View>
+          {showIntroSpeech ? (
+            <View style={styles.speechBubble}>
+              <Text style={styles.speechText}>예쁘게 꾸며주세요!!!</Text>
+              <View style={styles.speechTail} />
+            </View>
+          ) : null}
 
           <TouchableOpacity
             style={styles.nameButton}
@@ -231,7 +237,7 @@ export default function Hamkku() {
         <View style={[styles.previewFloor, { backgroundColor: previewItems.floor?.color }]} />
 
         <View style={styles.hamsterWrap}>
-          {PreviewSkinSvg ? <PreviewSkinSvg width={124} height={124} /> : null}
+          <PreviewDonaSvg width={124} height={124} />
           {renderAccessory(previewItems.accessory)}
         </View>
 
