@@ -19,8 +19,8 @@ import {
   useAttendanceStore,
 } from "@/stores/attendanceStore";
 import { hamkkuStyles } from "@/styles/hamkku/Hamkku.style";
-import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -44,10 +44,14 @@ export default function Hamkku() {
   const [isApplyMode, setIsApplyMode] = useState(false);
   const [showIntroSpeech, setShowIntroSpeech] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowIntroSpeech(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setShowIntroSpeech(true);
+      const timer = setTimeout(() => setShowIntroSpeech(false), 3000);
+
+      return () => clearTimeout(timer);
+    }, []),
+  );
 
   const selectedItem = getHamkkuItem(draftHamkku[activeCategory]);
   const selectedOwned = selectedItem
