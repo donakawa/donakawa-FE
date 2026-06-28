@@ -14,6 +14,8 @@ export default function TabLayout() {
       <Tabs.Screen name="wish" options={{ title: "위시" }} />
       <Tabs.Screen name="goal" options={{ href: null }} />
       <Tabs.Screen name="logCalendar" options={{ href: null }} />
+      <Tabs.Screen name="attendance" options={{ href: null }} />
+      <Tabs.Screen name="hamkku" options={{ href: null }} />
       <Tabs.Screen name="mypage" options={{ title: "마이" }} />
       <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>

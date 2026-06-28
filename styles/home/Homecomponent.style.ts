@@ -75,15 +75,37 @@ export const characterStyles = StyleSheet.create({
     color: "#7EC985",
   },
 
-  donaImage: {
+  donaWrap: {
     position: "absolute",
     bottom: 18,
     left: "50%",
     marginLeft: -60,
     width: 120,
     height: 120,
-    resizeMode: "contain",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 3,
+  },
+
+  donaImage: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+  },
+
+  accessoryLayer: {
+    position: "absolute",
+    top: -2,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 4,
+  },
+
+  accessoryText: {
+    fontFamily: "GalmuriBold",
+    fontSize: 24,
+    color: "#2D322E",
   },
 
   trashWrap: {
