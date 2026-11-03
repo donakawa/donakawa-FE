@@ -13,14 +13,14 @@ type GoalModalProps = {
   onChangeGoalName: (text: string) => void;
   onChangeAmount: (text: string) => void;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (isCarryOver: boolean) => void;
 };
 
 export default function GoalModal({
   visible,
   goalName,
   amount,
-  rolloverAmount = "171,900원",
+  rolloverAmount = "0원",
   onChangeGoalName,
   onChangeAmount,
   onClose,
@@ -37,7 +37,7 @@ export default function GoalModal({
               <Text style={styles.headerText}>이전</Text>
             </Pressable>
 
-            <Pressable onPress={onSubmit}>
+            <Pressable onPress={() => onSubmit(isCarryOver)}>
               <Text style={styles.doneText}>완료</Text>
             </Pressable>
           </View>

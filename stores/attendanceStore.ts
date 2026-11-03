@@ -1,25 +1,13 @@
 import { useSyncExternalStore } from "react";
-import {
-  DEFAULT_HAMKKU_SELECTION,
-  DEFAULT_OWNED_HAMKKU_ITEM_IDS,
-  type HamkkuCategory,
-} from "@/constants/hamkku";
 
+// TODO: 햄꾸 닉네임 조회/수정 API가 명세서에 없어 로컬 상태로만 유지 (앱 재시작 시 초기화)
 type AttendanceStoreState = {
-  points: number;
-  claimedRewardKeys: string[];
-  ownedHamkkuItemIds: string[];
-  appliedHamkku: Record<HamkkuCategory, string>;
   hamkkuNickname: string;
 };
 
 const listeners = new Set<() => void>();
 
 let state: AttendanceStoreState = {
-  points: 24,
-  claimedRewardKeys: [],
-  ownedHamkkuItemIds: DEFAULT_OWNED_HAMKKU_ITEM_IDS,
-  appliedHamkku: DEFAULT_HAMKKU_SELECTION,
   hamkkuNickname: "프리더햄토",
 };
 
@@ -36,45 +24,6 @@ const getSnapshot = () => state;
 
 export const useAttendanceStore = () =>
   useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-
-export const claimAttendanceReward = (rewardKey: string, points: number) => {
-  if (state.claimedRewardKeys.includes(rewardKey)) return;
-
-  state = {
-    ...state,
-    points: state.points + points,
-    claimedRewardKeys: [...state.claimedRewardKeys, rewardKey],
-  };
-  emit();
-};
-
-export const purchaseHamkkuItem = (itemId: string, price: number) => {
-  if (state.ownedHamkkuItemIds.includes(itemId)) return true;
-  if (state.points < price) return false;
-
-  state = {
-    ...state,
-    points: state.points - price,
-    ownedHamkkuItemIds: [...state.ownedHamkkuItemIds, itemId],
-  };
-  emit();
-  return true;
-};
-
-export const applyHamkkuItems = (nextAppliedHamkku: Record<HamkkuCategory, string>) => {
-  const canApply = Object.values(nextAppliedHamkku).every((itemId) =>
-    state.ownedHamkkuItemIds.includes(itemId),
-  );
-
-  if (!canApply) return false;
-
-  state = {
-    ...state,
-    appliedHamkku: nextAppliedHamkku,
-  };
-  emit();
-  return true;
-};
 
 export const updateHamkkuNickname = (nickname: string) => {
   const nextNickname = nickname.trim().slice(0, 10);

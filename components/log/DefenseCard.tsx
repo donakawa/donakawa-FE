@@ -11,7 +11,6 @@ import ShieldIcon from "@/assets/images/log/shield.svg";
 import UnionIcon from "@/assets/images/log/Union.svg";
 
 interface DefenseCardProps {
-  // 최근 3개월 방어 기록 (GET /log > last3months)
   number?: number;
   savings?: number;
   coffee?: number;

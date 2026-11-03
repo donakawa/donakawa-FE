@@ -11,7 +11,6 @@ export const budgetSettingStyles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: "center",
     width: "100%",
-    // gap: 56,
   },
 
   formArea: {

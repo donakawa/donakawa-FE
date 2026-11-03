@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 
-// mypage
 export const myPageStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -167,7 +166,6 @@ export const myPageStyles = StyleSheet.create({
   },
 });
 
-// ProfileSettingModal
 export const profileSettingModalStyles = StyleSheet.create({
   overlay: {
     flex: 1,

@@ -1,8 +1,9 @@
 import DirtyIcon from "@/assets/images/home/dirty.svg";
 import PawIcon from "@/assets/images/home/Union.svg";
 import RibbonIcon from "@/assets/images/home/Union_2.svg";
+import { useCharacterComment } from "@/api/character";
+import { useHamkkuAppearance } from "@/components/home/hamkkuAppearance";
 import { getDonaSvg, type DonaExpression } from "@/constants/dona";
-import { getHamkkuItem } from "@/constants/hamkku";
 import { useAttendanceStore } from "@/stores/attendanceStore";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
@@ -19,11 +20,14 @@ export default function HomeCharacter({
   spent,
   percent,
 }: HomeCharacterProps) {
-  const { appliedHamkku, hamkkuNickname } = useAttendanceStore();
-  const appliedSkin = getHamkkuItem(appliedHamkku.skin);
-  const appliedAccessory = getHamkkuItem(appliedHamkku.accessory);
-  const appliedWall = getHamkkuItem(appliedHamkku.wall);
-  const appliedFloor = getHamkkuItem(appliedHamkku.floor);
+  const { hamkkuNickname } = useAttendanceStore();
+  const {
+    skin: appliedSkin,
+    accessory: appliedAccessory,
+    wall: appliedWall,
+    floor: appliedFloor,
+  } = useHamkkuAppearance();
+  const { data: comment } = useCharacterComment();
   const AppliedAccessorySvg = appliedAccessory?.Svg;
 
   const getDonaExpression = (): DonaExpression => {
@@ -45,6 +49,10 @@ export default function HomeCharacter({
   };
 
   const renderMessage = () => {
+    if (comment?.message) {
+      return <Text style={styles.speechText}>{comment.message}</Text>;
+    }
+
     if (!hasBudget) {
       return <Text style={styles.speechText}>똥 쌌어요...</Text>;
     }
@@ -76,6 +84,7 @@ export default function HomeCharacter({
       <View style={styles.floorLine} />
 
       <View style={[styles.bottomArea, { backgroundColor: appliedFloor?.color ?? "#E0F9BF" }]}>
+        {/* TODO: pooCount(useCharacter) 연동 및 똥 청소(useCleanPoo) 플로우는 UI 확정 후 연결 */}
         <View style={styles.trashWrap}>
           <DirtyIcon width={40} height={30} />
         </View>

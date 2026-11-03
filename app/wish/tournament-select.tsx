@@ -1,47 +1,65 @@
+import { TOURNAMENT_ALLOWED_SIZES } from "@/api/tournaments";
+import { useWishFolderItems, useWishFolders, useWishItems, type WishFolder } from "@/api/wishlist";
 import FolderCard from "@/components/common/FolderCard";
 import WishFlowBottomBar from "@/components/wish/WishFlowBottomBar";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
-import {
-  WISH_DUMMY_IMAGES,
-  getRandomWishDummyImages,
-} from "@/constants/wishDummyData";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import {
-  type ImageSourcePropType,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useEffect } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-const MIN_SELECT = 4;
 const MAX_SELECT = 16;
 
-type WishFolder = {
-  id: string;
-  title: string;
-  images: ImageSourcePropType[];
-};
+const PREVIEW_TAKE = 4;
+const ALL_FOLDER_ID = "all";
 
-const ALL_FOLDER: WishFolder = {
-  id: "all",
-  title: "전체 위시리스트",
-  images: WISH_DUMMY_IMAGES,
-};
+const toPreviewImages = (pages: { wishitems: { photoUrl: string | null }[] }[] = []) =>
+  pages
+    .flatMap((page) => page.wishitems)
+    .map((item) => item.photoUrl)
+    .filter((url): url is string => !!url)
+    .slice(0, PREVIEW_TAKE);
 
-const INITIAL_FOLDERS: WishFolder[] = [
-  { id: "1", title: "세일 중...", images: getRandomWishDummyImages() },
-  { id: "2", title: "살까 말까", images: getRandomWishDummyImages() },
-  { id: "3", title: "이번 달 후보", images: getRandomWishDummyImages() },
-];
+function useAllWishFolders() {
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useWishFolders();
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  return data?.pages.flatMap((page) => page.folders) ?? [];
+}
+
+function AllFolderCard({ onPress }: { onPress: () => void }) {
+  const { data } = useWishItems({ status: "WISHLISTED", take: PREVIEW_TAKE });
+  return (
+    <FolderCard
+      title="전체 위시리스트"
+      images={toPreviewImages(data?.pages)}
+      onPress={onPress}
+    />
+  );
+}
+
+function WishFolderCard({ folder, onPress }: { folder: WishFolder; onPress: () => void }) {
+  const { data } = useWishFolderItems(folder.id, PREVIEW_TAKE);
+  return (
+    <FolderCard title={folder.name} images={toPreviewImages(data?.pages)} onPress={onPress} />
+  );
+}
 
 export default function TournamentSelectScreen() {
   const router = useRouter();
-  const [selectedCount] = useState(0);
+  const folders = useAllWishFolders();
 
-  const canConfirm = selectedCount >= MIN_SELECT;
+  // TODO: 폴더를 넘나드는 선택을 하려면 선택 상태를 화면 간에 공유해야 함.
+  // 현재는 tournament-items 화면 안에서만 선택/생성하므로 이 화면의 카운터는 항상 0
+  const selectedCount = 0;
+
+  const goToItems = (folderId: string) => {
+    router.push({ pathname: "/wish/tournament-items", params: { folderId } });
+  };
 
   return (
     <View style={styles.container}>
@@ -54,40 +72,23 @@ export default function TournamentSelectScreen() {
       {/* Folder grid */}
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.folderGrid}>
-          <FolderCard
-            title={ALL_FOLDER.title}
-            images={ALL_FOLDER.images}
-            onPress={() =>
-              router.push({
-                pathname: "/wish/tournament-items",
-                params: { folderId: ALL_FOLDER.id },
-              })
-            }
-          />
-          {INITIAL_FOLDERS.map((folder) => (
-            <FolderCard
+          <AllFolderCard onPress={() => goToItems(ALL_FOLDER_ID)} />
+          {folders.map((folder) => (
+            <WishFolderCard
               key={folder.id}
-              title={folder.title}
-              images={folder.images}
-              onPress={() =>
-                router.push({
-                  pathname: "/wish/tournament-items",
-                  params: { folderId: folder.id },
-                })
-              }
+              folder={folder}
+              onPress={() => goToItems(folder.id)}
             />
           ))}
         </View>
       </ScrollView>
 
       <WishFlowBottomBar
-        notice={`*최소 ${MIN_SELECT}개의 위시템을 선택해 주세요.`}
+        notice={`*${TOURNAMENT_ALLOWED_SIZES.join(", ")}개의 위시템을 선택해 주세요.`}
         current={selectedCount}
         max={MAX_SELECT}
-        canConfirm={canConfirm}
-        onConfirm={() => {
-          // TODO: 다음 단계(토너먼트 진행) 페이지 연결
-        }}
+        canConfirm={false}
+        onConfirm={() => {}}
       />
     </View>
   );

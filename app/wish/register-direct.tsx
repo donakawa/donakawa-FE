@@ -1,9 +1,12 @@
+import { getApiErrorMessage } from "@/api/types";
+import { useCreateWishItem, useMoveWishFolder, type UploadFile } from "@/api/wishlist";
 import AlertModal from "@/components/common/AlertModal";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -24,8 +27,13 @@ interface FormData {
   link: string;
 }
 
+const ALL_FOLDER_ID = "all";
+
 export default function WishRegisterDirectScreen() {
   const router = useRouter();
+  const { folderId } = useLocalSearchParams<{ folderId?: string }>();
+  const createItem = useCreateWishItem();
+  const moveFolder = useMoveWishFolder();
   const [form, setForm] = useState<FormData>({
     store: "",
     name: "",
@@ -38,8 +46,10 @@ export default function WishRegisterDirectScreen() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertVisible, setAlertVisible] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<UploadFile | null>(null);
 
-  const canSubmit = form.name.trim().length > 0;
+  const isPending = createItem.isPending || moveFolder.isPending;
+  const canSubmit = form.name.trim().length > 0 && !isPending;
 
   const update = (key: keyof FormData) => (text: string) =>
     setForm((prev) => ({ ...prev, [key]: text }));
@@ -64,7 +74,13 @@ export default function WishRegisterDirectScreen() {
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      setImageUri(result.assets[0].uri);
+      const asset = result.assets[0];
+      setImageUri(asset.uri);
+      setImageFile({
+        uri: asset.uri,
+        name: asset.fileName ?? asset.uri.split("/").pop() ?? "wish-item.jpg",
+        type: asset.mimeType ?? "image/jpeg",
+      });
     }
   };
 
@@ -78,8 +94,45 @@ export default function WishRegisterDirectScreen() {
       showAlert("위시 이유를 입력해주세요.");
       return;
     }
-    // TODO: 상품 등록 API
-    router.back();
+    const price = Number(form.price.replace(/\D/g, ""));
+    if (!price) {
+      showAlert("가격을 숫자로 입력해주세요.");
+      return;
+    }
+
+    const optional = (value: string) => value.trim() || undefined;
+    createItem.mutate(
+      {
+        productName: form.name.trim(),
+        price,
+        storeName: optional(form.store),
+        brandName: optional(form.brand),
+        reason: optional(form.reason),
+        url: optional(form.link),
+        file: imageFile ?? undefined,
+      },
+      {
+        onSuccess: ({ id }) => {
+          if (!folderId || folderId === ALL_FOLDER_ID) {
+            router.back();
+            return;
+          }
+          moveFolder.mutate(
+            { itemId: id, type: "MANUAL", folderId },
+            {
+              onSuccess: () => router.back(),
+              onError: (error) =>
+                Alert.alert(
+                  "폴더 이동 실패",
+                  `위시는 등록됐지만 폴더 이동에 실패했어요.\n${getApiErrorMessage(error)}`,
+                  [{ text: "확인", onPress: () => router.back() }],
+                ),
+            },
+          );
+        },
+        onError: (error) => showAlert(getApiErrorMessage(error)),
+      },
+    );
   };
 
   return (

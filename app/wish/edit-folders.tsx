@@ -1,44 +1,21 @@
+import { getApiErrorMessage } from "@/api/types";
+import { useDeleteWishFolder, useWishFolders } from "@/api/wishlist";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import FolderCard from "@/components/common/FolderCard";
 import Toast from "@/components/common/Toast";
-import { WISH_DUMMY_IMAGES, getRandomWishDummyImages } from "@/constants/wishDummyData";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   ScrollView,
   Image,
-  type ImageSourcePropType,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-interface Folder {
-  id: string;
-  title: string;
-  images: ImageSourcePropType[];
-}
-
-const FOLDERS: Folder[] = [
-  {
-    id: "all",
-    title: "냐냐냥!!??",
-    images: WISH_DUMMY_IMAGES,
-  },
-  {
-    id: "1",
-    title: "세일 중...",
-    images: getRandomWishDummyImages(),
-  },
-  {
-    id: "2",
-    title: "살까 말까",
-    images: getRandomWishDummyImages(),
-  },
-];
 
 export default function WishEditFoldersScreen() {
   const router = useRouter();
@@ -47,6 +24,19 @@ export default function WishEditFoldersScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
+
+  // TODO: 폴더 API는 미리보기 이미지를 내려주지 않아 빈 썸네일로 표시됨
+  const foldersQuery = useWishFolders();
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = foldersQuery;
+  const folders = useMemo(
+    () => foldersQuery.data?.pages.flatMap((page) => page.folders) ?? [],
+    [foldersQuery.data],
+  );
+  const deleteFolder = useDeleteWishFolder();
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -62,10 +52,18 @@ export default function WishEditFoldersScreen() {
     setConfirmVisible(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     setConfirmVisible(false);
-    // TODO: 선택된 폴더 삭제 API
+    if (deleteFolder.isPending) return;
+    const results = await Promise.allSettled(
+      [...selectedIds].map((folderId) => deleteFolder.mutateAsync(folderId)),
+    );
+    const failed = results.find((result) => result.status === "rejected");
     setSelectedIds(new Set());
+    if (failed) {
+      Alert.alert("폴더 삭제 실패", getApiErrorMessage(failed.reason));
+      return;
+    }
     setToastMessage("폴더가 삭제되었습니다.");
     setToastVisible(true);
   };
@@ -91,11 +89,11 @@ export default function WishEditFoldersScreen() {
         ]}
       >
         <View style={styles.grid}>
-          {FOLDERS.map((folder) => {
+          {folders.map((folder) => {
             const isSelected = selectedIds.has(folder.id);
             return (
               <View key={folder.id} style={styles.cardWrap}>
-                <FolderCard title={folder.title} images={folder.images} />
+                <FolderCard title={folder.name} />
                 <TouchableOpacity
                   style={styles.overlay}
                   onPress={() => toggleSelect(folder.id)}

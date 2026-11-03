@@ -14,7 +14,6 @@ interface TopDayCardProps {
   dropped?: DayOfWeek;
 }
 
-// 기록이 없으면 "???"로 내려오므로 그대로 표시
 const formatDay = (day: DayOfWeek) => (day === "???" ? day : `${day}.`);
 
 export default function TopDayCard({

@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 
-// GoalButton
 export const goalButtonStyles = StyleSheet.create({
   container: {
     width: 163,
@@ -70,7 +69,6 @@ export const goalButtonStyles = StyleSheet.create({
   },
 });
 
-// GoalCard
 export const goalCardStyles = StyleSheet.create({
   container: {
     width: 335,
@@ -149,7 +147,6 @@ export const goalCardStyles = StyleSheet.create({
   },
 });
 
-// GoalModal
 export const goalModalStyles = StyleSheet.create({
   overlay: {
     flex: 1,

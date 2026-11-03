@@ -22,7 +22,6 @@ import {
   View,
 } from "react-native";
 
-// 이메일 인증 코드는 6자리 숫자 (API 명세서 기준)
 const EMPTY_CODE = ["", "", "", "", "", ""];
 
 export default function Signup() {
@@ -95,7 +94,6 @@ export default function Signup() {
     );
   };
 
-  // 재전송 시 기존 코드는 서버에서 무효화됨
   const handleResendCode = () => {
     sendEmailCode.mutate(
       { email: email.trim(), type: "REGISTER" },
@@ -133,7 +131,6 @@ export default function Signup() {
     }
   };
 
-  // 회원가입은 쿠키를 발급하지 않으므로 가입 직후 로그인까지 진행
   const handleRegister = async () => {
     const credentials = { email: email.trim(), password };
     try {
@@ -360,7 +357,7 @@ export default function Signup() {
                 value={nickname}
                 onChangeText={(text) => {
                   setNickname(text);
-                  setNicknameStatus('idle'); // 타이핑 시 상태 초기화
+                  setNicknameStatus('idle');
                 }}
                 maxLength={10}
               />

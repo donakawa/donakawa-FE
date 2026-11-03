@@ -17,7 +17,6 @@ import TrashEmptyIcon from "@/assets/images/log/delete_empty.svg";
 
 type CalendarMode = "bag" | "trash";
 
-// 화면 모드 → API type (소비 / 포기)
 const MODE_TO_TYPE: Record<CalendarMode, LogCalendarType> = {
   bag: "BOUGHT",
   trash: "DROPPED",
@@ -26,7 +25,6 @@ const MODE_TO_TYPE: Record<CalendarMode, LogCalendarType> = {
 // TODO: 캘린더 API 응답에 상품 이미지가 없어 샘플 이미지로 대체
 const ITEM_IMAGE_FALLBACK = require("@/assets/images/log/sample1.png");
 
-// "YYYY-MM-DD" 형태의 date에서 일(day)만 추출
 const getDayOfDate = (date: string) => {
   const day = Number(date.split(/[-T ]/)[2]);
   return Number.isNaN(day) ? null : day;
@@ -51,7 +49,6 @@ export default function LogCalendarPage() {
   const listTitle =
     selectedMode === "bag" ? "구매한 아이템" : "구매 포기한 아이템";
 
-  // 일자별 기록 (day → 기록)
   const dayMap = useMemo(() => {
     const map = new Map<number, LogCalendarDay>();
     data?.calendar.forEach((entry) => {
@@ -70,7 +67,6 @@ export default function LogCalendarPage() {
     return map;
   }, [dayMap, selectedMode]);
 
-  // 월 합계 금액 / 건수
   const monthTotalAmount =
     data?.calendar.reduce((sum, entry) => sum + entry.totalAmount, 0) ?? 0;
   const monthCount =

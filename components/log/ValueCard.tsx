@@ -34,7 +34,6 @@ function ValueRow({ label, value }: ValueRowProps) {
 }
 
 interface ValueCardProps {
-  // 위시 → 구매/포기 전환율 (%)
   boughtRate?: number;
   droppedRate?: number;
 }

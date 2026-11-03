@@ -1,19 +1,27 @@
+import { getApiErrorMessage } from "@/api/types";
+import {
+  useBuyWishItem,
+  useDropWishItem,
+  useUpdateWishReason,
+  useWishItem,
+  type PurchaseTimeSlot,
+  type WishItemType,
+} from "@/api/wishlist";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import CalendarModal from "@/components/wish/CalendarModal";
 import PurchaseCompleteModal from "@/components/wish/PurchaseCompleteModal";
 import TournamentBanner from "@/components/wish/TournamentBanner";
-import {
-  WISH_DUMMY_IMAGE_KEYS,
-  getWishDummyImageByKey,
-  type WishDummyImageKey,
-} from "@/constants/wishDummyData";
 import { Ionicons } from "@expo/vector-icons";
+import { differenceInCalendarDays, format } from "date-fns";
 import { StatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   type ImageSourcePropType,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -26,8 +34,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const MAX_MEMO = 30;
 const WISH_ITEM_IMAGE = require("@/assets/images/wish/wishItem.png");
 
-const isWishDummyImageKey = (key?: string): key is WishDummyImageKey =>
-  WISH_DUMMY_IMAGE_KEYS.includes(key as WishDummyImageKey);
+const isWishItemType = (value?: string): value is WishItemType =>
+  value === "AUTO" || value === "MANUAL";
+
+// TODO: 구매 시간대(MORNING/EVENING/NIGHT)를 고르는 UI가 없어 현재 시각 기준으로 임시 지정
+// (시간대 경계도 명세에 없어 12시/18시 기준으로 가정, 디자인/백엔드 확인 필요)
+const getCurrentTimeSlot = (): PurchaseTimeSlot => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "MORNING";
+  if (hour < 18) return "EVENING";
+  return "NIGHT";
+};
 
 type PurchaseRecord = {
   date: Date;
@@ -37,44 +54,108 @@ type PurchaseRecord = {
 export default function WishItemDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [memo, setMemo] = useState("더 이상은 못참겠다 사람이 한계가 있어 이래야\n내가 산다");
+  const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
+  const itemType: WishItemType = isWishItemType(type) ? type : "MANUAL";
+  const { data: item, isLoading, isError } = useWishItem(id ?? "", itemType, {
+    enabled: !!id && isWishItemType(type),
+  });
+  const dropItem = useDropWishItem();
+  const buyItem = useBuyWishItem();
+  const updateReason = useUpdateWishReason();
+
+  const [memo, setMemo] = useState("");
   const [abandonModalVisible, setAbandonModalVisible] = useState(false);
   const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
   const [purchaseCompleteVisible, setPurchaseCompleteVisible] = useState(false);
   const [purchaseRecord, setPurchaseRecord] = useState<PurchaseRecord | null>(null);
 
+  useEffect(() => {
+    if (item) setMemo((item.reason ?? "").slice(0, MAX_MEMO));
+  }, [item]);
+
   const handleAbandon = () => {
     setAbandonModalVisible(false);
-    // TODO: 구매 포기 API 호출
+    if (!id) return;
+    dropItem.mutate(
+      { itemId: id, type: itemType },
+      {
+        onSuccess: () => router.back(),
+        onError: (error) => Alert.alert("구매 포기 실패", getApiErrorMessage(error)),
+      },
+    );
   };
-  const { name, price, onSale, image, imageKey } = useLocalSearchParams<{
-    name: string;
-    price: string;
-    onSale?: string;
-    image?: string;
-    imageKey?: string;
-  }>();
 
-  const priceNum = Number(price) || 57300;
-  const isSale = onSale === "true";
-  const imageSource: ImageSourcePropType = isWishDummyImageKey(imageKey)
-    ? getWishDummyImageByKey(imageKey)
-    : image
-      ? { uri: image }
-      : WISH_ITEM_IMAGE;
-  const itemName = name || "ZARA 시티 걸 드레스 그린";
+  const handleMemoSave = () => {
+    if (!id || !item || memo === (item.reason ?? "")) return;
+    updateReason.mutate(
+      { itemId: id, type: itemType, reason: memo },
+      { onError: (error) => Alert.alert("메모 저장 실패", getApiErrorMessage(error)) },
+    );
+  };
+
+  const priceNum = item?.price ?? 0;
+  const imageSource: ImageSourcePropType = item?.photoUrl
+    ? { uri: item.photoUrl }
+    : WISH_ITEM_IMAGE;
+  const itemName = item?.name ?? "";
+  const addedDays = item ? differenceInCalendarDays(new Date(), new Date(item.addedAt)) : 0;
 
   const handlePurchaseConfirm = (start: Date, _end: Date | null, purchasePrice: string) => {
     setPurchaseModalVisible(false);
-    setPurchaseRecord({ date: start, price: purchasePrice });
-    setPurchaseCompleteVisible(true);
-    // TODO: 구매 결정 API 호출
+    if (!id) return;
+    // TODO: 구매 API에 가격 필드가 없어 모달에서 수정한 가격은 완료 모달 표시에만 사용됨
+    // TODO: 구매 이유(reasonId/reason) 입력 UI가 없어 생략 (명세상 필수라면 백엔드 확인 필요)
+    buyItem.mutate(
+      {
+        itemId: id,
+        type: itemType,
+        date: format(start, "yyyy-MM-dd"),
+        purchasedAt: getCurrentTimeSlot(),
+      },
+      {
+        onSuccess: () => {
+          setPurchaseRecord({ date: start, price: purchasePrice });
+          setPurchaseCompleteVisible(true);
+        },
+        onError: (error) => Alert.alert("구매 기록 실패", getApiErrorMessage(error)),
+      },
+    );
+  };
+
+  const handleOpenShop = () => {
+    if (!item?.productUrl) return;
+    Linking.openURL(item.productUrl).catch(() =>
+      Alert.alert("이동 실패", "사이트를 열 수 없어요."),
+    );
   };
 
   const handleViewPurchaseLog = () => {
     setPurchaseCompleteVisible(false);
     router.push("/logCalendar");
   };
+
+  if (!item) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        {isLoading ? (
+          <ActivityIndicator color="#7EC985" />
+        ) : (
+          <Text style={styles.dateMuted}>
+            {isError ? "상품 정보를 불러오지 못했어요." : "상품 정보가 없어요."}
+          </Text>
+        )}
+        <View pointerEvents="box-none" style={[styles.navHeader, { top: insets.top }]}>
+          <TouchableOpacity style={styles.navBtn} onPress={() => router.back()} hitSlop={8}>
+            <Image
+              source={require("@/assets/images/wish/back-button.png")}
+              style={styles.navBtnImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -95,12 +176,13 @@ export default function WishItemDetailScreen() {
         <View style={styles.metaBlock}>
           <View style={styles.dateRow}>
             <Text style={styles.dateMuted}>담은 지</Text>
-            <Text style={styles.dateMuted}> +1일</Text>
+            <Text style={styles.dateMuted}> +{addedDays}일</Text>
           </View>
           <View style={styles.namePrice}>
             <Text style={styles.productName}>{itemName}</Text>
             <View style={styles.priceRow}>
-              <Text style={[styles.priceNum, isSale && styles.priceNumSale]}>
+              {/* TODO: 세일 여부는 API에 없어 세일 가격 스타일(priceNumSale)은 사용하지 않음 */}
+              <Text style={styles.priceNum}>
                 {priceNum.toLocaleString()}
               </Text>
               <Text style={styles.priceUnit}>원</Text>
@@ -156,11 +238,11 @@ export default function WishItemDetailScreen() {
         </View>
 
         {/* 쇼핑몰 링크 */}
-        <TouchableOpacity style={styles.shopLink} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.shopLink} activeOpacity={0.8} onPress={handleOpenShop}>
           <View style={styles.shopLinkLeft}>
             <Image source={{ uri: "https://placehold.co/42x42" }} style={styles.shopAvatar} />
             <View style={styles.shopInfo}>
-              <Text style={styles.shopName}>MUSINSA</Text>
+              <Text style={styles.shopName}>{item.platform ?? item.brand ?? "-"}</Text>
               <Text style={styles.shopSub}>눌러서 사이트로 이동</Text>
             </View>
           </View>
@@ -179,6 +261,7 @@ export default function WishItemDetailScreen() {
             placeholder="구매 메모를 입력하세요"
             placeholderTextColor="#AAAFAB"
             textAlignVertical="top"
+            onEndEditing={handleMemoSave}
           />
           <View style={styles.memoCountRow}>
             <Text style={[styles.memoCountCurrent, memo.length >= MAX_MEMO && styles.memoCountFull]}>
@@ -201,6 +284,7 @@ export default function WishItemDetailScreen() {
             resizeMode="contain"
           />
         </TouchableOpacity>
+        {/* TODO: 위시템 수정 화면이 없어 수정 버튼은 아직 동작하지 않음 (수정 API는 MANUAL 전용) */}
         <TouchableOpacity style={styles.navBtn} hitSlop={8}>
           <Image
             source={require("@/assets/images/wish/item-edit-button.png")}
@@ -242,6 +326,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FBFBF5",
+  },
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   hero: {
     height: 374,

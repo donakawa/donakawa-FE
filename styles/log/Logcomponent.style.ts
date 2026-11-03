@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 
-// ReceiptCard
 export const receiptCardStyles = StyleSheet.create({
   container: {
     width: 335,
@@ -199,7 +198,6 @@ export const receiptCardStyles = StyleSheet.create({
   },
 });
 
-// DefenseCard
 export const defenseCardStyles = StyleSheet.create({
   card: {
     width: 335,
@@ -328,7 +326,6 @@ export const defenseCardStyles = StyleSheet.create({
   },
 });
 
-// TopDay
 export const topdayCardStyles = StyleSheet.create({
   container: {
     width: 335,
@@ -385,7 +382,6 @@ export const topdayCardStyles = StyleSheet.create({
   },
 });
 
-// ValueCard
 export const valueCardStyles = StyleSheet.create({
   container: {
     width: 335,

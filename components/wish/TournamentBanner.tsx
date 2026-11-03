@@ -1,3 +1,4 @@
+import InsetShadow from "@/components/common/InsetShadow";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -8,32 +9,40 @@ interface TournamentBannerProps {
 
 export default function TournamentBanner({ label = "토너먼트 하러 가기", onPress }: TournamentBannerProps) {
   return (
-    <TouchableOpacity style={styles.outer} onPress={onPress} activeOpacity={0.9}>
-      <View style={styles.inner}>
-        <View style={styles.row}>
-          <View style={styles.leftGroup}>
-            <MaterialCommunityIcons name="sword-cross" size={18} color="#464B47" />
-            <Text style={styles.label}>{label}</Text>
+    <TouchableOpacity style={styles.touchable} onPress={onPress} activeOpacity={0.9}>
+      <InsetShadow style={styles.outer}>
+        <View style={styles.inner}>
+          <View style={styles.row}>
+            <View style={styles.leftGroup}>
+              <MaterialCommunityIcons name="sword-cross" size={18} color="#464B47" />
+              <Text style={styles.label}>{label}</Text>
+            </View>
+            <Ionicons name="caret-forward" size={12} color="#464B47" />
           </View>
-          <Ionicons name="caret-forward" size={12} color="#464B47" />
         </View>
-      </View>
+        <View style={styles.outerBorder} />
+      </InsetShadow>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  outer: {
+  touchable: {
     alignSelf: "stretch",
+  },
+  outer: {
     height: 64,
     paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: "#E8F9C7",
     borderRadius: 5,
+  },
+  outerBorder: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: "none",
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: "#9CCCA0",
-    boxShadow:
-      "inset 4px 4px 2px rgba(255, 255, 255, 0.30), inset -4px -4px 4px rgba(104, 171, 110, 0.30)",
   },
   inner: {
     flex: 1,

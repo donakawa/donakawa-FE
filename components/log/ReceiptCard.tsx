@@ -5,15 +5,12 @@ import { Text, View } from "react-native";
 
 interface ReceiptCardProps {
   variant?: "default" | "goal";
-  // 진행 중인 목표 (없으면 null)
   goal?: InProgressGoal | null;
-  // default variant 전용: 함께한 기간 / 총 절약 금액
   since?: string;
   period?: number;
   totalSavings?: number;
 }
 
-// 30일 미만이면 period가 0으로 내려오므로 since 기준 일수로 표시
 const formatPeriod = (period?: number, since?: string) => {
   if (period && period > 0) return `+${period}개월`;
   if (!since) return "+0개월";

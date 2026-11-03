@@ -29,7 +29,6 @@ export default function WithdrawalPage() {
   const verifyPassword = useVerifyPassword();
   const deleteAccount = useDeleteAccount();
 
-  // 비밀번호가 없는 계정(소셜 로그인만 사용)은 소셜 재인증 필요
   const loginType: LoginType = me?.hasPassword === false ? "social" : "local";
 
   const [password, setPassword] = useState("");
@@ -39,7 +38,6 @@ export default function WithdrawalPage() {
   const isLocal = loginType === "local";
   const isValid = !verifyPassword.isPending && (isLocal ? password.length >= 1 : true);
 
-  // 확인 성공 시 5분 이내에 탈퇴 API를 호출해야 함
   const handleConfirm = () => {
     if (!isValid) return;
 
@@ -74,7 +72,6 @@ export default function WithdrawalPage() {
   };
 
   const handleGoogleAuth = () => {
-    // 구글 재인증 연동해야됨
   };
 
   return (

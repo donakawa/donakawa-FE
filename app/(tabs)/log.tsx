@@ -15,7 +15,6 @@ import CalendarIcon from "@/assets/images/log/calendar.svg";
 
 export default function LogPage() {
   const { data: me } = useMe();
-  // 로딩 중/실패 시에는 카드 기본값(0, "???")으로 표시
   const { data: log } = useLogMain();
   const handleGoalPress = () => {
     router.push("/goal");

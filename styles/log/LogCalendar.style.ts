@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 
-// LogCalendar
 export const logCalendarStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -64,7 +63,6 @@ export const logCalendarStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F0FFE5",
-    // paddingVertical: 10,
   },
 
   yearBox: {
@@ -189,7 +187,6 @@ export const logCalendarStyles = StyleSheet.create({
   },
 });
 
-// Calendar
 export const calendarStyles = StyleSheet.create({
   calendarGrid: {
     width: 335,
@@ -245,7 +242,6 @@ export const calendarStyles = StyleSheet.create({
   },
 });
 
-// CalendarItemCard
 export const calendarItemCardStyles = StyleSheet.create({
   card: {
     height: 122,

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Dimensions,
   Pressable,
@@ -13,8 +14,10 @@ import {
 import SearchIcon from "@/assets/images/buyOrNot/search.svg";
 import ArrowIcon from "@/assets/images/log/arrow_mini.svg";
 
+import { getApiErrorMessage } from "@/api/types";
 import SimpleModal from "@/components/common/SimpleModal";
 import Toast from "@/components/common/Toast";
+import type { BuyOrNotHistoryItem } from "@/types/buyOrNot";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const ANIMATION_DURATION_MS = 220;
@@ -22,24 +25,31 @@ const ANIMATION_DURATION_MS = 220;
 interface BuyOrNotMenuProps {
   visible: boolean;
   onClose: () => void;
-  historyItemNames: string[];
+  historyItems: BuyOrNotHistoryItem[];
+  onDeleteHistory?: (id: number) => Promise<unknown>;
   onPressNewRecommendation?: () => void;
 }
 
 export default function BuyOrNotMenu({
   visible,
   onClose,
-  historyItemNames,
+  historyItems,
+  onDeleteHistory,
   onPressNewRecommendation,
 }: BuyOrNotMenuProps) {
   const [isMounted, setIsMounted] = useState(visible);
-  const [items, setItems] = useState(historyItemNames);
   const [toastVisible, setToastVisible] = useState(false);
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
 
-  useEffect(() => {
-    setItems(historyItemNames);
-  }, [historyItemNames]);
+  const deleteHistory = async (id: number) => {
+    if (!onDeleteHistory) return;
+    try {
+      await onDeleteHistory(id);
+      setToastVisible(true);
+    } catch (error) {
+      Alert.alert("삭제 실패", getApiErrorMessage(error));
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -99,14 +109,11 @@ export default function BuyOrNotMenu({
         <View style={styles.historyList}>
           <Text style={styles.sectionTitle}>추천 기록</Text>
 
-          {items.map((name, index) => (
+          {historyItems.map((item) => (
             <HistoryRow
-              key={`${name}-${index}`}
-              name={name}
-              onDelete={() => {
-                setItems((prev) => prev.filter((_, i) => i !== index));
-                setToastVisible(true);
-              }}
+              key={item.id}
+              name={item.name}
+              onDelete={() => deleteHistory(item.id)}
             />
           ))}
         </View>

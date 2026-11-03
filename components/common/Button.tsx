@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // variant
   primary: {
     backgroundColor: "#0B4112",
   },
@@ -61,11 +60,9 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.4,
   },
-  // size
   sm: { paddingVertical: 8, paddingHorizontal: 16 },
   md: { paddingVertical: 12, paddingHorizontal: 24 },
   lg: { paddingVertical: 16, paddingHorizontal: 32 },
-  // labels
   label: { fontWeight: "600" },
   primaryLabel: { color: "#FFFFFF" },
   secondaryLabel: { color: "#0B4112" },

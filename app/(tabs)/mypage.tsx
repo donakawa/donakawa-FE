@@ -39,7 +39,6 @@ export default function MyPage() {
   const nickname = me?.nickname ?? "";
   const [draftNickname, setDraftNickname] = useState(nickname);
 
-  // 프로필 이미지는 서버에 저장하지 않음 (API 명세서에 없음)
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [draftProfileIndex, setDraftProfileIndex] =
     useState(selectedProfileIndex);
@@ -69,7 +68,6 @@ export default function MyPage() {
     });
   };
 
-  // 서버 로그아웃이 실패해도 앱에서는 로그아웃 처리
   const handleLogout = () => {
     logout.mutate(undefined, {
       onSettled: () => router.replace("/login"),

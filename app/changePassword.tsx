@@ -38,7 +38,6 @@ export default function ChangePasswordPage() {
   const changePassword = useChangePassword();
   const isPending = verifyPassword.isPending || changePassword.isPending;
 
-  // 소셜 로그인만 쓴 계정은 기존 비밀번호가 없으므로 바로 설정 단계로
   useEffect(() => {
     if (me && !me.hasPassword) setStep(2);
   }, [me]);
@@ -61,7 +60,6 @@ export default function ChangePasswordPage() {
   const handleSubmit = () => {
     if (!isValid) return;
 
-    // 확인 성공 시 5분 동안 비밀번호 변경 가능
     if (step === 1) {
       verifyPassword.mutate(
         { password: currentPassword, type: "CHANGE_PASSWORD" },

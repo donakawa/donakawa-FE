@@ -1,4 +1,3 @@
-// API 명세서(노션) 기준 엔드포인트 경로 모음
 type Id = string | number;
 
 export const ENDPOINTS = {
