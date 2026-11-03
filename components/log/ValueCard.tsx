@@ -33,14 +33,22 @@ function ValueRow({ label, value }: ValueRowProps) {
   );
 }
 
-export default function ValueCard() {
+interface ValueCardProps {
+  boughtRate?: number;
+  droppedRate?: number;
+}
+
+export default function ValueCard({
+  boughtRate = 0,
+  droppedRate = 0,
+}: ValueCardProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>위시템으로 담은 상품 중...</Text>
 
       <View style={styles.card}>
-        <ValueRow label="구매전환" value={60} />
-        <ValueRow label="포기전환" value={30} />
+        <ValueRow label="구매전환" value={boughtRate} />
+        <ValueRow label="포기전환" value={droppedRate} />
       </View>
     </View>
   );

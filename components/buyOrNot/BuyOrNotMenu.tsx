@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Dimensions,
   Pressable,
@@ -13,8 +14,10 @@ import {
 import SearchIcon from "@/assets/images/buyOrNot/search.svg";
 import ArrowIcon from "@/assets/images/log/arrow_mini.svg";
 
+import { getApiErrorMessage } from "@/api/types";
 import SimpleModal from "@/components/common/SimpleModal";
 import Toast from "@/components/common/Toast";
+import type { BuyOrNotHistoryItem } from "@/types/buyOrNot";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const ANIMATION_DURATION_MS = 220;
@@ -22,24 +25,37 @@ const ANIMATION_DURATION_MS = 220;
 interface BuyOrNotMenuProps {
   visible: boolean;
   onClose: () => void;
-  historyItemNames: string[];
+  historyItems: BuyOrNotHistoryItem[];
+  onDeleteHistory?: (id: number) => Promise<unknown>;
+  onPressHistory?: (id: number) => void;
   onPressNewRecommendation?: () => void;
+  newButtonText?: string;
+  historyTitle?: string;
 }
 
 export default function BuyOrNotMenu({
   visible,
   onClose,
-  historyItemNames,
+  historyItems,
+  onDeleteHistory,
+  onPressHistory,
   onPressNewRecommendation,
+  newButtonText = "새로 살말 추천 받기",
+  historyTitle = "추천 기록",
 }: BuyOrNotMenuProps) {
   const [isMounted, setIsMounted] = useState(visible);
-  const [items, setItems] = useState(historyItemNames);
   const [toastVisible, setToastVisible] = useState(false);
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
 
-  useEffect(() => {
-    setItems(historyItemNames);
-  }, [historyItemNames]);
+  const deleteHistory = async (id: number) => {
+    if (!onDeleteHistory) return;
+    try {
+      await onDeleteHistory(id);
+      setToastVisible(true);
+    } catch (error) {
+      Alert.alert("삭제 실패", getApiErrorMessage(error));
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -85,7 +101,7 @@ export default function BuyOrNotMenu({
         >
           <View style={styles.newRecommendButton}>
             <Ionicons name="pricetag" size={14} color="#2D322E" />
-            <Text style={styles.newRecommendText}>새로 살말 추천 받기</Text>
+            <Text style={styles.newRecommendText}>{newButtonText}</Text>
             <ArrowIcon style={styles.arrow} />
           </View>
         </Pressable>
@@ -97,16 +113,14 @@ export default function BuyOrNotMenu({
         </View>
 
         <View style={styles.historyList}>
-          <Text style={styles.sectionTitle}>추천 기록</Text>
+          <Text style={styles.sectionTitle}>{historyTitle}</Text>
 
-          {items.map((name, index) => (
+          {historyItems.map((item) => (
             <HistoryRow
-              key={`${name}-${index}`}
-              name={name}
-              onDelete={() => {
-                setItems((prev) => prev.filter((_, i) => i !== index));
-                setToastVisible(true);
-              }}
+              key={item.id}
+              name={item.name}
+              onPress={onPressHistory && (() => onPressHistory(item.id))}
+              onDelete={() => deleteHistory(item.id)}
             />
           ))}
         </View>
@@ -124,10 +138,11 @@ export default function BuyOrNotMenu({
 
 interface HistoryRowProps {
   name: string;
+  onPress?: () => void;
   onDelete: () => void;
 }
 
-function HistoryRow({ name, onDelete }: HistoryRowProps) {
+function HistoryRow({ name, onPress, onDelete }: HistoryRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const buttonOpacity = useRef(new Animated.Value(0)).current;
@@ -147,7 +162,7 @@ function HistoryRow({ name, onDelete }: HistoryRowProps) {
       <Pressable
         style={[styles.historyRow, isOpen && styles.historyRowOpen]}
         onLongPress={toggleOpen}
-        onPress={() => isOpen && toggleOpen()}
+        onPress={() => (isOpen ? toggleOpen() : onPress?.())}
       >
         <Text style={styles.historyItem} numberOfLines={1}>
           {name}

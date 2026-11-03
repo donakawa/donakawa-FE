@@ -1,7 +1,11 @@
+import { getApiErrorMessage } from "@/api/types";
+import { useCrawlProduct, wishlistKeys } from "@/api/wishlist";
 import { Ionicons } from "@expo/vector-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -14,12 +18,26 @@ import {
 export default function WishRegisterLinkScreen() {
   const router = useRouter();
   const [url, setUrl] = useState("");
+  const queryClient = useQueryClient();
+  const crawlProduct = useCrawlProduct();
 
-  const canSubmit = url.trim().length > 0;
+  const canSubmit = url.trim().length > 0 && !crawlProduct.isPending;
 
+  // TODO: 폴더 상세에서 진입한 경우(folderId 파라미터) 폴더 지정 미구현.
+  // 크롤링 결과의 id가 위시템 id인지 명세에서 확인되지 않아 폴더 이동 API를 호출하지 않음
   const handleSubmit = () => {
     if (!canSubmit) return;
-    // TODO: URL로 상품 정보 불러오기
+    crawlProduct.mutate(url.trim(), {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+        router.back();
+      },
+      onError: (error) =>
+        Alert.alert(
+          "상품 불러오기 실패",
+          getApiErrorMessage(error, error instanceof Error ? error.message : undefined),
+        ),
+    });
   };
 
   return (
@@ -60,7 +78,7 @@ export default function WishRegisterLinkScreen() {
             activeOpacity={0.85}
           >
             <Text style={[styles.buttonText, canSubmit && styles.buttonTextActive]}>
-              등록하기
+              {crawlProduct.isPending ? "불러오는 중..." : "등록하기"}
             </Text>
           </TouchableOpacity>
         </View>

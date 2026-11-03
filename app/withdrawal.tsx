@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Keyboard,
   Pressable,
   Text,
@@ -9,6 +10,8 @@ import {
   View,
 } from "react-native";
 
+import { useDeleteAccount, useMe, useVerifyPassword } from "@/api/auth";
+import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 import SimpleModal from "@/components/common/SimpleModal";
 
@@ -22,30 +25,53 @@ import EyeOffIcon from "@/assets/images/mypage/visibility-off-eye.svg";
 type LoginType = "local" | "social";
 
 export default function WithdrawalPage() {
-  const loginType: LoginType = "local";
+  const { data: me } = useMe();
+  const verifyPassword = useVerifyPassword();
+  const deleteAccount = useDeleteAccount();
+
+  const loginType: LoginType = me?.hasPassword === false ? "social" : "local";
 
   const [password, setPassword] = useState("");
   const [secure, setSecure] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   const isLocal = loginType === "local";
-  const isValid = isLocal ? password.length >= 1 : true;
+  const isValid = !verifyPassword.isPending && (isLocal ? password.length >= 1 : true);
 
   const handleConfirm = () => {
     if (!isValid) return;
 
-    setModalVisible(true);
+    if (!isLocal) {
+      // TODO: 소셜 재인증(/auth/google/reauth, /auth/kakao/reauth) 연동
+      Alert.alert("소셜 계정 재인증은 준비 중입니다.");
+      return;
+    }
+
+    verifyPassword.mutate(
+      { password, type: "DELETE_ACCOUNT" },
+      {
+        onSuccess: (isCorrect) => {
+          if (!isCorrect) {
+            Alert.alert("비밀번호가 일치하지 않습니다.");
+            return;
+          }
+          setModalVisible(true);
+        },
+        onError: (error) => Alert.alert("비밀번호 확인 실패", getApiErrorMessage(error)),
+      },
+    );
   };
 
   const handleWithdrawal = () => {
     setModalVisible(false);
 
-    // 회원 탈퇴 API 연동해야됨
-    router.replace("/settings");
+    deleteAccount.mutate(undefined, {
+      onSuccess: () => router.replace("/login"),
+      onError: (error) => Alert.alert("회원 탈퇴 실패", getApiErrorMessage(error)),
+    });
   };
 
   const handleGoogleAuth = () => {
-    // 구글 재인증 연동해야됨
   };
 
   return (
@@ -73,9 +99,7 @@ export default function WithdrawalPage() {
                 <View style={styles.inputGroup}>
                   <TextInput
                     style={styles.input}
-                    value={
-                      isLocal ? "donakawa@dona.com" : "donakawa123@naver.com"
-                    }
+                    value={me?.email ?? ""}
                     editable={false}
                     placeholderTextColor="#C3C8C4"
                   />

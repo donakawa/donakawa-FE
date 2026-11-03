@@ -1,6 +1,7 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -11,6 +12,8 @@ import {
   View,
 } from "react-native";
 
+import { useChangePassword, useMe, useVerifyPassword } from "@/api/auth";
+import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 
 import { changePasswordStyles as styles } from "@/styles/mypage/SubPage.style";
@@ -30,6 +33,15 @@ export default function ChangePasswordPage() {
 
   const [secure, setSecure] = useState(true);
 
+  const { data: me } = useMe();
+  const verifyPassword = useVerifyPassword();
+  const changePassword = useChangePassword();
+  const isPending = verifyPassword.isPending || changePassword.isPending;
+
+  useEffect(() => {
+    if (me && !me.hasPassword) setStep(2);
+  }, [me]);
+
   const isCurrentPasswordValid = currentPassword.length >= 8;
   const isNewPasswordValid = newPassword.length >= 8;
   const isConfirmVisible = isNewPasswordValid;
@@ -38,24 +50,42 @@ export default function ChangePasswordPage() {
     confirmPassword.length >= 8 && newPassword === confirmPassword;
 
   const isValid =
-    step === 1
+    !isPending &&
+    (step === 1
       ? isCurrentPasswordValid
       : step === 2
         ? isConfirmPasswordValid
-        : true;
+        : true);
 
   const handleSubmit = () => {
     if (!isValid) return;
 
     if (step === 1) {
-      setStep(2);
-      setSecure(true);
+      verifyPassword.mutate(
+        { password: currentPassword, type: "CHANGE_PASSWORD" },
+        {
+          onSuccess: (isCorrect) => {
+            if (!isCorrect) {
+              Alert.alert("비밀번호가 일치하지 않습니다.");
+              return;
+            }
+            setStep(2);
+            setSecure(true);
+          },
+          onError: (error) => Alert.alert("비밀번호 확인 실패", getApiErrorMessage(error)),
+        },
+      );
       return;
     }
 
     if (step === 2) {
-      setStep(3);
-      setSecure(true);
+      changePassword.mutate(newPassword, {
+        onSuccess: () => {
+          setStep(3);
+          setSecure(true);
+        },
+        onError: (error) => Alert.alert("비밀번호 변경 실패", getApiErrorMessage(error)),
+      });
       return;
     }
 

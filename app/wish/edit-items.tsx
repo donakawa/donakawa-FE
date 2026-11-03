@@ -1,36 +1,78 @@
+import { getApiError, getApiErrorMessage } from "@/api/types";
+import {
+  useCreateWishFolder,
+  useDeleteWishItem,
+  useMoveWishFolder,
+  useWishFolderItems,
+  useWishFolders,
+  useWishItems,
+} from "@/api/wishlist";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import Toast from "@/components/common/Toast";
 import WishCreateFolderModal from "@/components/wish/WishCreateFolderModal";
 import WishItemCard from "@/components/wish/WishItemCard";
 import WishMoveFolderSheet, { MoveFolderOption } from "@/components/wish/WishMoveFolderSheet";
-import {
-  createRandomWishDummyProducts,
-  type WishDummyProduct,
-} from "@/constants/wishDummyData";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const INITIAL_MOVE_FOLDERS: MoveFolderOption[] = [
-  { id: "1", title: "세일 중..." },
-  { id: "2", title: "냐냐냥!!" },
-];
+const ALL_FOLDER_ID = "all";
 
 export default function WishEditItemsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { title } = useLocalSearchParams<{ folderId?: string; title?: string }>();
-  const [items] = useState<WishDummyProduct[]>(createRandomWishDummyProducts);
+  const { folderId, title } = useLocalSearchParams<{ folderId?: string; title?: string }>();
+  const isAllFolder = !folderId || folderId === ALL_FOLDER_ID;
+  const allItemsQuery = useWishItems({ status: "WISHLISTED" }, { enabled: isAllFolder });
+  const folderItemsQuery = useWishFolderItems(folderId ?? "", undefined, {
+    enabled: !isAllFolder,
+  });
+  const itemsQuery = isAllFolder ? allItemsQuery : folderItemsQuery;
+  const items = useMemo(
+    () => itemsQuery.data?.pages.flatMap((page) => page.wishitems) ?? [],
+    [itemsQuery.data],
+  );
+
+  const foldersQuery = useWishFolders();
+  const {
+    hasNextPage: hasNextFolderPage,
+    isFetchingNextPage: isFetchingNextFolderPage,
+    fetchNextPage: fetchNextFolderPage,
+  } = foldersQuery;
+  const moveFolders = useMemo<MoveFolderOption[]>(
+    () =>
+      (foldersQuery.data?.pages.flatMap((page) => page.folders) ?? [])
+        .filter((folder) => folder.id !== folderId)
+        .map((folder) => ({ id: folder.id, title: folder.name })),
+    [foldersQuery.data, folderId],
+  );
+
+  useEffect(() => {
+    if (hasNextFolderPage && !isFetchingNextFolderPage) fetchNextFolderPage();
+  }, [hasNextFolderPage, isFetchingNextFolderPage, fetchNextFolderPage]);
+
+  const deleteItem = useDeleteWishItem();
+  const moveFolder = useMoveWishFolder();
+  const createFolder = useCreateWishFolder();
+  const isPending = deleteItem.isPending || moveFolder.isPending;
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [moveSheetVisible, setMoveSheetVisible] = useState(false);
   const [folderModalVisible, setFolderModalVisible] = useState(false);
-  const [moveFolders, setMoveFolders] = useState<MoveFolderOption[]>(INITIAL_MOVE_FOLDERS);
-  const [selectedMoveFolderId, setSelectedMoveFolderId] = useState(INITIAL_MOVE_FOLDERS[0].id);
+  const [selectedMoveFolderId, setSelectedMoveFolderId] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
+
+  useEffect(() => {
+    if (!selectedMoveFolderId && moveFolders.length > 0) {
+      setSelectedMoveFolderId(moveFolders[0].id);
+    }
+  }, [moveFolders, selectedMoveFolderId]);
+
+  const selectedItems = () => items.filter((item) => selectedIds.has(item.id));
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -51,26 +93,62 @@ export default function WishEditItemsScreen() {
     setMoveSheetVisible(true);
   };
 
-  const handleCompleteMove = () => {
-    // TODO: 선택된 위시템 폴더 이동 API
+  const handleCompleteMove = async () => {
+    if (!selectedMoveFolderId || isPending) return;
     setMoveSheetVisible(false);
+    const results = await Promise.allSettled(
+      selectedItems().map((item) =>
+        moveFolder.mutateAsync({
+          itemId: item.id,
+          type: item.type,
+          folderId: selectedMoveFolderId,
+        }),
+      ),
+    );
+    const failed = results.find((result) => result.status === "rejected");
     setSelectedIds(new Set());
+    if (failed) {
+      Alert.alert("폴더 이동 실패", getApiErrorMessage(failed.reason));
+      return;
+    }
     setToastMessage("위시템이 이동되었습니다.");
     setToastVisible(true);
   };
 
   const handleCreateMoveFolder = (name: string) => {
-    const newFolder = { id: Date.now().toString(), title: name };
-    setMoveFolders((prev) => [...prev, newFolder]);
-    setSelectedMoveFolderId(newFolder.id);
+    createFolder.mutate(name, {
+      onSuccess: ({ folderId: newFolderId }) => {
+        setSelectedMoveFolderId(newFolderId);
+        setMoveSheetVisible(true);
+      },
+      onError: (error) =>
+        Alert.alert(
+          "폴더 생성 실패",
+          getApiError(error)?.code === "DUPLICATE_FOLDER_NAME"
+            ? "이미 같은 이름의 폴더가 있어요."
+            : getApiErrorMessage(error),
+        ),
+    });
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     setConfirmVisible(false);
-    // TODO: 선택된 위시템 삭제 API
+    if (isPending) return;
+    const results = await Promise.allSettled(
+      selectedItems().map((item) => deleteItem.mutateAsync({ itemId: item.id, type: item.type })),
+    );
+    const failed = results.find((result) => result.status === "rejected");
     setSelectedIds(new Set());
+    if (failed) {
+      Alert.alert("위시템 삭제 실패", getApiErrorMessage(failed.reason));
+      return;
+    }
     setToastMessage("위시템이 삭제되었습니다.");
     setToastVisible(true);
+  };
+
+  const handleEndReached = () => {
+    if (itemsQuery.hasNextPage && !itemsQuery.isFetchingNextPage) itemsQuery.fetchNextPage();
   };
 
   return (
@@ -110,8 +188,7 @@ export default function WishEditItemsScreen() {
               <WishItemCard
                 name={item.name}
                 price={item.price}
-                image={item.image}
-                onSale={item.onSale}
+                image={item.photoUrl ?? undefined}
               />
               <TouchableOpacity
                 style={styles.overlay}
@@ -131,6 +208,8 @@ export default function WishEditItemsScreen() {
             </View>
           );
         }}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
 
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom || 20 }]}>

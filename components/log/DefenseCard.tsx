@@ -10,7 +10,23 @@ import CoffeeIcon from "@/assets/images/log/coffee.svg";
 import ShieldIcon from "@/assets/images/log/shield.svg";
 import UnionIcon from "@/assets/images/log/Union.svg";
 
-export default function DefenseCard() {
+interface DefenseCardProps {
+  number?: number;
+  savings?: number;
+  coffee?: number;
+  minimumWage?: number;
+  chicken?: number;
+}
+
+export default function DefenseCard({
+  number = 0,
+  savings = 0,
+  coffee = 0,
+  minimumWage = 0,
+  chicken = 0,
+}: DefenseCardProps) {
+  const savingsText = `${savings.toLocaleString()}원`;
+
   const [isOpen, setIsOpen] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
 
@@ -66,7 +82,7 @@ export default function DefenseCard() {
 
             <View style={styles.content}>
               <StrokeText
-                text="456,123원"
+                text={savingsText}
                 color="#7EC985"
                 strokeColor="#fff"
                 fontSize={22}
@@ -74,7 +90,7 @@ export default function DefenseCard() {
               />
 
               <Text style={styles.description}>
-                도나와 함께 10번의 지름신을 막아냄
+                도나와 함께 {number}번의 지름신을 막아냄
               </Text>
             </View>
           </LinearGradient>
@@ -103,7 +119,7 @@ export default function DefenseCard() {
 
                 <View>
                   <StrokeText
-                    text="456,123원"
+                    text={savingsText}
                     color="#7EC985"
                     strokeColor="#ffffff"
                     fontSize={16}
@@ -116,17 +132,17 @@ export default function DefenseCard() {
             <View style={styles.detailList}>
               <View style={styles.detailRow}>
                 <CoffeeIcon style={styles.detailImage} />
-                <Text style={styles.detailItem}>커피 91잔</Text>
+                <Text style={styles.detailItem}>커피 {coffee.toLocaleString()}잔</Text>
               </View>
 
               <View style={styles.detailRow}>
                 <ClockIcon style={styles.detailImage} />
-                <Text style={styles.detailItem}>최저시급 44시간</Text>
+                <Text style={styles.detailItem}>최저시급 {minimumWage.toLocaleString()}시간</Text>
               </View>
 
               <View style={styles.detailRow}>
                 <ChickenIcon style={styles.detailImage} />
-                <Text style={styles.detailItem}>치킨 18마리</Text>
+                <Text style={styles.detailItem}>치킨 {chicken.toLocaleString()}마리</Text>
               </View>
             </View>
           </LinearGradient>

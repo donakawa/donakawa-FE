@@ -1,4 +1,6 @@
+import InsetShadow from "@/components/common/InsetShadow";
 import SpeechBubble from "@/components/common/SpeechBubble";
+import { useChats, useDeleteChat } from "@/api/chats";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
@@ -10,6 +12,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 export default function BuyOrNotStartScreen() {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const { data: chats } = useChats();
+  const deleteChat = useDeleteChat();
 
   return (
     <View style={styles.container}>
@@ -49,9 +53,18 @@ export default function BuyOrNotStartScreen() {
               style={styles.ctaTouchable}
               onPress={() => router.push("/wish/buyornot-select")}
             >
-              <View style={styles.ctaButton}>
+              <InsetShadow
+                style={styles.ctaButton}
+                shadowColor="rgba(229, 153, 153, 0.80)"
+                shadowOffset={{ width: -3, height: -4 }}
+                shadowBlur={7}
+                reflectedLightColor="#FFE7F1"
+                reflectedLightOffset={{ width: 1, height: 3 }}
+                reflectedLightBlur={4}
+              >
                 <Text style={styles.ctaText}>위시 선택</Text>
-              </View>
+                <View style={styles.ctaBorder} />
+              </InsetShadow>
             </TouchableOpacity>
           </View>
         </View>
@@ -60,8 +73,12 @@ export default function BuyOrNotStartScreen() {
       <BuyOrNotMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
-        historyItemNames={[]}
-        onPressNewRecommendation={() => setIsMenuVisible(false)}
+        historyItems={(chats ?? []).map((chat) => ({ id: chat.id, name: chat.title }))}
+        onDeleteHistory={(id) => deleteChat.mutateAsync(id)}
+        onPressNewRecommendation={() => {
+          setIsMenuVisible(false);
+          router.push("/wish/buyornot-select");
+        }}
       />
     </View>
   );
@@ -115,18 +132,19 @@ const styles = StyleSheet.create({
     height: 51,
   },
   ctaButton: {
-    width: "100%",
-    height: "100%",
+    width: 162,
+    height: 51,
     backgroundColor: "#FFDBEB",
+    borderRadius: 7,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ctaBorder: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: "none",
     borderRadius: 7,
     borderWidth: 2,
     borderColor: "#E67972",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: [
-      { offsetX: 1, offsetY: 3, blurRadius: 4, spreadDistance: 0, color: "#FFE7F1", inset: true },
-      { offsetX: -3, offsetY: -4, blurRadius: 7, spreadDistance: 0, color: "rgba(229, 153, 153, 0.80)", inset: true },
-    ],
   },
   ctaText: {
     textAlign: "center",

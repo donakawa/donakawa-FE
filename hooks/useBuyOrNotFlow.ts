@@ -1,170 +1,137 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { Alert } from "react-native";
 
+import {
+  isChatQuestion,
+  useChatQuestion,
+  useChatResult,
+  useSelectChatOption,
+  type ChatDecision,
+  type ChatQuestion,
+  type ChatQuestionOption,
+  type ChatResult,
+} from "@/api/chats";
+import { getApiErrorMessage } from "@/api/types";
 import type {
-  BuyOrNotAnswer,
   BuyOrNotMessageSegment,
-  BuyOrNotOption,
   BuyOrNotResult,
   BuyOrNotResultType,
-  BuyOrNotSession,
 } from "@/types/buyOrNot";
 
 type FlowPhase = "QUESTION" | "LOADING" | "RESULT";
 
-export function useBuyOrNotFlow(session: BuyOrNotSession) {
+export const BUY_OR_NOT_LOADING_MESSAGE = "흠...";
+
+const DECISION_TO_RESULT_TYPE: Record<ChatDecision, BuyOrNotResultType> = {
+  "구매 추천": "RECOMMEND",
+  "구매 보류": "HOLD",
+};
+
+const RESULT_PRIMARY_BUTTON_TEXT = "그래, 고맙다. 도움이 됐어.";
+const RESULT_SECONDARY_BUTTON_TEXT = "다른 위시로 다시 물어볼래!";
+
+const toBuyOrNotResult = ({ decision, message }: ChatResult): BuyOrNotResult => ({
+  type: DECISION_TO_RESULT_TYPE[decision],
+  messages: [[{ text: message }]],
+  primaryButtonText: RESULT_PRIMARY_BUTTON_TEXT,
+  secondaryButtonText: RESULT_SECONDARY_BUTTON_TEXT,
+});
+
+export function useBuyOrNotFlow(chatId: number) {
+  const isValidChat = Number.isFinite(chatId) && chatId > 0;
+
   const [phase, setPhase] = useState<FlowPhase>("QUESTION");
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<BuyOrNotAnswer[]>([]);
   const [resultStep, setResultStep] = useState(0);
+  const [answeredQuestion, setAnsweredQuestion] = useState<ChatQuestion | null>(null);
+  const [isFinished, setIsFinished] = useState(false);
 
-  const currentQuestion = session.questions[questionIndex];
+  const questionQuery = useChatQuestion(chatId, {
+    enabled: isValidChat && phase !== "RESULT",
+  });
+  const fetched = questionQuery.data;
+  const fetchedQuestion = fetched && isChatQuestion(fetched) ? fetched : null;
 
-  const result = useMemo(() => {
-    if (phase !== "RESULT") return null;
-    return calculateMockResult(answers);
-  }, [phase, answers]);
+  const currentPhase: FlowPhase =
+    phase === "QUESTION" && fetched && !isChatQuestion(fetched) ? "RESULT" : phase;
 
-  const isResultFinalStep =
-    result != null && resultStep === result.messages.length - 1;
+  const resultQuery = useChatResult(chatId, {
+    enabled: isValidChat && currentPhase === "RESULT",
+  });
+  const selectMutation = useSelectChatOption();
 
-  const selectOption = (option: BuyOrNotOption) => {
-    const answer: BuyOrNotAnswer = {
-      questionId: currentQuestion.id,
-      optionId: option.id,
-      value: option.value,
-    };
+  const currentQuestion = currentPhase === "LOADING" ? answeredQuestion : fetchedQuestion;
+  const result = resultQuery.data ? toBuyOrNotResult(resultQuery.data) : null;
 
-    setAnswers((prev) => [...prev, answer]);
+  const isResultFinalStep = result != null && resultStep === result.messages.length - 1;
+
+  const canLeaveLoading = selectMutation.isSuccess && !questionQuery.isFetching;
+
+  const isWaitingForTap =
+    (currentPhase === "LOADING" && canLeaveLoading) ||
+    (currentPhase === "RESULT" && result != null && !isResultFinalStep);
+
+  const selectOption = (option: ChatQuestionOption) => {
+    if (!fetchedQuestion || selectMutation.isPending) return;
+
+    setAnsweredQuestion(fetchedQuestion);
     setPhase("LOADING");
+
+    selectMutation.mutate(
+      { id: chatId, step: fetchedQuestion.step, selectedOptionId: option.id },
+      {
+        onSuccess: (data) => setIsFinished(data.isFinished),
+        onError: (error) => {
+          setPhase("QUESTION");
+          Alert.alert("답변 저장 실패", getApiErrorMessage(error));
+        },
+      },
+    );
   };
 
   const goNext = () => {
-    if (phase === "RESULT") {
-      if (!isResultFinalStep) {
+    if (currentPhase === "RESULT") {
+      if (result && !isResultFinalStep) {
         setResultStep((prev) => prev + 1);
       }
       return;
     }
 
-    if (phase !== "LOADING") return;
+    if (currentPhase !== "LOADING" || !canLeaveLoading) return;
 
-    const isLastQuestion = questionIndex === session.questions.length - 1;
-
-    if (isLastQuestion) {
+    if (isFinished) {
       setResultStep(0);
       setPhase("RESULT");
       return;
     }
 
-    setQuestionIndex((prev) => prev + 1);
     setPhase("QUESTION");
   };
 
-  const restart = () => {
-    setPhase("QUESTION");
-    setQuestionIndex(0);
-    setAnswers([]);
-    setResultStep(0);
-  };
+  const errorMessage = (error: unknown): BuyOrNotMessageSegment[] => [
+    { text: getApiErrorMessage(error) },
+  ];
 
-  const bubbleMessage: BuyOrNotMessageSegment[] =
-    phase === "QUESTION"
-      ? [{ text: currentQuestion.message }]
-      : phase === "LOADING"
-        ? [{ text: currentQuestion.loadingMessage }]
-        : (result?.messages[resultStep] ?? []);
+  let bubbleMessage: BuyOrNotMessageSegment[];
+  if (currentPhase === "RESULT") {
+    bubbleMessage = resultQuery.isError
+      ? errorMessage(resultQuery.error)
+      : (result?.messages[resultStep] ?? [{ text: BUY_OR_NOT_LOADING_MESSAGE }]);
+  } else if (currentPhase === "LOADING") {
+    bubbleMessage = [{ text: BUY_OR_NOT_LOADING_MESSAGE }];
+  } else if (questionQuery.isError) {
+    bubbleMessage = errorMessage(questionQuery.error);
+  } else {
+    bubbleMessage = [{ text: fetchedQuestion?.question ?? BUY_OR_NOT_LOADING_MESSAGE }];
+  }
 
   return {
-    phase,
+    phase: currentPhase,
     currentQuestion,
-    answers,
     result,
     isResultFinalStep,
+    isWaitingForTap,
     bubbleMessage,
     selectOption,
     goNext,
-    restart,
   };
-}
-
-function calculateMockResult(answers: BuyOrNotAnswer[]): BuyOrNotResult {
-  const values = answers.map((answer) => answer.value);
-
-  let type: BuyOrNotResultType = "RECOMMEND";
-
-  if (
-    values.includes("REPLACEABLE") ||
-    values.includes("RARELY") ||
-    values.includes("NO_PLAN")
-  ) {
-    type = "NOT_NEEDED";
-  }
-
-  if (values.includes("REPLACEABLE") && values.includes("RARELY")) {
-    type = "DANGER";
-  }
-
-  if (values.includes("NO_SIMILAR_ITEM") && values.includes("VERY_OFTEN")) {
-    type = "HOLD";
-  }
-
-  const resultMap: Record<BuyOrNotResultType, BuyOrNotResult> = {
-    RECOMMEND: {
-      type: "RECOMMEND",
-      messages: [
-        [
-          { text: "이 정도면 필요한 것 같아! 예산이\n" },
-          { text: "140,000", highlight: true },
-          { text: "원 남았고 5일 후 갱신돼!" },
-        ],
-        [
-          {
-            text: "다른 곳에 돈 쓸 일이 있지 않다면\n구매를 고려해봐도 나쁘지 않을 듯!",
-          },
-        ],
-      ],
-      primaryButtonText: "그래, 고맙다. 도움이 됐어.",
-      secondaryButtonText: "다른 위시로 다시 물어볼래!",
-    },
-    HOLD: {
-      type: "HOLD",
-      messages: [
-        [
-          { text: "사고 싶은 건 알겠지만... 예산이\n" },
-          { text: "9,870", highlight: true },
-          { text: "원 남았고 열흘 더 참아야 해" },
-        ],
-        [{ text: "이걸 사면 거지가 되고 말 거야..." }],
-      ],
-      primaryButtonText: "그래, 고맙다. 도움이 됐어.",
-      secondaryButtonText: "다른 위시로 다시 물어볼래!",
-    },
-    NOT_NEEDED: {
-      type: "NOT_NEEDED",
-      messages: [
-        [
-          { text: "꼭 필요하진 않아 보여... 예산이\n" },
-          { text: "140,000", highlight: true },
-          { text: "원 남았고 5일 후 갱신돼" },
-        ],
-        [
-          {
-            text: "다른 위시도 사고 싶다면 참아보자...\n사고 나서 후회할지도 몰라!",
-          },
-        ],
-      ],
-      primaryButtonText: "그래, 고맙다. 도움이 됐어.",
-      secondaryButtonText: "다른 위시로 다시 물어볼래!",
-    },
-    DANGER: {
-      type: "DANGER",
-      messages: [
-        [{ text: "정말 필요한 거 맞아?\n이러다가 거지가 되게 생겼어" }],
-      ],
-      primaryButtonText: "알겠어 미안해",
-      secondaryButtonText: "다른 위시로 다시 물어볼래!",
-    },
-  };
-
-  return resultMap[type];
 }

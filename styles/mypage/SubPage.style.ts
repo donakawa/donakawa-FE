@@ -146,7 +146,6 @@ export const changePasswordStyles = StyleSheet.create({
   },
 });
 
-// withdrawal
 export const withdrawalStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -336,7 +335,6 @@ export const withdrawalStyles = StyleSheet.create({
   },
 });
 
-// 오픈 라이센스
 export const openSourceLicenseStyle = StyleSheet.create({
   container: {
     flex: 1,

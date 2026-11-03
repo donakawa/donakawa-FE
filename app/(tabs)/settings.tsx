@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import { useMe } from "@/api/auth";
 import Header from "@/components/common/Header";
 import { settingsStyles as styles } from "@/styles/mypage/Settings.style";
 
@@ -44,7 +45,8 @@ function SettingRow({
 }
 
 export default function SettingsPage() {
-  const isGoogleConnected = true;
+  const { data: me } = useMe();
+  const isGoogleConnected = me?.providers.includes("google") ?? false;
 
   return (
     <View style={styles.container}>
@@ -62,7 +64,7 @@ export default function SettingsPage() {
               />
               <SettingRow
                 title="구글 연동"
-                description="hamtolthegoat@gmail.com"
+                description={isGoogleConnected ? me?.email : undefined}
                 isConnected={isGoogleConnected}
               />
             </View>

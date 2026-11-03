@@ -1,6 +1,16 @@
+import {
+  useCalculateBudget,
+  useCreateGoalBudget,
+  useGoalBudget,
+  useResetGoalBudget,
+  type GoalBudget,
+  type SpendStrategy,
+} from "@/api/goals";
+import { getApiErrorMessage } from "@/api/types";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Easing,
   Keyboard,
@@ -74,15 +84,32 @@ function toNumber(value: string) {
   return Number(value.replace(/[^0-9]/g, ""));
 }
 
-function calculateGoalAmount(income: number, strategy: Strategy) {
-  const ratioByStrategy: Record<Strategy, number> = {
-    asset: 0.1,
-    balance: 0.25,
-    free: 0.5,
-  };
+const STRATEGY_CODE: Record<Strategy, SpendStrategy> = {
+  asset: 1,
+  balance: 2,
+  free: 3,
+};
 
-  return Math.floor(income * ratioByStrategy[strategy]);
-}
+const STRATEGY_BY_CODE: Record<SpendStrategy, Strategy> = {
+  1: "asset",
+  2: "balance",
+  3: "free",
+};
+
+const toOptionalNumber = (value: string) =>
+  value.length > 0 ? toNumber(value) : undefined;
+
+const formatOptionalMoney = (value: number | null) =>
+  value === null ? "" : formatMoney(String(value));
+
+const toForm = (budget: GoalBudget): Form => ({
+  income: formatMoney(String(budget.monthlyIncome)),
+  incomeDay: String(budget.incomeDate),
+  fixedCost: formatOptionalMoney(budget.fixedExpense),
+  saving: formatOptionalMoney(budget.monthlySaving),
+  strategy: STRATEGY_BY_CODE[budget.spendStrategy] ?? "",
+  goalAmount: formatMoney(String(budget.shoppingBudget)),
+});
 
 export default function BudgetSettings() {
   const [step, setStep] = useState<Step>(1);
@@ -100,13 +127,27 @@ export default function BudgetSettings() {
     goalAmount: "",
   });
 
+  const { data: savedBudget } = useGoalBudget();
+  const calculateBudget = useCalculateBudget();
+  const createBudget = useCreateGoalBudget();
+  const resetBudget = useResetGoalBudget();
+  const isSaving = createBudget.isPending || resetBudget.isPending;
+  const isPending = calculateBudget.isPending || isSaving;
+
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (!savedBudget || prefilledRef.current) return;
+    prefilledRef.current = true;
+    setForm(toForm(savedBudget));
+  }, [savedBudget]);
+
   const selectedStrategy = strategies.find(
     (item) => item.key === form.strategy,
   );
 
   const isSummaryOrEditStep = step === 7 || step === 8;
 
-  const isValid =
+  const isStepValid =
     step === 1
       ? form.income.length > 0
       : step === 2
@@ -120,6 +161,7 @@ export default function BudgetSettings() {
               : step === 6
                 ? form.goalAmount.length > 0
                 : true;
+  const isValid = isStepValid && !isPending;
 
   useEffect(() => {
     if (step > TOTAL_PROGRESS_STEP) return;
@@ -172,17 +214,51 @@ export default function BudgetSettings() {
     setStep(6);
   };
 
+  const handleSave = () => {
+    // TODO: SKIP으로 필수 항목(월 수입, 소비 전략)을 건너뛸 수 있어 저장 시점에 검사. SKIP 정책 확정 필요
+    if (form.income.length === 0 || form.strategy === "") {
+      Alert.alert("저장 실패", "월 수입과 소비 전략을 입력해주세요.");
+      return;
+    }
+
+    const body = {
+      monthlyIncome: toNumber(form.income),
+      incomeDate: toOptionalNumber(form.incomeDay),
+      fixedExpense: toOptionalNumber(form.fixedCost),
+      monthlySaving: toOptionalNumber(form.saving),
+      spendStrategy: STRATEGY_CODE[form.strategy],
+      shoppingBudget: toNumber(form.goalAmount),
+    };
+
+    const save = savedBudget ? resetBudget : createBudget;
+    save.mutate(body, {
+      onSuccess: () => router.back(),
+      onError: (error) => Alert.alert("저장 실패", getApiErrorMessage(error)),
+    });
+  };
+
   const handleSubmit = () => {
     if (!isValid) return;
 
     if (step === 5) {
       if (form.strategy === "") return;
 
-      const income = toNumber(form.income);
-      const goalAmount = calculateGoalAmount(income, form.strategy);
-
-      updateForm("goalAmount", formatMoney(String(goalAmount)));
-      setStep(6);
+      calculateBudget.mutate(
+        {
+          monthlyIncome: toNumber(form.income),
+          fixedExpense: toOptionalNumber(form.fixedCost),
+          monthlySaving: toOptionalNumber(form.saving),
+          spendStrategy: STRATEGY_CODE[form.strategy],
+        },
+        {
+          onSuccess: ({ shoppingBudget }) => {
+            updateForm("goalAmount", formatMoney(String(shoppingBudget)));
+            setStep(6);
+          },
+          onError: (error) =>
+            Alert.alert("목표액 계산 실패", getApiErrorMessage(error)),
+        },
+      );
       return;
     }
 
@@ -192,7 +268,7 @@ export default function BudgetSettings() {
     }
 
     if (step === 7) {
-      router.back();
+      handleSave();
       return;
     }
 

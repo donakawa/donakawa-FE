@@ -1,3 +1,4 @@
+
 export type BuyOrNotQuestion = {
   id: number;
   order: number;
@@ -18,7 +19,17 @@ export type BuyOrNotAnswer = {
   value: string;
 };
 
-export type BuyOrNotResultType = "RECOMMEND" | "HOLD" | "NOT_NEEDED" | "DANGER";
+export type BuyOrNotSession = {
+  wishItem: {
+    id: number;
+    name: string;
+    price: number;
+    imageUrl: string;
+  };
+  questions: BuyOrNotQuestion[];
+};
+
+export type BuyOrNotResultType = "RECOMMEND" | "HOLD";
 
 export type BuyOrNotMessageSegment = {
   text: string;
@@ -32,12 +43,7 @@ export type BuyOrNotResult = {
   secondaryButtonText: string;
 };
 
-export type BuyOrNotSession = {
-  wishItem: {
-    id: number;
-    name: string;
-    price: number;
-    imageUrl: string;
-  };
-  questions: BuyOrNotQuestion[];
+export type BuyOrNotHistoryItem = {
+  id: number;
+  name: string;
 };

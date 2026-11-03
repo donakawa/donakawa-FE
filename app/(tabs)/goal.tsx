@@ -1,8 +1,10 @@
 import { logPageStyles as styles } from "@/styles/log/Log.style";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 
+import { useCreateGoal, useLogGoals, useUpdateGoalStatus } from "@/api/log";
+import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 import SimpleModal from "@/components/common/SimpleModal";
 import GoalButton from "@/components/log/GoalButton";
@@ -13,6 +15,13 @@ import ReceiptCard from "@/components/log/ReceiptCard";
 import FlagIcon from "@/assets/images/log/flag.svg";
 import StopIcon from "@/assets/images/log/stop.svg";
 
+const formatYearMonth = (date: string | null) => {
+  if (!date) return "-";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return date.slice(0, 7).replace("-", ".");
+  return `${parsed.getFullYear()}.${String(parsed.getMonth() + 1).padStart(2, "0")}`;
+};
+
 export default function LogPage() {
   const [stopModalVisible, setStopModalVisible] = useState(false);
   const [newGoalModalVisible, setNewGoalModalVisible] = useState(false);
@@ -20,6 +29,68 @@ export default function LogPage() {
 
   const [goalName, setGoalName] = useState("");
   const [amount, setAmount] = useState("");
+
+  const { data: goals } = useLogGoals();
+  const createGoal = useCreateGoal();
+  const updateGoalStatus = useUpdateGoalStatus();
+
+  const inProgress = goals?.inProgress ?? null;
+  const pastGoals = goals?.past ?? [];
+
+  // TODO: 이월 금액 출처가 명세에 없어 진행 중 목표의 모은 금액(current)으로 사용.
+  // 이미 중단한 목표의 모은 금액은 past 응답에 없어 이월 불가
+  const rolloverAmount = inProgress?.current ?? 0;
+
+  const handleStopConfirm = () => {
+    if (updateGoalStatus.isPending) return;
+    if (!inProgress) {
+      setStopModalVisible(false);
+      Alert.alert("진행 중인 목표가 없습니다.");
+      return;
+    }
+    updateGoalStatus.mutate(
+      { id: inProgress.id, changeStatusTo: "STOPPED" },
+      {
+        onSuccess: () => setStopModalVisible(false),
+        onError: (error) => {
+          setStopModalVisible(false);
+          Alert.alert("목표 중단 실패", getApiErrorMessage(error));
+        },
+      },
+    );
+  };
+
+  const handleGoalSubmit = (isCarryOver: boolean) => {
+    if (createGoal.isPending) return;
+
+    const title = goalName.trim();
+    const moneyGoal = Number(amount.replace(/[^0-9]/g, ""));
+
+    if (!title) {
+      Alert.alert("목표 이름을 입력해주세요.");
+      return;
+    }
+    if (!moneyGoal) {
+      Alert.alert("채울 금액을 입력해주세요.");
+      return;
+    }
+
+    createGoal.mutate(
+      {
+        title,
+        moneyGoal,
+        current: isCarryOver && rolloverAmount > 0 ? rolloverAmount : undefined,
+      },
+      {
+        onSuccess: () => {
+          setGoalModalVisible(false);
+          setGoalName("");
+          setAmount("");
+        },
+        onError: (error) => Alert.alert("목표 설정 실패", getApiErrorMessage(error)),
+      },
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -32,7 +103,7 @@ export default function LogPage() {
         <View style={styles.cardContainer}>
           <View style={styles.cardList}>
             <View>
-              <ReceiptCard variant="goal" />
+              <ReceiptCard variant="goal" goal={inProgress} />
 
               <View style={{ flexDirection: "row", gap: 9 }}>
                 <GoalButton
@@ -61,27 +132,16 @@ export default function LogPage() {
               </Text>
 
               <View style={{ gap: 8 }}>
-                <GoalCard
-                  createdAt="2026.02"
-                  title="사브리나 카펜터 향수"
-                  amount="44,000"
-                  finishedAt="2026.03"
-                />
-
-                <GoalCard
-                  createdAt="2026.01"
-                  title="주식 구매"
-                  amount="88,000"
-                  finishedAt="2026.02"
-                />
-
-                <GoalCard
-                  createdAt="2025.12"
-                  title="순금 한 돈"
-                  amount="990,000"
-                  finishedAt="2026.01"
-                  isStopped
-                />
+                {pastGoals.map((goal) => (
+                  <GoalCard
+                    key={goal.id}
+                    createdAt={formatYearMonth(goal.createdAt)}
+                    title={goal.title}
+                    amount={goal.moneyGoal.toLocaleString()}
+                    finishedAt={formatYearMonth(goal.endedAt)}
+                    isStopped={goal.status === "STOPPED"}
+                  />
+                ))}
               </View>
             </View>
           </View>
@@ -93,7 +153,7 @@ export default function LogPage() {
         title="목표를 중단하시겠습니까?"
         description="해당 작업은 되돌릴 수 없습니다."
         onCancel={() => setStopModalVisible(false)}
-        onConfirm={() => setStopModalVisible(false)}
+        onConfirm={handleStopConfirm}
       />
 
       <SimpleModal
@@ -113,8 +173,9 @@ export default function LogPage() {
         amount={amount}
         onChangeGoalName={setGoalName}
         onChangeAmount={setAmount}
+        rolloverAmount={`${rolloverAmount.toLocaleString()}원`}
         onClose={() => setGoalModalVisible(false)}
-        onSubmit={() => setGoalModalVisible(false)}
+        onSubmit={handleGoalSubmit}
       />
     </View>
   );

@@ -1,23 +1,26 @@
+import {
+  useAttendance,
+  useClaimAttendanceReward,
+  useCreateAttendance,
+} from "@/api/attendance";
+import { getApiErrorMessage } from "@/api/types";
 import AttendanceIcon from "@/assets/images/attendance/attendance_1.svg";
 import RewardAttendanceIcon from "@/assets/images/attendance/attendance_2.svg";
 import AttendanceMonthPickerSheet from "@/components/attendance/AttendanceMonthPickerSheet";
-import {
-  claimAttendanceReward,
-  useAttendanceStore,
-} from "@/stores/attendanceStore";
 import { attendanceStyles as styles } from "@/styles/attendance/Attendance.style";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const REWARDS = [
-  { days: 5, points: 10 },
-  { days: 10, points: 25 },
-  { days: 20, points: 50 },
-  { days: 30, points: 100 },
-];
+// TODO: 응답 rewards엔 보상 코인이 없어 정책(출석 포인트 수령 명세)의 값으로 표시. 정의되지 않은 단계(ex. 15일)는 코인 표기 생략
+const REWARD_POINTS: Record<number, number> = { 5: 10, 10: 25, 20: 50, 30: 100 };
+const DEFAULT_REWARDS = [5, 10, 20, 30].map((streakDays) => ({
+  streakDays,
+  achieved: false,
+  claimed: false,
+}));
 
 const getDateKey = (year: number, month: number, day: number) =>
   `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -36,34 +39,11 @@ const getMonthDays = (year: number, month: number) => {
   ];
 };
 
-const getMonthlyConsecutiveDays = (
-  attendanceSet: Set<string>,
-  year: number,
-  month: number,
-) => {
-  const lastDate = new Date(year, month, 0).getDate();
-  let currentStreak = 0;
-  let maxStreak = 0;
-
-  for (let day = 1; day <= lastDate; day += 1) {
-    if (attendanceSet.has(getDateKey(year, month, day))) {
-      currentStreak += 1;
-      maxStreak = Math.max(maxStreak, currentStreak);
-    } else {
-      currentStreak = 0;
-    }
-  }
-
-  return maxStreak;
-};
-
 export default function Attendance() {
   const today = useMemo(() => new Date(), []);
   const [currentDate, setCurrentDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  const [attendanceDates, setAttendanceDates] = useState<string[]>([]);
-  const { claimedRewardKeys } = useAttendanceStore();
   const [pickerVisible, setPickerVisible] = useState(false);
   const [receivedRewardPoints, setReceivedRewardPoints] = useState<
     number | null
@@ -80,30 +60,24 @@ export default function Attendance() {
   const isCurrentMonth =
     year === today.getFullYear() && month === today.getMonth() + 1;
   const todayDate = isCurrentMonth ? today.getDate() : null;
+
+  const { data: attendance } = useAttendance({ year, month });
+  const createAttendance = useCreateAttendance();
+  const claimReward = useClaimAttendanceReward();
+
   const attendanceSet = useMemo(
-    () => new Set(attendanceDates),
-    [attendanceDates],
+    () => new Set(attendance?.attendanceDates ?? []),
+    [attendance?.attendanceDates],
   );
-  const checkedInToday = attendanceSet.has(todayKey);
+  const checkedInToday =
+    attendance?.todayAttended ?? attendanceSet.has(todayKey);
   const days = useMemo(() => getMonthDays(year, month), [year, month]);
-  const monthAttendanceCount = attendanceDates.filter((date) =>
-    date.startsWith(`${year}-${String(month).padStart(2, "0")}-`),
-  ).length;
-  const consecutiveDays = getMonthlyConsecutiveDays(
-    attendanceSet,
-    year,
-    month,
-  );
-  const getRewardKey = (rewardDays: number) =>
-    `${year}-${String(month).padStart(2, "0")}-${rewardDays}`;
-  const nextClaimableReward = isCurrentMonth
-    ? REWARDS.find(
-        (reward) =>
-          consecutiveDays >= reward.days &&
-          !claimedRewardKeys.includes(getRewardKey(reward.days)),
-      )
-    : undefined;
-  const canClaimReward = Boolean(nextClaimableReward);
+  const monthAttendanceCount = attendance?.attendanceCount ?? 0;
+  const rewards = attendance?.rewards ?? DEFAULT_REWARDS;
+  const canClaimReward =
+    isCurrentMonth && !!attendance?.canClaimReward && !claimReward.isPending;
+  const canCheckIn =
+    isCurrentMonth && !!attendance && !checkedInToday && !createAttendance.isPending;
 
   const changeMonth = (amount: number) => {
     const date = new Date(year, month - 1 + amount, 1);
@@ -111,23 +85,24 @@ export default function Attendance() {
   };
 
   const handleCheckIn = () => {
-    if (!isCurrentMonth || checkedInToday) return;
+    if (!canCheckIn) return;
 
-    setAttendanceDates((prev) =>
-      prev.includes(todayKey) ? prev : [...prev, todayKey],
-    );
+    createAttendance.mutate(undefined, {
+      onError: (error) => Alert.alert("출석 실패", getApiErrorMessage(error)),
+    });
   };
 
   const handleReward = () => {
-    if (!nextClaimableReward) return;
+    if (!canClaimReward) return;
 
-    claimAttendanceReward(
-      getRewardKey(nextClaimableReward.days),
-      nextClaimableReward.points,
-    );
-    setReceivedRewardPoints(nextClaimableReward.points);
-    setShowRewardToast(true);
-    setTimeout(() => setShowRewardToast(false), 1800);
+    claimReward.mutate(undefined, {
+      onSuccess: ({ rewardCoin }) => {
+        setReceivedRewardPoints(rewardCoin);
+        setShowRewardToast(true);
+        setTimeout(() => setShowRewardToast(false), 1800);
+      },
+      onError: (error) => Alert.alert("보상 받기 실패", getApiErrorMessage(error)),
+    });
   };
 
   return (
@@ -235,23 +210,24 @@ export default function Attendance() {
           <View style={styles.streakCard}>
             <Text style={styles.cardTitle}>연속 출석</Text>
             <View style={styles.rewardRow}>
-              {REWARDS.map((reward) => {
-                const reached = consecutiveDays >= reward.days;
+              {rewards.map((reward) => {
+                const reached = reward.achieved;
+                const points = REWARD_POINTS[reward.streakDays];
                 return (
-                  <View key={reward.days} style={styles.rewardItem}>
+                  <View key={reward.streakDays} style={styles.rewardItem}>
                     <Text
                       style={[
                         styles.rewardPoint,
                         reached && styles.rewardPointActive,
                       ]}
                     >
-                      {reward.points}P
+                      {points !== undefined ? `${points}P` : ""}
                     </Text>
                     {reached ? (
                       <RewardAttendanceIcon width={35} height={35} />
                     ) : (
                       <View style={styles.rewardCircle}>
-                        <Text style={styles.rewardDay}>{reward.days}일</Text>
+                        <Text style={styles.rewardDay}>{reward.streakDays}일</Text>
                       </View>
                     )}
                   </View>
@@ -295,9 +271,9 @@ export default function Attendance() {
             style={[
               styles.pixelButton,
               styles.checkButton,
-              (!isCurrentMonth || checkedInToday) && styles.disabledButton,
+              !canCheckIn && styles.disabledButton,
             ]}
-            disabled={!isCurrentMonth || checkedInToday}
+            disabled={!canCheckIn}
             onPress={handleCheckIn}
             accessibilityRole="button"
             accessibilityLabel="출석하기"
@@ -305,8 +281,7 @@ export default function Attendance() {
             <Text
               style={[
                 styles.pixelButtonText,
-                (!isCurrentMonth || checkedInToday) &&
-                  styles.disabledButtonText,
+                !canCheckIn && styles.disabledButtonText,
               ]}
             >
               출석!

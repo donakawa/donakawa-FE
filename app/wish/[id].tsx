@@ -1,15 +1,12 @@
+import { useWishFolderItems, useWishItems, type WishItemSummary } from "@/api/wishlist";
 import MenuDropdown from "@/components/common/MenuDropdown";
 import MoreButton from "@/components/common/MoreButton";
 import SortDropdown, { SortOption } from "@/components/common/SortDropdown";
 import WishAddMenuDropdown from "@/components/wish/WishAddMenuDropdown";
 import WishItemCard from "@/components/wish/WishItemCard";
-import {
-  createRandomWishDummyProducts,
-  type WishDummyProduct,
-} from "@/constants/wishDummyData";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type SortType = "default" | "price_asc" | "price_desc";
@@ -20,24 +17,27 @@ const SORT_OPTIONS: SortOption<SortType>[] = [
   { label: "가격 높은순", value: "price_desc" },
 ];
 
-type ProductItem = WishDummyProduct & { type: "product" };
-type AddItem = { type: "add"; id: string };
-type ListItem = ProductItem | AddItem;
+const ALL_FOLDER_ID = "all";
 
-const createMockItems = (): ListItem[] => [
-  { type: "add", id: "add" },
-  ...createRandomWishDummyProducts().map((item) => ({ ...item, type: "product" as const })),
-];
+type ProductItem = { kind: "product"; id: string; item: WishItemSummary };
+type AddItem = { kind: "add"; id: string };
+type ListItem = ProductItem | AddItem;
 
 export default function WishFolderDetailScreen() {
   const router = useRouter();
   const { id, title } = useLocalSearchParams<{ id: string; title?: string }>();
-  const [items] = useState<ListItem[]>(createMockItems);
+  const isAllFolder = id === ALL_FOLDER_ID;
+  const allItemsQuery = useWishItems({ status: "WISHLISTED" }, { enabled: isAllFolder });
+  const folderItemsQuery = useWishFolderItems(id ?? "", undefined, {
+    enabled: !isAllFolder && !!id,
+  });
+  const itemsQuery = isAllFolder ? allItemsQuery : folderItemsQuery;
   const [addMenuVisible, setAddMenuVisible] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title ?? "위시 폴더");
   const [draftTitle, setDraftTitle] = useState(title ?? "위시 폴더");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
+  // TODO: 폴더 이름 수정 API가 없어 화면에서만 반영됨
   const handleTitleSubmit = () => {
     const trimmed = draftTitle.trim();
     if (trimmed) setCurrentTitle(trimmed);
@@ -59,6 +59,24 @@ export default function WishFolderDetailScreen() {
   const [sortAnchor, setSortAnchor] = useState({ top: 0, left: 20 });
   const sortButtonRef = useRef<View>(null);
 
+  const items = useMemo<ListItem[]>(() => {
+    const products = itemsQuery.data?.pages.flatMap((page) => page.wishitems) ?? [];
+    const sorted =
+      sort === "price_asc"
+        ? [...products].sort((a, b) => a.price - b.price)
+        : sort === "price_desc"
+          ? [...products].sort((a, b) => b.price - a.price)
+          : products;
+    return [
+      { kind: "add", id: "add" },
+      ...sorted.map((item) => ({ kind: "product" as const, id: item.id, item })),
+    ];
+  }, [itemsQuery.data, sort]);
+
+  const handleEndReached = () => {
+    if (itemsQuery.hasNextPage && !itemsQuery.isFetchingNextPage) itemsQuery.fetchNextPage();
+  };
+
   const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "기본순";
 
   const handleSortPress = () => {
@@ -69,7 +87,7 @@ export default function WishFolderDetailScreen() {
   };
 
   const renderItem = ({ item }: { item: ListItem }) => {
-    if (item.type === "add") {
+    if (item.kind === "add") {
       return (
         <TouchableOpacity
           style={styles.emptyCard}
@@ -85,21 +103,17 @@ export default function WishFolderDetailScreen() {
       );
     }
 
+    const product = item.item;
+    // TODO: 세일 여부는 API에 없어 표시하지 않음
     return (
       <WishItemCard
-        name={item.name}
-        price={item.price}
-        image={item.image}
-        onSale={item.onSale}
+        name={product.name}
+        price={product.price}
+        image={product.photoUrl ?? undefined}
         onPress={() =>
           router.push({
             pathname: "/wish/item",
-            params: {
-              name: item.name,
-              price: String(item.price),
-              onSale: String(!!item.onSale),
-              imageKey: item.imageKey,
-            },
+            params: { id: product.id, type: product.type },
           })
         }
       />
@@ -154,6 +168,8 @@ export default function WishFolderDetailScreen() {
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         contentContainerStyle={styles.list}
         renderItem={renderItem}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
 
       <WishAddMenuDropdown

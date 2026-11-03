@@ -1,27 +1,40 @@
 import { Ionicons } from "@expo/vector-icons";
+import {
+  useCharacter,
+  useCharacterItems,
+  useEquipItems,
+  usePurchaseItem,
+  type CharacterItem,
+} from "@/api/character";
+import { getApiError, getApiErrorMessage } from "@/api/types";
 import CheckIcon from "@/assets/images/hamkku/check.svg";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import DoneButton from "@/components/common/DoneButton";
 import Toast from "@/components/common/Toast";
+import {
+  API_CATEGORY,
+  EQUIPPED_FIELD,
+  getItemKeyFromImageUrl,
+  getLocalHamkkuItem,
+} from "@/components/home/hamkkuAppearance";
 import { getDonaSvg } from "@/constants/dona";
 import {
   DEFAULT_HAMKKU_SELECTION,
   getHamkkuItem,
   HAMKKU_CATEGORIES,
-  HAMKKU_ITEMS,
   type HamkkuCategory,
   type HamkkuItem,
 } from "@/constants/hamkku";
 import {
-  applyHamkkuItems,
-  purchaseHamkkuItem,
   updateHamkkuNickname,
   useAttendanceStore,
 } from "@/stores/attendanceStore";
 import { hamkkuStyles } from "@/styles/hamkku/Hamkku.style";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Alert,
+  Image,
   Pressable,
   ScrollView,
   Text,
@@ -32,14 +45,45 @@ import {
 
 const styles = hamkkuStyles as Record<keyof typeof hamkkuStyles, any>;
 
+type ShopItem = CharacterItem & {
+  category: HamkkuCategory;
+  local?: HamkkuItem;
+};
+
+type DraftSelection = Record<HamkkuCategory, number | null>;
+
+const EMPTY_DRAFT: DraftSelection = {
+  skin: null,
+  accessory: null,
+  wall: null,
+  floor: null,
+};
+
+const toShopItems = (
+  category: HamkkuCategory,
+  items?: CharacterItem[],
+): ShopItem[] =>
+  (items ?? []).map((item) => ({
+    ...item,
+    category,
+    local: getLocalHamkkuItem(getItemKeyFromImageUrl(item.imageUrl)),
+  }));
+
 export default function Hamkku() {
-  const { points, ownedHamkkuItemIds, appliedHamkku, hamkkuNickname } =
-    useAttendanceStore();
+  const { hamkkuNickname } = useAttendanceStore();
+  const { data: character } = useCharacter();
+  const skinItems = useCharacterItems(API_CATEGORY.skin);
+  const accessoryItems = useCharacterItems(API_CATEGORY.accessory);
+  const wallItems = useCharacterItems(API_CATEGORY.wall);
+  const floorItems = useCharacterItems(API_CATEGORY.floor);
+  const purchaseItem = usePurchaseItem();
+  const equipItems = useEquipItems();
+
   const [activeCategory, setActiveCategory] = useState<HamkkuCategory>("skin");
-  const [draftHamkku, setDraftHamkku] = useState(appliedHamkku);
+  const [draftHamkku, setDraftHamkku] = useState<DraftSelection>(EMPTY_DRAFT);
   const [nicknameDraft, setNicknameDraft] = useState(hamkkuNickname);
   const [nameSheetVisible, setNameSheetVisible] = useState(false);
-  const [pendingPurchaseItem, setPendingPurchaseItem] = useState<HamkkuItem | null>(null);
+  const [pendingPurchaseItem, setPendingPurchaseItem] = useState<ShopItem | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [isApplyMode, setIsApplyMode] = useState(false);
   const [showIntroSpeech, setShowIntroSpeech] = useState(true);
@@ -53,60 +97,91 @@ export default function Hamkku() {
     }, []),
   );
 
-  const selectedItem = getHamkkuItem(draftHamkku[activeCategory]);
-  const selectedOwned = selectedItem
-    ? ownedHamkkuItemIds.includes(selectedItem.id)
-    : false;
-  const selectedNeedsPurchase = selectedItem ? !selectedOwned && selectedItem.price > 0 : false;
+  useEffect(() => {
+    if (!character) return;
+    setDraftHamkku((prev) => ({
+      skin: prev.skin ?? character.equipped[EQUIPPED_FIELD.skin].itemId,
+      accessory: prev.accessory ?? character.equipped[EQUIPPED_FIELD.accessory].itemId,
+      wall: prev.wall ?? character.equipped[EQUIPPED_FIELD.wall].itemId,
+      floor: prev.floor ?? character.equipped[EQUIPPED_FIELD.floor].itemId,
+    }));
+  }, [character]);
 
-  const previewItems = useMemo(
+  const itemsByCategory = useMemo<Record<HamkkuCategory, ShopItem[]>>(
     () => ({
-      skin: getHamkkuItem(draftHamkku.skin) ?? getHamkkuItem(DEFAULT_HAMKKU_SELECTION.skin),
-      accessory:
-        getHamkkuItem(draftHamkku.accessory) ??
-        getHamkkuItem(DEFAULT_HAMKKU_SELECTION.accessory),
-      wall: getHamkkuItem(draftHamkku.wall) ?? getHamkkuItem(DEFAULT_HAMKKU_SELECTION.wall),
-      floor: getHamkkuItem(draftHamkku.floor) ?? getHamkkuItem(DEFAULT_HAMKKU_SELECTION.floor),
+      skin: toShopItems("skin", skinItems.data),
+      accessory: toShopItems("accessory", accessoryItems.data),
+      wall: toShopItems("wall", wallItems.data),
+      floor: toShopItems("floor", floorItems.data),
     }),
-    [draftHamkku],
+    [skinItems.data, accessoryItems.data, wallItems.data, floorItems.data],
   );
+
+  const findItem = (category: HamkkuCategory, itemId: number | null) =>
+    itemsByCategory[category].find((item) => item.itemId === itemId);
+
+  const selectedItem = findItem(activeCategory, draftHamkku[activeCategory]);
+  const selectedNeedsPurchase = selectedItem
+    ? !selectedItem.owned && selectedItem.price > 0
+    : false;
+
+  const previewItems = useMemo(() => {
+    const resolve = (category: HamkkuCategory) =>
+      itemsByCategory[category].find((item) => item.itemId === draftHamkku[category])
+        ?.local ??
+      getLocalHamkkuItem(character?.equipped[EQUIPPED_FIELD[category]].itemKey) ??
+      getHamkkuItem(DEFAULT_HAMKKU_SELECTION[category]);
+
+    return {
+      skin: resolve("skin"),
+      accessory: resolve("accessory"),
+      wall: resolve("wall"),
+      floor: resolve("floor"),
+    };
+  }, [itemsByCategory, draftHamkku, character]);
 
   const PreviewDonaSvg = getDonaSvg(
     previewItems.skin?.skinVariant,
     showIntroSpeech ? 1 : 2,
   );
-  const activeItems = HAMKKU_ITEMS.filter((item) => item.category === activeCategory);
+  const activeItems = itemsByCategory[activeCategory];
 
-  const handleSelectItem = (item: HamkkuItem) => {
-    setDraftHamkku((prev) => ({ ...prev, [item.category]: item.id }));
+  const handleSelectItem = (item: ShopItem) => {
+    setDraftHamkku((prev) => ({ ...prev, [item.category]: item.itemId }));
     setIsApplyMode(false);
   };
 
   const handlePurchase = () => {
-    if (!selectedItem || selectedOwned) return;
+    if (!selectedItem || selectedItem.owned) return;
     setPendingPurchaseItem(selectedItem);
   };
 
   const confirmPurchase = () => {
-    if (!pendingPurchaseItem) return;
+    if (!pendingPurchaseItem || purchaseItem.isPending) return;
 
-    const purchased = purchaseHamkkuItem(pendingPurchaseItem.id, pendingPurchaseItem.price);
+    const target = pendingPurchaseItem;
     setPendingPurchaseItem(null);
 
-    if (!purchased) {
-      setToastVisible(true);
-      return;
-    }
-
-    setDraftHamkku((prev) => ({
-      ...prev,
-      [pendingPurchaseItem.category]: pendingPurchaseItem.id,
-    }));
+    purchaseItem.mutate(
+      { itemId: target.itemId },
+      {
+        onSuccess: () => {
+          setDraftHamkku((prev) => ({ ...prev, [target.category]: target.itemId }));
+        },
+        onError: (error) => {
+          if (getApiError(error)?.code === "S002") {
+            setToastVisible(true);
+            return;
+          }
+          Alert.alert("구매 실패", getApiErrorMessage(error));
+        },
+      },
+    );
   };
 
   const handleDone = () => {
-    const canApply = Object.values(draftHamkku).every((itemId) =>
-      ownedHamkkuItemIds.includes(itemId),
+    const canApply = HAMKKU_CATEGORIES.every(
+      ({ id }) => findItem(id, draftHamkku[id])?.owned,
     );
 
     if (!canApply) {
@@ -118,10 +193,20 @@ export default function Hamkku() {
   };
 
   const handleApply = () => {
-    if (applyHamkkuItems(draftHamkku)) {
-      setIsApplyMode(false);
-      router.replace("/(tabs)");
-    }
+    const { skin, accessory, wall, floor } = draftHamkku;
+    if (skin === null || accessory === null || wall === null || floor === null) return;
+    if (equipItems.isPending) return;
+
+    equipItems.mutate(
+      { skinId: skin, accessoryId: accessory, wallpaperId: wall, floorId: floor },
+      {
+        onSuccess: () => {
+          setIsApplyMode(false);
+          router.replace("/(tabs)");
+        },
+        onError: (error) => Alert.alert("적용 실패", getApiErrorMessage(error)),
+      },
+    );
   };
 
   const handleNicknameDone = () => {
@@ -141,9 +226,11 @@ export default function Hamkku() {
     );
   };
 
-  const renderItemPreview = (item: HamkkuItem) => {
-    if (item.Svg) {
-      const ItemSvg = item.Svg;
+  const renderItemPreview = (item: ShopItem) => {
+    const local = item.local;
+
+    if (local?.Svg) {
+      const ItemSvg = local.Svg;
 
       return (
         <View style={styles.itemPreviewCircle}>
@@ -155,21 +242,33 @@ export default function Hamkku() {
       );
     }
 
-    if (item.color) {
-      return <View style={[styles.colorPreview, { backgroundColor: item.color }]} />;
+    if (local?.color) {
+      return <View style={[styles.colorPreview, { backgroundColor: local.color }]} />;
+    }
+
+    if (!local && item.imageUrl) {
+      const isColorItem = item.category === "wall" || item.category === "floor";
+
+      return (
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={isColorItem ? styles.colorPreview : styles.itemPreviewCircle}
+          resizeMode="contain"
+        />
+      );
     }
 
     return <View style={styles.itemPreviewCircle} />;
   };
 
-  const renderItemCard = (item: HamkkuItem) => {
-    const isSelected = draftHamkku[item.category] === item.id;
-    const isOwned = ownedHamkkuItemIds.includes(item.id);
+  const renderItemCard = (item: ShopItem) => {
+    const isSelected = draftHamkku[item.category] === item.itemId;
+    const isOwned = item.owned;
     const isColorItem = item.category === "wall" || item.category === "floor";
 
     return (
       <TouchableOpacity
-        key={item.id}
+        key={item.itemId}
         style={styles.itemWrap}
         activeOpacity={0.85}
         onPress={() => handleSelectItem(item)}
@@ -212,7 +311,7 @@ export default function Hamkku() {
           <View style={styles.coinCircle}>
             <Text style={styles.coinIcon}>S</Text>
           </View>
-          <Text style={styles.coinText}>{points}코인</Text>
+          <Text style={styles.coinText}>{character?.coin ?? 0}코인</Text>
         </View>
       </View>
 
@@ -265,7 +364,12 @@ export default function Hamkku() {
             >
               <Text style={styles.actionText}>이전으로</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.greenAction} activeOpacity={0.85} onPress={handleApply}>
+            <TouchableOpacity
+              style={styles.greenAction}
+              activeOpacity={0.85}
+              onPress={handleApply}
+              disabled={equipItems.isPending}
+            >
               <Text style={styles.actionText}>적용하기</Text>
             </TouchableOpacity>
           </View>
@@ -301,6 +405,7 @@ export default function Hamkku() {
                 style={styles.purchaseButton}
                 activeOpacity={0.85}
                 onPress={handlePurchase}
+                disabled={purchaseItem.isPending}
               >
                 <Text style={styles.purchaseText}>구매!</Text>
               </TouchableOpacity>
@@ -319,6 +424,7 @@ export default function Hamkku() {
         onConfirm={confirmPurchase}
       />
 
+      {/* TODO: 햄꾸 닉네임 API가 명세서에 없어 로컬 상태로만 저장 */}
       {nameSheetVisible ? (
         <Pressable style={styles.nameSheetBackdrop} onPress={() => setNameSheetVisible(false)}>
           <Pressable style={styles.nameSheet} onPress={() => {}}>

@@ -1,3 +1,11 @@
+import {
+  authApi,
+  useLogin,
+  useRegister,
+  useSendEmailCode,
+  useVerifyEmailCode,
+} from "@/api/auth";
+import { getApiError, getApiErrorMessage } from "@/api/types";
 import AuthButton from "@/components/auth/AuthButton";
 import AuthInput from "@/components/auth/AuthInput";
 import Header from "@/components/common/Header";
@@ -6,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Modal,
   Text,
   TextInput,
@@ -13,10 +22,12 @@ import {
   View,
 } from "react-native";
 
+const EMPTY_CODE = ["", "", "", "", "", ""];
+
 export default function Signup() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(["", "", "", "", ""]);
+  const [code, setCode] = useState(EMPTY_CODE);
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
@@ -33,7 +44,17 @@ export default function Signup() {
   const [nickname, setNickname] = useState("");
   const [nicknameStatus, setNicknameStatus] = useState<'idle' | 'available' | 'duplicate'>('idle');
 
-  const codeRefs = useRef<Array<TextInput | null>>([]);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [isCheckingNickname, setIsCheckingNickname] = useState(false);
+
+  const sendEmailCode = useSendEmailCode();
+  const verifyEmailCode = useVerifyEmailCode();
+  const register = useRegister();
+  const login = useLogin();
+  const isSubmitting = register.isPending || login.isPending;
+
+  const codeRefs = useRef<(TextInput | null)[]>([]);
 
   const progressWidth = step === 1 || step === 2 ? "33%" : step === 3 ? "66%" : "100%";
 
@@ -52,11 +73,77 @@ export default function Signup() {
     
     return () => clearInterval(timer);
   }, [step]);
-  const handleResendCode = () => {
-    setCode(["", "", "", "", ""]);
+  const resetCodeInput = () => {
+    setCode(EMPTY_CODE);
+    setCodeError(null);
     setVerifySeconds(VERIFY_TIME);
     setResendSeconds(RESEND_TIME);
-    codeRefs.current[0]?.focus();
+  };
+
+  const handleSendCode = () => {
+    setEmailError(null);
+    sendEmailCode.mutate(
+      { email: email.trim(), type: "REGISTER" },
+      {
+        onSuccess: () => {
+          resetCodeInput();
+          setStep(2);
+        },
+        onError: (error) => setEmailError(getApiErrorMessage(error)),
+      },
+    );
+  };
+
+  const handleResendCode = () => {
+    sendEmailCode.mutate(
+      { email: email.trim(), type: "REGISTER" },
+      {
+        onSuccess: () => {
+          resetCodeInput();
+          codeRefs.current[0]?.focus();
+        },
+        onError: (error) => setCodeError(getApiErrorMessage(error)),
+      },
+    );
+  };
+
+  const handleVerifyCode = () => {
+    setCodeError(null);
+    verifyEmailCode.mutate(
+      { email: email.trim(), code: code.join(""), type: "REGISTER" },
+      {
+        onSuccess: () => setIsVerifyModalOpen(true),
+        onError: (error) => setCodeError(getApiErrorMessage(error)),
+      },
+    );
+  };
+
+  const handleCheckNickname = async () => {
+    if (nickname.length === 0 || isCheckingNickname) return;
+    setIsCheckingNickname(true);
+    try {
+      const isAvailable = await authApi.checkNicknameAvailable(nickname);
+      setNicknameStatus(isAvailable ? "available" : "duplicate");
+    } catch (error) {
+      Alert.alert("닉네임 확인 실패", getApiErrorMessage(error));
+    } finally {
+      setIsCheckingNickname(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    const credentials = { email: email.trim(), password };
+    try {
+      await register.mutateAsync({ ...credentials, nickname });
+      await login.mutateAsync(credentials);
+      setStep(5);
+    } catch (error) {
+      if (getApiError(error)?.code === "U009") {
+        setNicknameStatus("duplicate");
+        return;
+      }
+      Alert.alert("회원가입 실패", getApiErrorMessage(error));
+    }
   };
 
   const handleCodeChange = (text: string, index: number) => {
@@ -106,14 +193,21 @@ export default function Signup() {
             <AuthInput
               placeholder="donakawa@dona.com"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                setEmailError(null);
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
+
+            {emailError && <Text style={styles.errorText}>{emailError}</Text>}
 
             <View style={styles.buttonSpace}>
               <AuthButton
                 title="인증번호 발송"
-                variant={email ? "primary" : "disabled"}
-                onPress={email ? () => setStep(2) : undefined}
+                variant={email.trim() && !sendEmailCode.isPending ? "primary" : "disabled"}
+                onPress={email.trim() ? handleSendCode : undefined}
               />
             </View>
           </View>
@@ -159,8 +253,10 @@ export default function Signup() {
               {formatTime(verifySeconds)}
             </Text>
 
+            {codeError && <Text style={styles.errorText}>{codeError}</Text>}
+
             <TouchableOpacity
-              disabled={resendSeconds > 0}
+              disabled={resendSeconds > 0 || sendEmailCode.isPending}
               onPress={handleResendCode}
             >
               <Text
@@ -179,13 +275,13 @@ export default function Signup() {
               <AuthButton
                 title="확인"
                 variant={
-                  verifySeconds > 0 && code.every((num) => num)
+                  verifySeconds > 0 && code.every((num) => num) && !verifyEmailCode.isPending
                     ? "primary"
                     : "disabled"
                 }
                 onPress={
                   verifySeconds > 0 && code.every((num) => num)
-                    ? () => setIsVerifyModalOpen(true)
+                    ? handleVerifyCode
                     : undefined
                 }
               />
@@ -261,19 +357,14 @@ export default function Signup() {
                 value={nickname}
                 onChangeText={(text) => {
                   setNickname(text);
-                  setNicknameStatus('idle'); // 타이핑 시 상태 초기화
+                  setNicknameStatus('idle');
                 }}
                 maxLength={10}
               />
 
               <TouchableOpacity 
                 style={styles.checkButton}
-                onPress={() => {
-                  if (nickname.length > 0) {
-                    // 백엔드 연동 전: 임시로 무조건 사용 가능 처리
-                    setNicknameStatus('available'); 
-                  }
-                }}
+                onPress={handleCheckNickname}
               >
                 <Text style={styles.checkButtonText}>중복</Text>
               </TouchableOpacity>
@@ -293,8 +384,8 @@ export default function Signup() {
             <View style={styles.buttonSpace}>
               <AuthButton
                 title={nicknameStatus === 'available' ? "확인" : "다음"}
-                variant={nicknameStatus === 'available' ? "primary" : "disabled"}
-                onPress={nicknameStatus === 'available' ? () => setStep(5) : undefined}
+                variant={nicknameStatus === 'available' && !isSubmitting ? "primary" : "disabled"}
+                onPress={nicknameStatus === 'available' ? handleRegister : undefined}
               />
             </View>
           </View>

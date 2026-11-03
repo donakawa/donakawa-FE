@@ -1,7 +1,9 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { BackHandler, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useChats, useDeleteChat } from "@/api/chats";
+import { useWishItem, type WishItemType } from "@/api/wishlist";
 import BuyOrNotCharacter from "@/components/buyOrNot/BuyOrNotCharacter";
 import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
 import ChoiceButton from "@/components/buyOrNot/ChoiceButton";
@@ -10,20 +12,33 @@ import SimpleModal from "@/components/common/SimpleModal";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 
-import { BUY_OR_NOT_MOCK_SESSION } from "@/constants/buyOrNot.mock";
 import { useBuyOrNotFlow } from "@/hooks/useBuyOrNotFlow";
 
+type BuyOrNotParams = {
+  chatId?: string;
+  wishItemId?: string;
+  type?: WishItemType;
+};
+
 export default function BuyOrNotPage() {
+  const { chatId: chatIdParam, wishItemId = "", type = "AUTO" } =
+    useLocalSearchParams<BuyOrNotParams>();
+  const chatId = Number(chatIdParam);
+
   const {
     phase,
     currentQuestion,
     result,
     isResultFinalStep,
+    isWaitingForTap,
     bubbleMessage,
     selectOption,
     goNext,
-    restart,
-  } = useBuyOrNotFlow(BUY_OR_NOT_MOCK_SESSION);
+  } = useBuyOrNotFlow(chatId);
+
+  const { data: wishItem } = useWishItem(wishItemId, type, { enabled: !!wishItemId });
+  const { data: chats } = useChats();
+  const deleteChat = useDeleteChat();
 
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isExitModalVisible, setIsExitModalVisible] = useState(false);
@@ -37,9 +52,13 @@ export default function BuyOrNotPage() {
   }, []);
 
   const isResult = phase === "RESULT";
-  const isLoading = phase === "LOADING";
   const isQuestion = phase === "QUESTION";
-  const isWaitingForTap = isLoading || (isResult && !isResultFinalStep);
+
+  const exitFlow = () => {
+    setIsExitModalVisible(false);
+    if (!isResult && Number.isFinite(chatId)) deleteChat.mutate(chatId);
+    router.navigate("/(tabs)");
+  };
 
   return (
     <View style={styles.container}>
@@ -53,11 +72,11 @@ export default function BuyOrNotPage() {
 
       <View style={styles.mainArea}>
         <View style={styles.itemInfo}>
-          {!isResult && (
+          {!isResult && wishItem && (
             <Text style={styles.itemText}>
-              {BUY_OR_NOT_MOCK_SESSION.wishItem.name} ·{" "}
+              {wishItem.name} ·{" "}
               <Text style={styles.itemPrice}>
-                {BUY_OR_NOT_MOCK_SESSION.wishItem.price.toLocaleString()}
+                {wishItem.price.toLocaleString()}
               </Text>
             </Text>
           )}
@@ -68,11 +87,11 @@ export default function BuyOrNotPage() {
             itemPosition={
               isResult
                 ? "none"
-                : currentQuestion.order === 1
+                : (currentQuestion?.step ?? 1) === 1
                   ? "center"
                   : "right"
             }
-            itemImageUri={BUY_OR_NOT_MOCK_SESSION.wishItem.imageUrl}
+            itemImageUri={wishItem?.photoUrl ?? undefined}
           />
 
           <Pressable
@@ -93,7 +112,7 @@ export default function BuyOrNotPage() {
             </Text>
           )}
 
-          {isQuestion && (
+          {isQuestion && currentQuestion && (
             <View style={styles.answerArea}>
               {currentQuestion.options.map((option) => (
                 <ChoiceButton
@@ -127,19 +146,17 @@ export default function BuyOrNotPage() {
         description={"현재 단계에서 나가면\n진행사항이 모두 취소됩니다."}
         confirmText="네"
         onCancel={() => setIsExitModalVisible(false)}
-        onConfirm={() => {
-          setIsExitModalVisible(false);
-          router.navigate("/(tabs)");
-        }}
+        onConfirm={exitFlow}
       />
 
       <BuyOrNotMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
-        historyItemNames={[BUY_OR_NOT_MOCK_SESSION.wishItem.name]}
+        historyItems={(chats ?? []).map((chat) => ({ id: chat.id, name: chat.title }))}
+        onDeleteHistory={(id) => deleteChat.mutateAsync(id)}
         onPressNewRecommendation={() => {
           setIsMenuVisible(false);
-          restart();
+          router.push("/wish/buyornot-select");
         }}
       />
     </View>
