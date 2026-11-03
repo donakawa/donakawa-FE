@@ -1,3 +1,4 @@
+import type { DayOfWeek } from "@/api/log";
 import StrokeText from "@/components/log/StrokeText";
 import { topdayCardStyles as styles } from "@/styles/log/Logcomponent.style";
 import { Text, View } from "react-native";
@@ -6,10 +7,25 @@ import CartIcon from "@/assets/images/log/cart.svg";
 import PayIcon from "@/assets/images/log/pay.svg";
 import TrashIcon from "@/assets/images/log/trash.svg";
 
-export default function TopDayCard() {
+interface TopDayCardProps {
+  nickname?: string;
+  wishlisted?: DayOfWeek;
+  bought?: DayOfWeek;
+  dropped?: DayOfWeek;
+}
+
+// 기록이 없으면 "???"로 내려오므로 그대로 표시
+const formatDay = (day: DayOfWeek) => (day === "???" ? day : `${day}.`);
+
+export default function TopDayCard({
+  nickname = "",
+  wishlisted = "???",
+  bought = "???",
+  dropped = "???",
+}: TopDayCardProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.topText}>프리더햄톨 님의 최다 요일은?</Text>
+      <Text style={styles.topText}>{nickname} 님의 최다 요일은?</Text>
 
       <View style={styles.topdayBox}>
         <View style={styles.dayItem}>
@@ -18,7 +34,7 @@ export default function TopDayCard() {
 
             <View style={styles.dayText}>
               <StrokeText
-                text="FRI."
+                text={formatDay(wishlisted)}
                 color="#FFFFFF"
                 strokeColor="#E37E7E"
                 fontSize={16}
@@ -36,7 +52,7 @@ export default function TopDayCard() {
 
             <View style={styles.dayText}>
               <StrokeText
-                text="SUN."
+                text={formatDay(bought)}
                 color="#FFFFFF"
                 strokeColor="#E67972"
                 fontSize={16}
@@ -54,7 +70,7 @@ export default function TopDayCard() {
 
             <View style={styles.dayText}>
               <StrokeText
-                text="TUE."
+                text={formatDay(dropped)}
                 color="#FFFFFF"
                 strokeColor="#E67972"
                 fontSize={16}

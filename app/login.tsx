@@ -1,3 +1,5 @@
+import { useLogin } from "@/api/auth";
+import { getApiErrorMessage } from "@/api/types";
 import DnkwLogo from "@/assets/images/auth/dnkw-logo.svg";
 import GoogleIcon from "@/assets/images/auth/google.svg";
 import KakaoIcon from "@/assets/images/auth/kakao.svg";
@@ -7,11 +9,24 @@ import { loginStyles as styles } from "@/styles/auth/Auth.style";
 import { authButtonStyles as buttonStyles } from "@/styles/auth/Authcomponent.style";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const login = useLogin();
+
+  const canSubmit = email.trim().length > 0 && password.length > 0 && !login.isPending;
+
+  const handleLogin = () => {
+    login.mutate(
+      { email: email.trim(), password },
+      {
+        onSuccess: () => router.replace("/(tabs)"),
+        onError: (error) => Alert.alert("로그인 실패", getApiErrorMessage(error)),
+      },
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -24,6 +39,8 @@ export default function Login() {
           placeholder="donakawa@dona.com"
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
 
         <AuthInput
@@ -37,7 +54,8 @@ export default function Login() {
 
         <AuthButton
           title="로그인"
-          onPress={() => router.replace("/(tabs)")}
+          variant={canSubmit ? "primary" : "disabled"}
+          onPress={canSubmit ? handleLogin : undefined}
         />
 
         <View style={styles.socialSection}>

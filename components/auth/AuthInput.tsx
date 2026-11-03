@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput, TouchableOpacity, View, type TextInputProps } from "react-native";
 import { authInputStyles as styles } from "@/styles/auth/Authcomponent.style";
 
 type Props = {
@@ -8,6 +8,8 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
+  keyboardType?: TextInputProps["keyboardType"];
+  autoCapitalize?: TextInputProps["autoCapitalize"];
 };
 
 export default function AuthInput({
@@ -15,6 +17,8 @@ export default function AuthInput({
   value,
   onChangeText,
   secureTextEntry = false,
+  keyboardType,
+  autoCapitalize,
 }: Props) {
   const [hidden, setHidden] = useState(secureTextEntry);
 
@@ -27,6 +31,8 @@ export default function AuthInput({
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={hidden}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
       />
 
       {secureTextEntry && (

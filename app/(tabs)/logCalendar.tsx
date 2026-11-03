@@ -1,7 +1,8 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { type LogCalendarDay, type LogCalendarType, useLogCalendar } from "@/api/log";
 import Calendar from "@/components/log/calendar/Calendar";
 import CalendarItemCard from "@/components/log/calendar/CalendarItemCard";
 import { logCalendarStyles as styles } from "@/styles/log/LogCalendar.style";
@@ -16,39 +17,20 @@ import TrashEmptyIcon from "@/assets/images/log/delete_empty.svg";
 
 type CalendarMode = "bag" | "trash";
 
-const purchaseItems = [
-  {
-    id: 1,
-    image: require("@/assets/images/log/sample1.png"),
-    price: "60,300원",
-    name: "라부부",
-    brand: "POPmart",
-  },
-  {
-    id: 2,
-    image: require("@/assets/images/log/sample1.png"),
-    price: "24,200원",
-    name: "우먼 가을 니트 아이보리",
-    brand: "에이블리",
-  },
-];
+// 화면 모드 → API type (소비 / 포기)
+const MODE_TO_TYPE: Record<CalendarMode, LogCalendarType> = {
+  bag: "BOUGHT",
+  trash: "DROPPED",
+};
 
-const giveUpItems = [
-  {
-    id: 1,
-    image: require("@/assets/images/log/sample1.png"),
-    price: "100,000,000원",
-    name: "앙앙이 신발",
-    brand: "무신사",
-  },
-  {
-    id: 2,
-    image: require("@/assets/images/log/sample1.png"),
-    price: "1,000원",
-    name: "앙앙이 블러셔",
-    brand: "에이블리",
-  },
-];
+// TODO: 캘린더 API 응답에 상품 이미지가 없어 샘플 이미지로 대체
+const ITEM_IMAGE_FALLBACK = require("@/assets/images/log/sample1.png");
+
+// "YYYY-MM-DD" 형태의 date에서 일(day)만 추출
+const getDayOfDate = (date: string) => {
+  const day = Number(date.split(/[-T ]/)[2]);
+  return Number.isNaN(day) ? null : day;
+};
 
 export default function LogCalendarPage() {
   const today = new Date();
@@ -60,18 +42,42 @@ export default function LogCalendarPage() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
 
-  const currentItems = selectedMode === "bag" ? purchaseItems : giveUpItems;
+  const { data } = useLogCalendar({
+    year,
+    month,
+    type: MODE_TO_TYPE[selectedMode],
+  });
+
   const listTitle =
     selectedMode === "bag" ? "구매한 아이템" : "구매 포기한 아이템";
 
-  const calendarAmountMap: Record<number, string> =
-    selectedMode === "bag"
-      ? {
-          1: "-171,900",
-        }
-      : {
-          8: "+248,600",
-        };
+  // 일자별 기록 (day → 기록)
+  const dayMap = useMemo(() => {
+    const map = new Map<number, LogCalendarDay>();
+    data?.calendar.forEach((entry) => {
+      const day = getDayOfDate(entry.date);
+      if (day !== null) map.set(day, entry);
+    });
+    return map;
+  }, [data]);
+
+  const calendarAmountMap = useMemo(() => {
+    const sign = selectedMode === "bag" ? "-" : "+";
+    const map: Record<number, string> = {};
+    dayMap.forEach((entry, day) => {
+      map[day] = `${sign}${entry.totalAmount.toLocaleString()}`;
+    });
+    return map;
+  }, [dayMap, selectedMode]);
+
+  // 월 합계 금액 / 건수
+  const monthTotalAmount =
+    data?.calendar.reduce((sum, entry) => sum + entry.totalAmount, 0) ?? 0;
+  const monthCount =
+    data?.calendar.reduce((sum, entry) => sum + entry.items.length, 0) ?? 0;
+
+  const currentItems =
+    selectedDate !== null ? (dayMap.get(selectedDate)?.items ?? []) : [];
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
@@ -105,8 +111,12 @@ export default function LogCalendarPage() {
       >
         <View style={styles.header}>
           <View style={styles.summaryRow}>
-            <Text style={styles.totalAmount}>264,500원</Text>
-            <Text style={styles.purchaseCount}>15회 구매</Text>
+            <Text style={styles.totalAmount}>
+              {monthTotalAmount.toLocaleString()}원
+            </Text>
+            <Text style={styles.purchaseCount}>
+              {monthCount}회 {selectedMode === "bag" ? "구매" : "포기"}
+            </Text>
           </View>
 
           <Pressable onPress={() => router.push("/log")}>
@@ -189,13 +199,13 @@ export default function LogCalendarPage() {
 
             <View style={styles.dayPurchaseList}>
               <View style={styles.itemList}>
-                {currentItems.map((item) => (
+                {currentItems.map((item, index) => (
                   <CalendarItemCard
-                    key={item.id}
-                    image={item.image}
-                    price={item.price}
+                    key={`${item.name}-${index}`}
+                    image={ITEM_IMAGE_FALLBACK}
+                    price={`${item.price.toLocaleString()}원`}
                     name={item.name}
-                    brand={item.brand}
+                    brand={item.shop}
                   />
                 ))}
               </View>

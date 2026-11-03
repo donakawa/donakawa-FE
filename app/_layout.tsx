@@ -1,10 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { Redirect, Stack, usePathname } from "expo-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Redirect, Stack, usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { setOnAuthExpired } from "@/api/client";
+import { queryClient } from "@/api/queryClient";
 import { ONBOARDING_STORAGE_KEY } from "@/constants/onboarding";
 
 type OnboardingState = "loading" | "seen" | "unseen";
@@ -37,30 +40,38 @@ export default function Layout() {
       });
   }, []);
 
+  const router = useRouter();
+  useEffect(() => {
+    setOnAuthExpired(() => router.replace("/login"));
+    return () => setOnAuthExpired(null);
+  }, [router]);
+
   if (!loaded || onboardingState === "loading") return null;
   if (onboardingState === "unseen" && pathname !== "/onboarding") {
     return <Redirect href="/onboarding" />;
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <SafeAreaView
-        edges={isWishItemPage ? ["left", "right", "bottom"] : undefined}
-        style={{ flex: 1, backgroundColor: "#FFFDF8" }}
-      >
-        <View
-          style={{
-            flex: 1,
-            width: "100%",
-            maxWidth: 393,
-            alignSelf: "center",
-            backgroundColor: "#FFFDF8",
-          }}
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+        <SafeAreaView
+          edges={isWishItemPage ? ["left", "right", "bottom"] : undefined}
+          style={{ flex: 1, backgroundColor: "#FFFDF8" }}
         >
-          <Stack screenOptions={{ headerShown: false }} />
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              maxWidth: 393,
+              alignSelf: "center",
+              backgroundColor: "#FFFDF8",
+            }}
+          >
+            <Stack screenOptions={{ headerShown: false }} />
+          </View>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

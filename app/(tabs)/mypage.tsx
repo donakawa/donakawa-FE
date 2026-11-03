@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   Text,
@@ -8,6 +9,8 @@ import {
   type ImageSourcePropType,
 } from "react-native";
 
+import { useLogout, useMe, useUpdateNickname } from "@/api/auth";
+import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 import ProfileSettingModal from "@/components/mypage/ProfileSettingModal";
 import { myPageStyles as styles } from "@/styles/mypage/Mypage.style";
@@ -29,9 +32,14 @@ const profileImages: ImageSourcePropType[] = [
 export default function MyPage() {
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
 
-  const [nickname, setNickname] = useState("프리더햄톨");
+  const { data: me } = useMe();
+  const updateNickname = useUpdateNickname();
+  const logout = useLogout();
+
+  const nickname = me?.nickname ?? "";
   const [draftNickname, setDraftNickname] = useState(nickname);
 
+  // 프로필 이미지는 서버에 저장하지 않음 (API 명세서에 없음)
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [draftProfileIndex, setDraftProfileIndex] =
     useState(selectedProfileIndex);
@@ -47,9 +55,25 @@ export default function MyPage() {
   };
 
   const submitProfile = () => {
-    setNickname(draftNickname);
     setSelectedProfileIndex(draftProfileIndex);
-    setIsProfileModalVisible(false);
+
+    const newNickname = draftNickname.trim();
+    if (!newNickname || newNickname === nickname) {
+      setIsProfileModalVisible(false);
+      return;
+    }
+
+    updateNickname.mutate(newNickname, {
+      onSuccess: () => setIsProfileModalVisible(false),
+      onError: (error) => Alert.alert("닉네임 변경 실패", getApiErrorMessage(error)),
+    });
+  };
+
+  // 서버 로그아웃이 실패해도 앱에서는 로그아웃 처리
+  const handleLogout = () => {
+    logout.mutate(undefined, {
+      onSettled: () => router.replace("/login"),
+    });
   };
 
   return (
@@ -83,7 +107,7 @@ export default function MyPage() {
 
             <View style={styles.profileInfo}>
               <Text style={styles.nickname}>{nickname}</Text>
-              <Text style={styles.email}>hamtolthegoat@naver.com</Text>
+              <Text style={styles.email}>{me?.email ?? ""}</Text>
             </View>
           </View>
         </View>
@@ -99,7 +123,11 @@ export default function MyPage() {
           </View>
         </Pressable>
 
-        <Pressable style={styles.logoutButton}>
+        <Pressable
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          disabled={logout.isPending}
+        >
           <Text style={styles.logoutText}>로그아웃</Text>
         </Pressable>
       </View>

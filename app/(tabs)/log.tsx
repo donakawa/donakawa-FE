@@ -2,6 +2,8 @@ import { logPageStyles as styles } from "@/styles/log/Log.style";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { useMe } from "@/api/auth";
+import { useLogMain } from "@/api/log";
 import Header from "@/components/common/Header";
 import DefenseCard from "@/components/log/DefenseCard";
 import ReceiptCard from "@/components/log/ReceiptCard";
@@ -12,6 +14,9 @@ import ArrowIcon from "@/assets/images/log/arrow_right.svg";
 import CalendarIcon from "@/assets/images/log/calendar.svg";
 
 export default function LogPage() {
+  const { data: me } = useMe();
+  // 로딩 중/실패 시에는 카드 기본값(0, "???")으로 표시
+  const { data: log } = useLogMain();
   const handleGoalPress = () => {
     router.push("/goal");
   };
@@ -42,10 +47,23 @@ export default function LogPage() {
           </Pressable>
 
           <View style={styles.cardList}>
-            <ReceiptCard />
-            <DefenseCard />
-            <TopDayCard />
-            <ValueCard />
+            <ReceiptCard
+              goal={log?.summary.inProgress ?? null}
+              since={log?.summary.since}
+              period={log?.summary.period}
+              totalSavings={log?.summary.totalSavings}
+            />
+            <DefenseCard {...log?.last3months} />
+            <TopDayCard
+              nickname={me?.nickname}
+              wishlisted={log?.dayOfWeek.WISHLISTED}
+              bought={log?.dayOfWeek.BOUGHT}
+              dropped={log?.dayOfWeek.DROPPED}
+            />
+            <ValueCard
+              boughtRate={log?.rate.BOUGHT}
+              droppedRate={log?.rate.DROPPED}
+            />
           </View>
         </View>
       </ScrollView>
