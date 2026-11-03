@@ -27,7 +27,10 @@ interface BuyOrNotMenuProps {
   onClose: () => void;
   historyItems: BuyOrNotHistoryItem[];
   onDeleteHistory?: (id: number) => Promise<unknown>;
+  onPressHistory?: (id: number) => void;
   onPressNewRecommendation?: () => void;
+  newButtonText?: string;
+  historyTitle?: string;
 }
 
 export default function BuyOrNotMenu({
@@ -35,7 +38,10 @@ export default function BuyOrNotMenu({
   onClose,
   historyItems,
   onDeleteHistory,
+  onPressHistory,
   onPressNewRecommendation,
+  newButtonText = "새로 살말 추천 받기",
+  historyTitle = "추천 기록",
 }: BuyOrNotMenuProps) {
   const [isMounted, setIsMounted] = useState(visible);
   const [toastVisible, setToastVisible] = useState(false);
@@ -95,7 +101,7 @@ export default function BuyOrNotMenu({
         >
           <View style={styles.newRecommendButton}>
             <Ionicons name="pricetag" size={14} color="#2D322E" />
-            <Text style={styles.newRecommendText}>새로 살말 추천 받기</Text>
+            <Text style={styles.newRecommendText}>{newButtonText}</Text>
             <ArrowIcon style={styles.arrow} />
           </View>
         </Pressable>
@@ -107,12 +113,13 @@ export default function BuyOrNotMenu({
         </View>
 
         <View style={styles.historyList}>
-          <Text style={styles.sectionTitle}>추천 기록</Text>
+          <Text style={styles.sectionTitle}>{historyTitle}</Text>
 
           {historyItems.map((item) => (
             <HistoryRow
               key={item.id}
               name={item.name}
+              onPress={onPressHistory && (() => onPressHistory(item.id))}
               onDelete={() => deleteHistory(item.id)}
             />
           ))}
@@ -131,10 +138,11 @@ export default function BuyOrNotMenu({
 
 interface HistoryRowProps {
   name: string;
+  onPress?: () => void;
   onDelete: () => void;
 }
 
-function HistoryRow({ name, onDelete }: HistoryRowProps) {
+function HistoryRow({ name, onPress, onDelete }: HistoryRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const buttonOpacity = useRef(new Animated.Value(0)).current;
@@ -154,7 +162,7 @@ function HistoryRow({ name, onDelete }: HistoryRowProps) {
       <Pressable
         style={[styles.historyRow, isOpen && styles.historyRowOpen]}
         onLongPress={toggleOpen}
-        onPress={() => isOpen && toggleOpen()}
+        onPress={() => (isOpen ? toggleOpen() : onPress?.())}
       >
         <Text style={styles.historyItem} numberOfLines={1}>
           {name}

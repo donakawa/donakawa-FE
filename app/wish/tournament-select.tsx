@@ -1,12 +1,13 @@
 import { TOURNAMENT_ALLOWED_SIZES } from "@/api/tournaments";
 import { useWishFolderItems, useWishFolders, useWishItems, type WishFolder } from "@/api/wishlist";
 import FolderCard from "@/components/common/FolderCard";
+import TournamentMenu from "@/components/wish/TournamentMenu";
 import WishFlowBottomBar from "@/components/wish/WishFlowBottomBar";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 const MAX_SELECT = 16;
@@ -52,6 +53,7 @@ function WishFolderCard({ folder, onPress }: { folder: WishFolder; onPress: () =
 export default function TournamentSelectScreen() {
   const router = useRouter();
   const folders = useAllWishFolders();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // TODO: 폴더를 넘나드는 선택을 하려면 선택 상태를 화면 간에 공유해야 함.
   // 현재는 tournament-items 화면 안에서만 선택/생성하므로 이 화면의 카운터는 항상 0
@@ -65,7 +67,11 @@ export default function TournamentSelectScreen() {
     <View style={styles.container}>
       <StatusBar style="dark" />
 
-      <WishFlowTopBar onBack={() => router.back()} rightVariant="menu" />
+      <WishFlowTopBar
+        onBack={() => router.back()}
+        rightVariant="menu"
+        onRightPress={() => setIsMenuVisible(true)}
+      />
 
       <WishFlowTitleBanner title="후보를 선택" />
 
@@ -90,6 +96,8 @@ export default function TournamentSelectScreen() {
         canConfirm={false}
         onConfirm={() => {}}
       />
+
+      <TournamentMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
     </View>
   );
 }

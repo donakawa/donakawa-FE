@@ -1,6 +1,6 @@
 import InsetShadow from "@/components/common/InsetShadow";
 import SpeechBubble from "@/components/common/SpeechBubble";
-import BuyOrNotMenu from "@/components/buyOrNot/BuyOrNotMenu";
+import TournamentMenu from "@/components/wish/TournamentMenu";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
 import { StatusBar } from "expo-status-bar";
@@ -71,12 +71,7 @@ export default function TournamentIntroScreen() {
         </View>
       </View>
 
-      <BuyOrNotMenu
-        visible={isMenuVisible}
-        onClose={() => setIsMenuVisible(false)}
-        historyItems={[]}
-        onPressNewRecommendation={() => setIsMenuVisible(false)}
-      />
+      <TournamentMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
     </View>
   );
 }

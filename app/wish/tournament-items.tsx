@@ -9,6 +9,7 @@ import {
   useWishItems,
   type WishItemSummary,
 } from "@/api/wishlist";
+import TournamentMenu from "@/components/wish/TournamentMenu";
 import WishFlowBottomBar from "@/components/wish/WishFlowBottomBar";
 import WishFlowTitleBanner from "@/components/wish/WishFlowTitleBanner";
 import WishFlowTopBar from "@/components/wish/WishFlowTopBar";
@@ -45,6 +46,7 @@ export default function TournamentItemsScreen() {
 
   const [selected, setSelected] = useState<Map<string, WishItemSummary>>(new Map());
   const createTournament = useCreateTournament();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const selectedCount = selected.size;
   const canConfirm = isValidTournamentSize(selectedCount) && !createTournament.isPending;
@@ -74,11 +76,8 @@ export default function TournamentItemsScreen() {
         })),
       },
       {
-        onSuccess: () => {
-          // TODO: 대결 진행(useTournamentRound) / 최종 결과(useTournamentResult) 화면이 아직 없음.
-          // 화면이 생기면 생성된 토너먼트 id로 이동하도록 연결
-          Alert.alert("토너먼트 생성 완료", "대결 화면은 준비 중이에요.");
-        },
+        onSuccess: ({ id }) =>
+          router.replace({ pathname: "/wish/tournament-play", params: { id: String(id) } }),
         onError: (error) => Alert.alert("토너먼트 생성 실패", getApiErrorMessage(error)),
       },
     );
@@ -88,7 +87,11 @@ export default function TournamentItemsScreen() {
     <View style={styles.container}>
       <StatusBar style="dark" />
 
-      <WishFlowTopBar onBack={() => router.back()} rightVariant="menu" />
+      <WishFlowTopBar
+        onBack={() => router.back()}
+        rightVariant="menu"
+        onRightPress={() => setIsMenuVisible(true)}
+      />
 
       <WishFlowTitleBanner title="후보를 선택" />
 
@@ -124,6 +127,8 @@ export default function TournamentItemsScreen() {
         canConfirm={canConfirm}
         onConfirm={handleConfirm}
       />
+
+      <TournamentMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
     </View>
   );
 }
