@@ -83,7 +83,10 @@ function Row({ children }: { children: React.ReactNode }) {
 
 export default function DevComponentsPage() {
   if (!__DEV__) return <Redirect href="/" />;
+  return <DevComponentsContent />;
+}
 
+function DevComponentsContent() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);

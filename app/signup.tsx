@@ -54,7 +54,7 @@ export default function Signup() {
   const login = useLogin();
   const isSubmitting = register.isPending || login.isPending;
 
-  const codeRefs = useRef<Array<TextInput | null>>([]);
+  const codeRefs = useRef<(TextInput | null)[]>([]);
 
   const progressWidth = step === 1 || step === 2 ? "33%" : step === 3 ? "66%" : "100%";
 
