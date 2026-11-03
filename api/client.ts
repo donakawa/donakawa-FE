@@ -1,4 +1,4 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { AxiosError, create, type InternalAxiosRequestConfig } from "axios";
 
 import { ENDPOINTS } from "@/api/endpoints";
 
@@ -10,7 +10,7 @@ if (!API_BASE_URL) {
   );
 }
 
-export const apiClient = axios.create({
+export const apiClient = create({
   baseURL: API_BASE_URL,
   timeout: 10_000,
   withCredentials: true,
