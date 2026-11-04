@@ -29,7 +29,7 @@ export type WishItemSummary = {
 };
 
 export type WishItemListParams = CursorParams & {
-  status?: WishItemStatus;
+  status: WishItemStatus;
 };
 
 export type WishItemListResponse = {
@@ -123,7 +123,7 @@ const toFormData = (body: Partial<CreateWishItemRequest>) => {
 const MULTIPART = { headers: { "Content-Type": "multipart/form-data" } };
 
 export const wishlistApi = {
-  getItems: async (params: WishItemListParams = {}) =>
+  getItems: async (params: WishItemListParams) =>
     (
       await apiClient.get<ApiSuccess<WishItemListResponse>>(ENDPOINTS.wishlist.items, {
         params,
@@ -333,7 +333,7 @@ const invalidateSpendingViews = (queryClient: QueryClient) =>
   ]);
 
 export const useWishItems = (
-  params: Omit<WishItemListParams, "cursor"> = {},
+  params: Omit<WishItemListParams, "cursor">,
   options?: { enabled?: boolean },
 ) =>
   useInfiniteQuery({
