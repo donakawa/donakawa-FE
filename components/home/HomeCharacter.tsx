@@ -1,10 +1,10 @@
 import DirtyIcon from "@/assets/images/home/dirty.svg";
 import PawIcon from "@/assets/images/home/Union.svg";
 import RibbonIcon from "@/assets/images/home/Union_2.svg";
+import { useMe } from "@/api/auth";
 import { useCharacterComment } from "@/api/character";
 import { useHamkkuAppearance } from "@/components/home/hamkkuAppearance";
 import { getDonaSvg, type DonaExpression } from "@/constants/dona";
-import { useAttendanceStore } from "@/stores/attendanceStore";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -20,7 +20,9 @@ export default function HomeCharacter({
   spent,
   percent,
 }: HomeCharacterProps) {
-  const { hamkkuNickname } = useAttendanceStore();
+  // 햄꾸 닉네임은 회원 닉네임과 동일
+  const { data: me } = useMe();
+  const hamkkuNickname = me?.nickname ?? "";
   const {
     skin: appliedSkin,
     accessory: appliedAccessory,
