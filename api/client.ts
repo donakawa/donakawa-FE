@@ -62,6 +62,20 @@ const requestTokenRefresh = async () => {
 
 let refreshPromise: Promise<unknown> | null = null;
 
+// 동시에 여러 요청이 401을 받아도 리프레시는 한 번만 수행. 실패하면 세션 만료 처리
+export const refreshSession = async () => {
+  try {
+    refreshPromise ??= requestTokenRefresh().finally(() => {
+      refreshPromise = null;
+    });
+    await refreshPromise;
+  } catch (refreshError) {
+    await tokenStorage.clear();
+    onAuthExpired?.();
+    throw refreshError;
+  }
+};
+
 type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 apiClient.interceptors.response.use(
@@ -79,16 +93,7 @@ apiClient.interceptors.response.use(
     }
 
     original._retry = true;
-    try {
-      refreshPromise ??= requestTokenRefresh().finally(() => {
-        refreshPromise = null;
-      });
-      await refreshPromise;
-      return apiClient(original);
-    } catch (refreshError) {
-      await tokenStorage.clear();
-      onAuthExpired?.();
-      return Promise.reject(refreshError);
-    }
+    await refreshSession();
+    return apiClient(original);
   },
 );

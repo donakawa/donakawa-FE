@@ -7,10 +7,11 @@ import {
 } from "@tanstack/react-query";
 
 import { characterKeys } from "@/api/character";
-import { API_BASE_URL, apiClient } from "@/api/client";
+import { API_BASE_URL, apiClient, refreshSession } from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
 import { goalsKeys } from "@/api/goals";
 import { logKeys } from "@/api/log";
+import { tokenStorage } from "@/api/tokenStorage";
 import type { ApiSuccess } from "@/api/types";
 
 export type WishItemStatus = "WISHLISTED" | "DROPPED" | "BOUGHT";
@@ -207,14 +208,18 @@ export type CrawlEventHandlers = {
 };
 
 export const subscribeCrawlEvents = (jobId: string, handlers: CrawlEventHandlers) => {
-  const xhr = new XMLHttpRequest();
-  let readIndex = 0;
-  let buffer = "";
+  let xhr: XMLHttpRequest | null = null;
   let finished = false;
 
   const finish = () => {
     finished = true;
-    xhr.abort();
+    xhr?.abort();
+  };
+
+  const fail = (message: string) => {
+    if (finished) return;
+    finished = true;
+    handlers.onError?.(new Error(message));
   };
 
   const dispatch = (block: string) => {
@@ -224,6 +229,12 @@ export const subscribeCrawlEvents = (jobId: string, handlers: CrawlEventHandlers
       if (line.startsWith("event:")) event = line.slice(6).trim();
       else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
     });
+
+    if (event === "error") {
+      fail("상품 정보를 가져오지 못했어요.");
+      xhr?.abort();
+      return;
+    }
     if (dataLines.length === 0) return;
 
     try {
@@ -237,36 +248,51 @@ export const subscribeCrawlEvents = (jobId: string, handlers: CrawlEventHandlers
     }
   };
 
-  const consume = () => {
+  // 서버는 연결을 여는 순간에만 토큰을 검사하므로 401은 연결 시점에만 발생
+  const connect = async (canRefresh: boolean) => {
+    const accessToken = await tokenStorage.getAccessToken();
     if (finished) return;
-    buffer += xhr.responseText.slice(readIndex);
-    readIndex = xhr.responseText.length;
-    const blocks = buffer.split(/\r?\n\r?\n/);
-    buffer = blocks.pop() ?? "";
-    blocks.forEach(dispatch);
+
+    const request = new XMLHttpRequest();
+    xhr = request;
+    let readIndex = 0;
+    let buffer = "";
+
+    const consume = () => {
+      if (finished) return;
+      buffer += request.responseText.slice(readIndex);
+      readIndex = request.responseText.length;
+      const blocks = buffer.split(/\r?\n\r?\n/);
+      buffer = blocks.pop() ?? "";
+      blocks.forEach(dispatch);
+    };
+
+    request.onprogress = consume;
+    request.onreadystatechange = () => {
+      if (request.readyState === 3) consume();
+      if (request.readyState !== 4 || finished) return;
+
+      if (request.status === 401 && canRefresh) {
+        refreshSession()
+          .then(() => connect(false))
+          .catch(() => fail("로그인이 만료되었습니다. 다시 로그인해주세요."));
+        return;
+      }
+
+      consume();
+      if (buffer.trim()) dispatch(buffer);
+      fail(`SSE 연결이 종료되었습니다. (status ${request.status})`);
+    };
+    request.onerror = () => fail("SSE 연결에 실패했습니다.");
+
+    request.open("GET", `${API_BASE_URL}${ENDPOINTS.wishlist.crawlEvents(jobId)}`);
+    request.withCredentials = true;
+    request.setRequestHeader("Accept", "text/event-stream");
+    if (accessToken) request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+    request.send();
   };
 
-  xhr.onprogress = consume;
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === 3) consume();
-    if (xhr.readyState !== 4 || finished) return;
-    consume();
-    if (buffer.trim()) dispatch(buffer);
-    if (!finished) {
-      finished = true;
-      handlers.onError?.(new Error(`SSE 연결이 종료되었습니다. (status ${xhr.status})`));
-    }
-  };
-  xhr.onerror = () => {
-    if (finished) return;
-    finished = true;
-    handlers.onError?.(new Error("SSE 연결에 실패했습니다."));
-  };
-
-  xhr.open("GET", `${API_BASE_URL}${ENDPOINTS.wishlist.crawlEvents(jobId)}`);
-  xhr.withCredentials = true;
-  xhr.setRequestHeader("Accept", "text/event-stream");
-  xhr.send();
+  connect(true).catch(() => fail("SSE 연결에 실패했습니다."));
 
   return () => {
     if (!finished) finish();
@@ -282,7 +308,8 @@ export const crawlApi = {
     (await apiClient.get<ApiSuccess<CrawlResult>>(ENDPOINTS.wishlist.crawlResult(cacheId))).data
       .data,
 
-  crawlProduct: async (url: string, timeoutMs = 60_000): Promise<CrawlResult> => {
+  // 서버 대기 시간이 최대 2분이라 그보다 먼저 포기하지 않도록 여유를 둠
+  crawlProduct: async (url: string, timeoutMs = 130_000): Promise<CrawlResult> => {
     const { jobId } = await crawlApi.requestCrawl(url);
     const dataId = await new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => {
