@@ -11,12 +11,14 @@ import {
 } from "react-native";
 
 import { useDeleteAccount, useMe, useVerifyPassword } from "@/api/auth";
+import { useSocialReauth } from "@/api/socialAuth";
 import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 import SimpleModal from "@/components/common/SimpleModal";
 
 import { withdrawalStyles as styles } from "@/styles/mypage/SubPage.style";
 
+import KakaoIcon from "@/assets/images/auth/kakao.svg";
 import GoogleIcon from "@/assets/images/mypage/google.svg";
 import ShieldIcon from "@/assets/images/mypage/security.svg";
 import EyeIcon from "@/assets/images/mypage/visibility-eye.svg";
@@ -28,22 +30,44 @@ export default function WithdrawalPage() {
   const { data: me } = useMe();
   const verifyPassword = useVerifyPassword();
   const deleteAccount = useDeleteAccount();
+  const socialReauth = useSocialReauth();
 
   const loginType: LoginType = me?.hasPassword === false ? "social" : "local";
+  const socialProvider = me?.providers.includes("google")
+    ? "google"
+    : me?.providers.includes("kakao")
+      ? "kakao"
+      : null;
 
   const [password, setPassword] = useState("");
   const [secure, setSecure] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   const isLocal = loginType === "local";
-  const isValid = !verifyPassword.isPending && (isLocal ? password.length >= 1 : true);
+  const isPending = verifyPassword.isPending || socialReauth.isPending;
+  const isValid = !isPending && (isLocal ? password.length >= 1 : true);
+
+  // 재인증 성공 시 5분 이내에 탈퇴 API를 호출해야 함
+  const handleSocialAuth = () => {
+    if (!socialProvider || isPending) return;
+
+    socialReauth.mutate(socialProvider, {
+      onSuccess: (verified) => {
+        if (verified) setModalVisible(true);
+      },
+      onError: (error) =>
+        Alert.alert(
+          "본인 확인 실패",
+          getApiErrorMessage(error, error instanceof Error ? error.message : undefined),
+        ),
+    });
+  };
 
   const handleConfirm = () => {
     if (!isValid) return;
 
     if (!isLocal) {
-      // TODO: 소셜 재인증(/auth/google/reauth, /auth/kakao/reauth) 연동
-      Alert.alert("소셜 계정 재인증은 준비 중입니다.");
+      handleSocialAuth();
       return;
     }
 
@@ -69,9 +93,6 @@ export default function WithdrawalPage() {
       onSuccess: () => router.replace("/login"),
       onError: (error) => Alert.alert("회원 탈퇴 실패", getApiErrorMessage(error)),
     });
-  };
-
-  const handleGoogleAuth = () => {
   };
 
   return (
@@ -168,18 +189,29 @@ export default function WithdrawalPage() {
                     확인
                   </Text>
                 </Pressable>
-                <View style={styles.divider}>
-                  <View style={styles.dividerLine} />
-                  <Text style={styles.dividerText}>다른 방법으로 인증</Text>
-                  <View style={styles.dividerLine} />
-                </View>
-                <Pressable
-                  style={styles.googleButton}
-                  onPress={handleGoogleAuth}
-                >
-                  <GoogleIcon />
-                  <Text style={styles.googleText}>Google 계정으로 인증</Text>
-                </Pressable>
+                {socialProvider && (
+                  <>
+                    <View style={styles.divider}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>다른 방법으로 인증</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+                    <Pressable
+                      style={styles.googleButton}
+                      onPress={handleSocialAuth}
+                      disabled={isPending}
+                    >
+                      {socialProvider === "google" ? (
+                        <GoogleIcon />
+                      ) : (
+                        <KakaoIcon width={24} height={24} />
+                      )}
+                      <Text style={styles.googleText}>
+                        {socialProvider === "google" ? "Google" : "카카오"} 계정으로 인증
+                      </Text>
+                    </Pressable>
+                  </>
+                )}
               </View>
             </View>
           </View>

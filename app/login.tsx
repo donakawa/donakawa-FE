@@ -1,4 +1,5 @@
 import { useLogin } from "@/api/auth";
+import { useSocialLogin, type SocialProvider } from "@/api/socialAuth";
 import { getApiErrorMessage } from "@/api/types";
 import DnkwLogo from "@/assets/images/auth/dnkw-logo.svg";
 import GoogleIcon from "@/assets/images/auth/google.svg";
@@ -15,8 +16,23 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const login = useLogin();
+  const socialLogin = useSocialLogin();
 
   const canSubmit = email.trim().length > 0 && password.length > 0 && !login.isPending;
+
+  const handleSocialLogin = (provider: SocialProvider) => {
+    socialLogin.mutate(provider, {
+      onSuccess: (result) => {
+        // TODO: 신규 가입(result.isNewUser)은 목표 설정 화면으로 이동. 화면이 아직 없어 홈으로 이동
+        if (result) router.replace("/(tabs)");
+      },
+      onError: (error) =>
+        Alert.alert(
+          "로그인 실패",
+          getApiErrorMessage(error, error instanceof Error ? error.message : undefined),
+        ),
+    });
+  };
 
   const handleLogin = () => {
     login.mutate(
@@ -65,7 +81,11 @@ export default function Login() {
           </View>
 
           <View style={styles.socialButtons}>
-            <TouchableOpacity style={[buttonStyles.button, buttonStyles.google]}>
+            <TouchableOpacity
+              style={[buttonStyles.button, buttonStyles.google]}
+              onPress={() => handleSocialLogin("google")}
+              disabled={socialLogin.isPending}
+            >
               <GoogleIcon
                 width={24}
                 height={24}
@@ -80,7 +100,11 @@ export default function Login() {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[buttonStyles.button, buttonStyles.kakao]}>
+            <TouchableOpacity
+              style={[buttonStyles.button, buttonStyles.kakao]}
+              onPress={() => handleSocialLogin("kakao")}
+              disabled={socialLogin.isPending}
+            >
                 <KakaoIcon
                 width={24}
                 height={24}

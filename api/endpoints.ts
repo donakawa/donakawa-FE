@@ -13,6 +13,7 @@ export const ENDPOINTS = {
     verifyEmailCode: "/auth/email/verify-code",
     googleLogin: "/auth/google/login",
     kakaoLogin: "/auth/kakao/login",
+    oauthToken: "/auth/oauth/token",
     googleReauth: "/auth/google/reauth",
     kakaoReauth: "/auth/kakao/reauth",
     me: "/auth/me",
