@@ -497,5 +497,11 @@ export const useDeleteWishFolder = () => {
 
 export const useRequestCrawl = () => useMutation({ mutationFn: crawlApi.requestCrawl });
 
-export const useCrawlProduct = () =>
-  useMutation({ mutationFn: (url: string) => crawlApi.crawlProduct(url) });
+// 크롤링이 끝나면 서버에 위시 아이템이 등록되므로 위시 캐시도 갱신
+export const useCrawlProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (url: string) => crawlApi.crawlProduct(url),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: wishlistKeys.all }),
+  });
+};
