@@ -9,7 +9,7 @@ import TournamentBanner from "@/components/wish/TournamentBanner";
 import WishCreateFolderModal from "@/components/wish/WishCreateFolderModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ComponentRef, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const ALL_FOLDER_ID = "all";
@@ -21,7 +21,7 @@ export default function WishScreen() {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState({ top: 0, right: 20 });
-  const menuButtonRef = useRef<View>(null);
+  const menuButtonRef = useRef<ComponentRef<typeof View>>(null);
   // TODO: 폴더 이름 수정 API가 없어 화면에서만 반영 (새로고침/재조회 시 원래 이름으로 돌아감)
   const [renamedTitles, setRenamedTitles] = useState<Record<string, string>>({});
 

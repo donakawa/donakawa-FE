@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   imagePreview: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     width: "100%",
     height: "100%",
   },

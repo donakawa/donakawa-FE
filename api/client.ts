@@ -31,6 +31,12 @@ const NO_REFRESH_PATHS: string[] = [
 const shouldSkipRefresh = (url?: string) =>
   !!url && NO_REFRESH_PATHS.includes(url);
 
+// 토큰 만료가 아닌 401 (A016: 탈퇴 재인증 시간 초과)
+const NO_REFRESH_ERROR_CODES = ["A016"];
+
+const getErrorCode = (error: AxiosError) =>
+  (error.response?.data as { error?: { errorCode?: string } } | undefined)?.error?.errorCode;
+
 let onAuthExpired: (() => void) | null = null;
 export const setOnAuthExpired = (handler: (() => void) | null) => {
   onAuthExpired = handler;
@@ -87,7 +93,8 @@ apiClient.interceptors.response.use(
       error.response?.status !== 401 ||
       !original ||
       original._retry ||
-      shouldSkipRefresh(original.url)
+      shouldSkipRefresh(original.url) ||
+      NO_REFRESH_ERROR_CODES.includes(getErrorCode(error) ?? "")
     ) {
       return Promise.reject(error);
     }

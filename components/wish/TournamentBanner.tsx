@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   outerBorder: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     pointerEvents: "none",
     borderRadius: 5,
     borderWidth: 1,

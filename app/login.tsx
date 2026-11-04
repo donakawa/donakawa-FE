@@ -9,8 +9,9 @@ import AuthInput from "@/components/auth/AuthInput";
 import { loginStyles as styles } from "@/styles/auth/Auth.style";
 import { authButtonStyles as buttonStyles } from "@/styles/auth/Authcomponent.style";
 import { router } from "expo-router";
-import { useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useState } from "react";
+import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,13 +19,22 @@ export default function Login() {
   const login = useLogin();
   const socialLogin = useSocialLogin();
 
+  // Android는 Custom Tab을 미리 준비해 소셜 로그인 브라우저가 뜨는 시간을 줄임
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+
+    WebBrowser.warmUpAsync().catch(() => {});
+    return () => {
+      WebBrowser.coolDownAsync().catch(() => {});
+    };
+  }, []);
+
   const canSubmit = email.trim().length > 0 && password.length > 0 && !login.isPending;
 
   const handleSocialLogin = (provider: SocialProvider) => {
     socialLogin.mutate(provider, {
       onSuccess: (result) => {
-        // TODO: 신규 가입(result.isNewUser)은 목표 설정 화면으로 이동. 화면이 아직 없어 홈으로 이동
-        if (result) router.replace("/(tabs)");
+        if (result) router.replace(result.isNewUser ? "/socialGoal" : "/(tabs)");
       },
       onError: (error) =>
         Alert.alert(

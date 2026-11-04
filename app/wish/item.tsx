@@ -159,7 +159,7 @@ export default function WishItemDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <StatusBar style="light" />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}

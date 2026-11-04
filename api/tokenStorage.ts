@@ -24,18 +24,35 @@ export type AuthTokens = {
   refreshToken?: string;
 };
 
+// 모든 API 요청이 읽는 값이라 SecureStore를 매번 읽지 않도록 메모리에 보관 (undefined: 아직 안 읽음)
+let cachedAccessToken: string | null | undefined;
+
 // 소셜 로그인 토큰 저장소. 이메일 로그인은 쿠키를 사용하므로 저장하지 않음
 export const tokenStorage = {
-  getAccessToken: () => storage.get(ACCESS_TOKEN_KEY),
+  async getAccessToken() {
+    if (cachedAccessToken === undefined) {
+      const stored = await storage.get(ACCESS_TOKEN_KEY);
+      // 읽는 동안 토큰이 저장/삭제됐다면 그 값을 유지
+      if (cachedAccessToken === undefined) cachedAccessToken = stored;
+    }
+    return cachedAccessToken;
+  },
+
   getRefreshToken: () => storage.get(REFRESH_TOKEN_KEY),
-  removeAccessToken: () => storage.remove(ACCESS_TOKEN_KEY),
+
+  async removeAccessToken() {
+    cachedAccessToken = null;
+    await storage.remove(ACCESS_TOKEN_KEY);
+  },
 
   async setTokens({ accessToken, refreshToken }: AuthTokens) {
+    cachedAccessToken = accessToken;
     await storage.set(ACCESS_TOKEN_KEY, accessToken);
     if (refreshToken) await storage.set(REFRESH_TOKEN_KEY, refreshToken);
   },
 
   async clear() {
+    cachedAccessToken = null;
     await Promise.all([storage.remove(ACCESS_TOKEN_KEY), storage.remove(REFRESH_TOKEN_KEY)]);
   },
 };

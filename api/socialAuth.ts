@@ -38,8 +38,9 @@ const openAuthSession = async (url: string) => {
   const result = await WebBrowser.openAuthSessionAsync(url, REDIRECT_URL);
   if (result.type !== "success") return null;
 
-  const { hostname, queryParams } = Linking.parse(result.url);
-  return { hostname, params: queryParams ?? {} };
+  // 서버가 donakawa:///social/goal 형태로 보내면 hostname이 비고 path에 경로가 담김
+  const { hostname, path, queryParams } = Linking.parse(result.url);
+  return { target: [hostname, path].filter(Boolean).join("/"), params: queryParams ?? {} };
 };
 
 const getAuthUrl = async (path: string) =>
@@ -54,12 +55,15 @@ export const socialAuthApi = {
     const { code } = session.params;
     if (typeof code !== "string") throw new Error("소셜 로그인에 실패했습니다.");
 
+    // 남아 있는 이전 토큰이 교환 요청에 실리지 않도록 제거
+    await tokenStorage.clear();
+
     // code는 30초 안에 한 번만 사용 가능
     const { data } = await apiClient.get<ApiSuccess<AuthTokens>>(ENDPOINTS.auth.oauthToken, {
       params: { code },
     });
     await tokenStorage.setTokens(data.data);
-    return { isNewUser: session.hostname === "social" };
+    return { isNewUser: session.target.startsWith("social/goal") };
   },
 
   // 취소 시 false. 성공 시 5분 안에 탈퇴 API를 호출해야 함
@@ -67,6 +71,9 @@ export const socialAuthApi = {
     const session = await openAuthSession(await getAuthUrl(REAUTH_PATH[provider]));
     if (!session) return false;
 
+    if (session.params.system_error) {
+      throw new Error("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
     if (session.params.reauth !== "success") {
       throw new Error("본인 확인에 실패했습니다. 다시 시도해주세요.");
     }
