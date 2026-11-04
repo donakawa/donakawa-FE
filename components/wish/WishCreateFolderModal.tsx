@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type ComponentRef, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -27,7 +27,7 @@ export default function WishCreateFolderModal({
 }: WishCreateFolderModalProps) {
   const insets = useSafeAreaInsets();
   const [name, setName] = useState("");
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   const isOverLimit = name.length > MAX_LENGTH;
   const canSubmit = name.trim().length > 0 && !isOverLimit;
@@ -50,7 +50,9 @@ export default function WishCreateFolderModal({
       transparent
       animationType="slide"
       onRequestClose={handleClose}
-      onShow={() => setTimeout(() => inputRef.current?.focus(), 50)}
+      onShow={() => {
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }}
     >
       <Pressable style={styles.backdrop} onPress={handleClose}>
         <KeyboardAvoidingView

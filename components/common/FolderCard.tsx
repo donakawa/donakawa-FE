@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type ComponentRef, useRef, useState } from "react";
 import {
   Image,
   type ImageSourcePropType,
@@ -27,7 +27,7 @@ export default function FolderCard({ title, images = [], onPress, onTitleEdit }:
   const cells = Array.from({ length: 4 }, (_, i) => images[i] ?? null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(title);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   const cellStyle = (index: number) => {
     const radius: Record<string, number> = {};

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useMe, useUpdateNickname } from "@/api/auth";
 import {
   useCharacter,
   useCharacterItems,
@@ -25,10 +26,6 @@ import {
   type HamkkuCategory,
   type HamkkuItem,
 } from "@/constants/hamkku";
-import {
-  updateHamkkuNickname,
-  useAttendanceStore,
-} from "@/stores/attendanceStore";
 import { hamkkuStyles } from "@/styles/hamkku/Hamkku.style";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -70,7 +67,10 @@ const toShopItems = (
   }));
 
 export default function Hamkku() {
-  const { hamkkuNickname } = useAttendanceStore();
+  // 햄꾸 닉네임은 회원 닉네임과 동일 (/auth/me, /auth/profile/nickname)
+  const { data: me } = useMe();
+  const hamkkuNickname = me?.nickname ?? "";
+  const updateNickname = useUpdateNickname();
   const { data: character } = useCharacter();
   const skinItems = useCharacterItems(API_CATEGORY.skin);
   const accessoryItems = useCharacterItems(API_CATEGORY.accessory);
@@ -211,8 +211,18 @@ export default function Hamkku() {
 
   const handleNicknameDone = () => {
     const trimmed = nicknameDraft.trim();
-    if (trimmed) updateHamkkuNickname(trimmed);
-    setNameSheetVisible(false);
+    if (updateNickname.isPending) return;
+
+    // 현재 닉네임과 같으면 서버가 U008 에러를 주므로 호출하지 않음
+    if (!trimmed || trimmed === hamkkuNickname) {
+      setNameSheetVisible(false);
+      return;
+    }
+
+    updateNickname.mutate(trimmed, {
+      onSuccess: () => setNameSheetVisible(false),
+      onError: (error) => Alert.alert("닉네임 변경 실패", getApiErrorMessage(error)),
+    });
   };
 
   const renderAccessory = (item?: HamkkuItem) => {

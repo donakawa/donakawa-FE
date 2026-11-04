@@ -6,7 +6,7 @@ import WishAddMenuDropdown from "@/components/wish/WishAddMenuDropdown";
 import WishItemCard from "@/components/wish/WishItemCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { type ComponentRef, useMemo, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type SortType = "default" | "price_asc" | "price_desc";
@@ -46,7 +46,7 @@ export default function WishFolderDetailScreen() {
   };
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState({ top: 0, right: 20 });
-  const moreButtonRef = useRef<View>(null);
+  const moreButtonRef = useRef<ComponentRef<typeof View>>(null);
 
   const handleMorePress = () => {
     moreButtonRef.current?.measure((_x: number, _y: number, _w: number, height: number, _pageX: number, pageY: number) => {
@@ -57,7 +57,7 @@ export default function WishFolderDetailScreen() {
   const [sort, setSort] = useState<SortType>("default");
   const [sortVisible, setSortVisible] = useState(false);
   const [sortAnchor, setSortAnchor] = useState({ top: 0, left: 20 });
-  const sortButtonRef = useRef<View>(null);
+  const sortButtonRef = useRef<ComponentRef<typeof View>>(null);
 
   const items = useMemo<ListItem[]>(() => {
     const products = itemsQuery.data?.pages.flatMap((page) => page.wishitems) ?? [];

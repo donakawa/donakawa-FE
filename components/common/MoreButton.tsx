@@ -1,11 +1,11 @@
-import { forwardRef } from "react";
+import { type ComponentRef, forwardRef } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 type MoreButtonProps = {
   onPress?: () => void;
 };
 
-const MoreButton = forwardRef<View, MoreButtonProps>(({ onPress }, ref) => (
+const MoreButton = forwardRef<ComponentRef<typeof View>, MoreButtonProps>(({ onPress }, ref) => (
   <View ref={ref}>
     <TouchableOpacity
       style={styles.button}

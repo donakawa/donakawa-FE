@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const authInputStyles = StyleSheet.create({
   container: {
-    width: 322,
+    alignSelf: "stretch",
     height: 48,
     borderWidth: 1,
     borderColor: "#7EC985",
@@ -32,17 +32,13 @@ export const authButtonStyles = StyleSheet.create({
   },
   primary: {
     backgroundColor: "#F0FFE5",
+  },
+  primaryBorder: {
+    ...StyleSheet.absoluteFill,
+    pointerEvents: "none",
+    borderRadius: 7,
     borderWidth: 1,
     borderColor: "#9CCCA0",
-    boxShadow: [
-        {
-            offsetX: 0,
-            offsetY: 4,
-            blurRadius: 4,
-            spreadDistance: 0,
-            color: "rgba(126, 201, 133, 0.35)",
-      },
-    ]
   },
   google: {
     width: 317,
@@ -77,11 +73,22 @@ kakao: {
   position: "relative",
 },
 
-socialText: {
+socialIcon: {
+  position: "absolute",
+  left: 14,
+},
+
+googleText: {
+  fontFamily: "RobotoMedium",
+  fontSize: 14,
+  color: "#1F1F1F",
+},
+
+kakaoText: {
   fontFamily: "WantedSansRegular",
   fontSize: 16,
   lineHeight: 24,
-  color: "#1F1F1F",
+  color: "rgba(0, 0, 0, 0.85)",
 },
   disabled: {
     backgroundColor: "#DCE1DD",

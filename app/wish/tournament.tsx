@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   ctaBorder: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     pointerEvents: "none",
     borderRadius: 7,
     borderWidth: 2,

@@ -1,7 +1,9 @@
 import { router } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 import { useMe } from "@/api/auth";
+import { useSocialConnect, type SocialProvider } from "@/api/socialAuth";
+import { getApiErrorMessage } from "@/api/types";
 import Header from "@/components/common/Header";
 import { settingsStyles as styles } from "@/styles/mypage/Settings.style";
 
@@ -46,7 +48,21 @@ function SettingRow({
 
 export default function SettingsPage() {
   const { data: me } = useMe();
+  const socialConnect = useSocialConnect();
   const isGoogleConnected = me?.providers.includes("google") ?? false;
+  const isKakaoConnected = me?.providers.includes("kakao") ?? false;
+
+  const handleConnect = (provider: SocialProvider) => {
+    if (socialConnect.isPending) return;
+
+    socialConnect.mutate(provider, {
+      onError: (error) =>
+        Alert.alert(
+          "계정 연동 실패",
+          getApiErrorMessage(error, error instanceof Error ? error.message : undefined),
+        ),
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -66,6 +82,13 @@ export default function SettingsPage() {
                 title="구글 연동"
                 description={isGoogleConnected ? me?.email : undefined}
                 isConnected={isGoogleConnected}
+                onPress={isGoogleConnected ? undefined : () => handleConnect("google")}
+              />
+              <SettingRow
+                title="카카오 연동"
+                description={isKakaoConnected ? me?.email : undefined}
+                isConnected={isKakaoConnected}
+                onPress={isKakaoConnected ? undefined : () => handleConnect("kakao")}
               />
             </View>
           </View>

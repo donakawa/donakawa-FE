@@ -109,12 +109,12 @@ export default function ProfileSettingModal({
                             value={nickname}
                             onChangeText={onChangeNickname}
                             style={styles.input}
-                            maxLength={8}
+                            maxLength={10}
                             placeholder="닉네임"
                             placeholderTextColor="#2D322E"
                           />
 
-                          <Text style={styles.count}>{nickname.length}/8</Text>
+                          <Text style={styles.count}>{nickname.length}/10</Text>
                         </View>
                       </View>
                     </View>
