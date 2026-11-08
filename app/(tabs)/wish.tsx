@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   folderGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     columnGap: 11,
     rowGap: 16,
   },
