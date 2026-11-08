@@ -33,7 +33,10 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionOuterCard}>
+        <TouchableOpacity
+          style={styles.actionOuterCard}
+          onPress={() => router.push("/wish/tournament")}
+        >
           <View style={styles.cardHighlight} />
           <View style={styles.actionInnerCard}>
             <View style={styles.actionTopRow}>
@@ -85,7 +88,10 @@ export default function HomeActionCards({ hasBudget }: HomeActionCardsProps) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.wideOuterCard}>
+        <TouchableOpacity
+          style={styles.wideOuterCard}
+          onPress={() => router.push("/wish/tournament")}
+        >
           <View style={styles.cardHighlight} />
           <View style={styles.wideInnerCard}>
             <TournamentIcon />
