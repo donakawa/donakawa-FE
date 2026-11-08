@@ -22,7 +22,6 @@ export default function TournamentIntroScreen() {
         onRightPress={() => setIsMenuVisible(true)}
       />
 
-      {/* Rounded main panel */}
       <View style={styles.mainPanel}>
         <WishFlowTitleBanner
           title="토너먼트"
@@ -30,7 +29,6 @@ export default function TournamentIntroScreen() {
           topRadius
         />
 
-        {/* Body */}
         <View style={styles.body}>
           <Text style={styles.noticeText}>*최대 16개의 위시템으로 비교할 수 있습니다.</Text>
 

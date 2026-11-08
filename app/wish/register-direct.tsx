@@ -162,7 +162,6 @@ export default function WishRegisterDirectScreen() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          {/* 이미지 + 스토어 */}
           <View style={styles.topSection}>
             <TouchableOpacity
               style={styles.imageBox}
@@ -195,7 +194,6 @@ export default function WishRegisterDirectScreen() {
             </View>
           </View>
 
-          {/* 폼 카드 */}
           <View style={styles.formCard}>
             <FormField
               label="상품명"

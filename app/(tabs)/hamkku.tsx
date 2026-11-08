@@ -427,7 +427,6 @@ export default function Hamkku() {
         onConfirm={confirmPurchase}
       />
 
-      {/* TODO: 햄꾸 닉네임 API가 명세서에 없어 로컬 상태로만 저장 */}
       {nameSheetVisible ? (
         <Pressable style={styles.nameSheetBackdrop} onPress={() => setNameSheetVisible(false)}>
           <Pressable style={styles.nameSheet} onPress={() => {}}>

@@ -95,7 +95,6 @@ export default function TournamentItemsScreen() {
 
       <WishFlowTitleBanner title="후보를 선택" />
 
-      {/* Item grid */}
       <FlatList
         data={items}
         keyExtractor={toItemKey}

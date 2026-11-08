@@ -60,7 +60,6 @@ export default function WishCreateFolderModal({
           keyboardVerticalOffset={0}
         >
           <Pressable style={[styles.sheet, { paddingBottom: insets.bottom || 20 }]}>
-            {/* 취소 / 완료 */}
             <View style={styles.header}>
               <TouchableOpacity onPress={handleClose} hitSlop={8}>
                 <Text style={styles.cancel}>취소</Text>
@@ -70,7 +69,6 @@ export default function WishCreateFolderModal({
               </TouchableOpacity>
             </View>
 
-            {/* 폴더 픽셀 버튼 */}
             <View style={styles.folderButtonWrap}>
               <View style={styles.folderButtonOuterWrap}>
                 <View style={styles.folderButtonShadow} />
@@ -85,7 +83,6 @@ export default function WishCreateFolderModal({
               </View>
             </View>
 
-            {/* 텍스트 입력 */}
             <View style={styles.inputWrap}>
               <TextInput
                 ref={inputRef}

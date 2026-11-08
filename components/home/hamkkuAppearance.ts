@@ -20,13 +20,13 @@ export const EQUIPPED_FIELD: Record<HamkkuCategory, keyof Character["equipped"]>
   floor: "floor",
 };
 
-// TODO: 명세서엔 SKIN_JUNGLE, ACC_BASIC, WALL_PINK, FLOOR_BASIC만 나와 있어 나머지 키는 추정값. 백엔드 시드 데이터 확인 필요
+// TODO: SKIN_JUNGLE, SKIN_BLACK, SKIN_BLUE, ACC_BASIC, WALL_PINK, FLOOR_BASIC 외의 키는 추정값. 백엔드 시드 데이터 확인 필요
 const LOCAL_ITEM_ID_BY_KEY: Record<string, string> = {
   SKIN_BASIC: "skin-default",
   SKIN_PEARL: "skin-default",
   SKIN_JUNGLE: "skin-gray",
-  SKIN_BLACK: "skin-gold", // 블랙아이햄스터 (서버 키 확인됨)
-  SKIN_BLUE: "skin-black", // 블루사파이어 (서버 키 확인됨)
+  SKIN_BLACK: "skin-gold",
+  SKIN_BLUE: "skin-black",
   SKIN_GUINEAPIG: "skin-brown",
   ACC_BASIC: "accessory-none",
   ACC_SPROUT: "accessory-sprout",
