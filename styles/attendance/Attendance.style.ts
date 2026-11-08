@@ -217,39 +217,6 @@ export const attendanceStyles = StyleSheet.create({
   hiddenActionRow: {
     display: "none",
   },
-  pixelButton: {
-    width: 69,
-    height: 48,
-    borderRadius: 4,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#5F6460",
-    shadowOffset: { width: 2, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  rewardButton: {
-    borderColor: "#ECA9BF",
-    backgroundColor: "#FFD9EB",
-  },
-  checkButton: {
-    borderColor: "#9CCCA0",
-    backgroundColor: "#E8F9C7",
-  },
-  disabledButton: {
-    borderColor: "#C8CDCA",
-    backgroundColor: "#E6EAE8",
-  },
-  pixelButtonText: {
-    color: "#7A5751",
-    fontFamily: "GalmuriBold",
-    fontSize: 15,
-  },
-  disabledButtonText: {
-    color: "#AAAFAB",
-  },
   rewardToast: {
     position: "absolute",
     left: -4,

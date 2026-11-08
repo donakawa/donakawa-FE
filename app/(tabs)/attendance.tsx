@@ -6,6 +6,7 @@ import {
 import { getApiErrorMessage } from "@/api/types";
 import AttendanceIcon from "@/assets/images/attendance/attendance_1.svg";
 import RewardAttendanceIcon from "@/assets/images/attendance/attendance_2.svg";
+import AttendanceActionButton from "@/components/attendance/AttendanceActionButton";
 import AttendanceMonthPickerSheet from "@/components/attendance/AttendanceMonthPickerSheet";
 import { attendanceStyles as styles } from "@/styles/attendance/Attendance.style";
 import { Ionicons } from "@expo/vector-icons";
@@ -247,46 +248,20 @@ export default function Attendance() {
             !isCurrentMonth && styles.hiddenActionRow,
           ]}
         >
-          <TouchableOpacity
-            style={[
-              styles.pixelButton,
-              styles.rewardButton,
-              !canClaimReward && styles.disabledButton,
-            ]}
+          <AttendanceActionButton
+            title="받기!"
+            variant="pink"
             disabled={!canClaimReward}
             onPress={handleReward}
-            accessibilityRole="button"
             accessibilityLabel="출석 보상 받기"
-          >
-            <Text
-              style={[
-                styles.pixelButtonText,
-                !canClaimReward && styles.disabledButtonText,
-              ]}
-            >
-              받기!
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.pixelButton,
-              styles.checkButton,
-              !canCheckIn && styles.disabledButton,
-            ]}
+          />
+          <AttendanceActionButton
+            title="출석!"
+            variant="green"
             disabled={!canCheckIn}
             onPress={handleCheckIn}
-            accessibilityRole="button"
             accessibilityLabel="출석하기"
-          >
-            <Text
-              style={[
-                styles.pixelButtonText,
-                !canCheckIn && styles.disabledButtonText,
-              ]}
-            >
-              출석!
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
       </View>
 
