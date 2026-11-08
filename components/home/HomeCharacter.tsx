@@ -5,7 +5,8 @@ import { useMe } from "@/api/auth";
 import { useCharacterComment } from "@/api/character";
 import HamkkuAccessory from "@/components/home/HamkkuAccessory";
 import { useHamkkuAppearance } from "@/components/home/hamkkuAppearance";
-import { getDonaSvg, type DonaExpression } from "@/constants/dona";
+import DonaCharacter from "@/components/home/DonaCharacter";
+import { type DonaExpression } from "@/constants/dona";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -41,7 +42,6 @@ export default function HomeCharacter({
     return 1;
   };
 
-  const DonaSvg = getDonaSvg(appliedSkin?.skinVariant, getDonaExpression());
 
   const renderMessage = () => {
     if (comment?.message) {
@@ -86,7 +86,11 @@ export default function HomeCharacter({
       </View>
 
       <View style={styles.donaWrap}>
-        <DonaSvg width={DONA_SIZE} height={DONA_SIZE} />
+        <DonaCharacter
+          skinVariant={appliedSkin?.skinVariant}
+          expression={getDonaExpression()}
+          size={DONA_SIZE}
+        />
         <HamkkuAccessory item={appliedAccessory} size={DONA_SIZE} />
       </View>
 

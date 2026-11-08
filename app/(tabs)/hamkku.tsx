@@ -19,7 +19,7 @@ import {
   getItemKeyFromImageUrl,
   getLocalHamkkuItem,
 } from "@/components/home/hamkkuAppearance";
-import { getDonaSvg } from "@/constants/dona";
+import DonaCharacter from "@/components/home/DonaCharacter";
 import {
   DEFAULT_HAMKKU_SELECTION,
   getHamkkuItem,
@@ -144,10 +144,6 @@ export default function Hamkku() {
     };
   }, [itemsByCategory, draftHamkku, character]);
 
-  const PreviewDonaSvg = getDonaSvg(
-    previewItems.skin?.skinVariant,
-    showIntroSpeech ? 1 : 2,
-  );
   const activeItems = itemsByCategory[activeCategory];
 
   const handleSelectItem = (item: ShopItem) => {
@@ -343,7 +339,11 @@ export default function Hamkku() {
         <View style={[styles.previewFloor, { backgroundColor: previewItems.floor?.color }]} />
 
         <View style={styles.hamsterWrap}>
-          <PreviewDonaSvg width={PREVIEW_DONA_SIZE} height={PREVIEW_DONA_SIZE} />
+          <DonaCharacter
+            skinVariant={previewItems.skin?.skinVariant}
+            expression={showIntroSpeech ? 1 : 2}
+            size={PREVIEW_DONA_SIZE}
+          />
           <HamkkuAccessory item={previewItems.accessory} size={PREVIEW_DONA_SIZE} />
         </View>
 

@@ -24,7 +24,7 @@ import type { SvgProps } from "react-native-svg";
 export type DonaSkinVariant = 1 | 2 | 3 | 4;
 export type DonaExpression = 1 | 2 | 3 | 4 | 5;
 
-const DONA_IMAGES: Record<
+export const DONA_IMAGES: Record<
   DonaSkinVariant,
   Record<DonaExpression, ComponentType<SvgProps>>
 > = {
@@ -57,8 +57,3 @@ const DONA_IMAGES: Record<
     5: Dona4Face5,
   },
 };
-
-export const getDonaSvg = (
-  skinVariant: DonaSkinVariant | undefined,
-  expression: DonaExpression,
-) => DONA_IMAGES[skinVariant ?? 1][expression];
