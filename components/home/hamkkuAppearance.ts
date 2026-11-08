@@ -25,8 +25,8 @@ const LOCAL_ITEM_ID_BY_KEY: Record<string, string> = {
   SKIN_BASIC: "skin-default",
   SKIN_PEARL: "skin-default",
   SKIN_JUNGLE: "skin-gray",
-  SKIN_BLACKEYE: "skin-gold",
-  SKIN_SAPPHIRE: "skin-black",
+  SKIN_BLACK: "skin-gold", // 블랙아이햄스터 (서버 키 확인됨)
+  SKIN_BLUE: "skin-black", // 블루사파이어 (서버 키 확인됨)
   SKIN_GUINEAPIG: "skin-brown",
   ACC_BASIC: "accessory-none",
   ACC_SPROUT: "accessory-sprout",
@@ -49,8 +49,17 @@ export const getItemKeyFromImageUrl = (imageUrl?: string) => {
   return fileName.replace(/\.[a-z0-9]+$/i, "").toUpperCase() || undefined;
 };
 
+const warnedUnknownKeys = new Set<string>();
+
 export const getLocalHamkkuItem = (itemKey?: string): HamkkuItem | undefined => {
-  const localId = itemKey ? LOCAL_ITEM_ID_BY_KEY[itemKey] : undefined;
+  if (!itemKey) return undefined;
+  const localId = LOCAL_ITEM_ID_BY_KEY[itemKey];
+
+  // 매핑에 없는 키는 기본 아이템으로 대체돼 "적용이 안 되는" 것처럼 보이므로 개발 중에 알림
+  if (!localId && __DEV__ && !warnedUnknownKeys.has(itemKey)) {
+    warnedUnknownKeys.add(itemKey);
+    console.warn(`[hamkku] 앱에 매핑되지 않은 itemKey: ${itemKey}`);
+  }
   return localId ? getHamkkuItem(localId) : undefined;
 };
 
