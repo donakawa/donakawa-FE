@@ -2,6 +2,7 @@ import { useCreateWishFolder, useWishFolders, useWishItems } from "@/api/wishlis
 import { getApiError, getApiErrorMessage } from "@/api/types";
 import AddFolderButton from "@/components/common/AddFolderButton";
 import FolderCard from "@/components/common/FolderCard";
+import Header from "@/components/common/Header";
 import MenuDropdown from "@/components/common/MenuDropdown";
 import MoreButton from "@/components/common/MoreButton";
 import WishAddMenuDropdown from "@/components/common/WishAddMenuDropdown";
@@ -9,7 +10,7 @@ import TournamentBanner from "@/components/wish/TournamentBanner";
 import WishCreateFolderModal from "@/components/wish/WishCreateFolderModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ComponentRef, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const ALL_FOLDER_ID = "all";
@@ -21,7 +22,7 @@ export default function WishScreen() {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState({ top: 0, right: 20 });
-  const menuButtonRef = useRef<View>(null);
+  const menuButtonRef = useRef<ComponentRef<typeof View>>(null);
   // TODO: 폴더 이름 수정 API가 없어 화면에서만 반영 (새로고침/재조회 시 원래 이름으로 돌아감)
   const [renamedTitles, setRenamedTitles] = useState<Record<string, string>>({});
 
@@ -73,10 +74,11 @@ export default function WishScreen() {
 
   return (
     <View style={styles.safeArea}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Wish List</Text>
-        <MoreButton ref={menuButtonRef} onPress={handleMenuPress} />
-      </View>
+      <Header
+        title="Wish List"
+        rightElement={<MoreButton ref={menuButtonRef} onPress={handleMenuPress} />}
+        style={styles.header}
+      />
       <View style={styles.tournamentBannerWrap}>
         <TournamentBanner onPress={() => router.push("/wish/tournament")} />
       </View>
@@ -151,31 +153,17 @@ export default function WishScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#FFFDF8" },
   header: {
-    height: 48,
-    marginHorizontal: 20,
-    marginTop: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerTitle: {
-    color: "#7A5751",
-    fontSize: 22,
-    fontFamily: "GalmuriBold",
-    fontWeight: "700",
-    textShadowColor: "#7A5751",
-    textShadowOffset: { width: 0.6, height: 0 },
-    textShadowRadius: 0,
+    paddingHorizontal: 20,
   },
   tournamentBannerWrap: {
     marginHorizontal: 20,
-    marginTop: 8,
+    marginTop: 23,
   },
   scroll: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 120 },
   folderGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     columnGap: 11,
     rowGap: 16,
   },

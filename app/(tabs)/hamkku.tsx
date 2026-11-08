@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useMe, useUpdateNickname } from "@/api/auth";
 import {
   useCharacter,
   useCharacterItems,
@@ -11,13 +12,14 @@ import CheckIcon from "@/assets/images/hamkku/check.svg";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import DoneButton from "@/components/common/DoneButton";
 import Toast from "@/components/common/Toast";
+import HamkkuAccessory from "@/components/home/HamkkuAccessory";
 import {
   API_CATEGORY,
   EQUIPPED_FIELD,
   getItemKeyFromImageUrl,
   getLocalHamkkuItem,
 } from "@/components/home/hamkkuAppearance";
-import { getDonaSvg } from "@/constants/dona";
+import DonaCharacter from "@/components/home/DonaCharacter";
 import {
   DEFAULT_HAMKKU_SELECTION,
   getHamkkuItem,
@@ -25,10 +27,6 @@ import {
   type HamkkuCategory,
   type HamkkuItem,
 } from "@/constants/hamkku";
-import {
-  updateHamkkuNickname,
-  useAttendanceStore,
-} from "@/stores/attendanceStore";
 import { hamkkuStyles } from "@/styles/hamkku/Hamkku.style";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -44,6 +42,9 @@ import {
 } from "react-native";
 
 const styles = hamkkuStyles as Record<keyof typeof hamkkuStyles, any>;
+
+// styles.hamsterWrap의 width/height와 같아야 함
+const PREVIEW_DONA_SIZE = 124;
 
 type ShopItem = CharacterItem & {
   category: HamkkuCategory;
@@ -70,7 +71,10 @@ const toShopItems = (
   }));
 
 export default function Hamkku() {
-  const { hamkkuNickname } = useAttendanceStore();
+  // 햄꾸 닉네임은 회원 닉네임과 동일 (/auth/me, /auth/profile/nickname)
+  const { data: me } = useMe();
+  const hamkkuNickname = me?.nickname ?? "";
+  const updateNickname = useUpdateNickname();
   const { data: character } = useCharacter();
   const skinItems = useCharacterItems(API_CATEGORY.skin);
   const accessoryItems = useCharacterItems(API_CATEGORY.accessory);
@@ -140,10 +144,6 @@ export default function Hamkku() {
     };
   }, [itemsByCategory, draftHamkku, character]);
 
-  const PreviewDonaSvg = getDonaSvg(
-    previewItems.skin?.skinVariant,
-    showIntroSpeech ? 1 : 2,
-  );
   const activeItems = itemsByCategory[activeCategory];
 
   const handleSelectItem = (item: ShopItem) => {
@@ -211,19 +211,18 @@ export default function Hamkku() {
 
   const handleNicknameDone = () => {
     const trimmed = nicknameDraft.trim();
-    if (trimmed) updateHamkkuNickname(trimmed);
-    setNameSheetVisible(false);
-  };
+    if (updateNickname.isPending) return;
 
-  const renderAccessory = (item?: HamkkuItem) => {
-    const AccessorySvg = item?.Svg;
-    if (!AccessorySvg) return null;
+    // 현재 닉네임과 같으면 서버가 U008 에러를 주므로 호출하지 않음
+    if (!trimmed || trimmed === hamkkuNickname) {
+      setNameSheetVisible(false);
+      return;
+    }
 
-    return (
-      <View style={styles.accessoryLayer}>
-        <AccessorySvg width={34} height={34} />
-      </View>
-    );
+    updateNickname.mutate(trimmed, {
+      onSuccess: () => setNameSheetVisible(false),
+      onError: (error) => Alert.alert("닉네임 변경 실패", getApiErrorMessage(error)),
+    });
   };
 
   const renderItemPreview = (item: ShopItem) => {
@@ -317,12 +316,15 @@ export default function Hamkku() {
 
       <View style={styles.preview}>
         <View style={[styles.previewWall, { backgroundColor: previewItems.wall?.color }]}>
-          {showIntroSpeech ? (
-            <View style={styles.speechBubble}>
-              <Text style={styles.speechText}>예쁘게 꾸며주세요!!!</Text>
-              <View style={styles.speechTail} />
-            </View>
-          ) : null}
+          {/* 말풍선이 사라져도 닉네임이 햄스터 위에 머물도록 자리는 유지 */}
+          <View
+            style={[styles.speechBubble, !showIntroSpeech && styles.speechBubbleHidden]}
+            accessibilityElementsHidden={!showIntroSpeech}
+            importantForAccessibility={showIntroSpeech ? "auto" : "no-hide-descendants"}
+          >
+            <Text style={styles.speechText}>예쁘게 꾸며주세요!!!</Text>
+            <View style={styles.speechTail} />
+          </View>
 
           <TouchableOpacity
             style={styles.nameButton}
@@ -340,8 +342,12 @@ export default function Hamkku() {
         <View style={[styles.previewFloor, { backgroundColor: previewItems.floor?.color }]} />
 
         <View style={styles.hamsterWrap}>
-          <PreviewDonaSvg width={124} height={124} />
-          {renderAccessory(previewItems.accessory)}
+          <DonaCharacter
+            skinVariant={previewItems.skin?.skinVariant}
+            expression={showIntroSpeech ? 1 : 2}
+            size={PREVIEW_DONA_SIZE}
+          />
+          <HamkkuAccessory item={previewItems.accessory} size={PREVIEW_DONA_SIZE} />
         </View>
 
         {!isApplyMode && (
@@ -424,7 +430,6 @@ export default function Hamkku() {
         onConfirm={confirmPurchase}
       />
 
-      {/* TODO: 햄꾸 닉네임 API가 명세서에 없어 로컬 상태로만 저장 */}
       {nameSheetVisible ? (
         <Pressable style={styles.nameSheetBackdrop} onPress={() => setNameSheetVisible(false)}>
           <Pressable style={styles.nameSheet} onPress={() => {}}>

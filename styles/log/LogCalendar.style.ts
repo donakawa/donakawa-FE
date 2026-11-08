@@ -41,44 +41,6 @@ export const logCalendarStyles = StyleSheet.create({
 
   closeImage: {},
 
-  monthControl: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-
-  arrowButton: {
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  selectBox: {
-    height: 35,
-    borderWidth: 1,
-    borderColor: "#9CCCA0",
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F0FFE5",
-  },
-
-  yearBox: {
-    width: 102,
-  },
-
-  monthBox: {
-    width: 73,
-  },
-
-  selectText: {
-    fontSize: 16,
-    fontFamily: "WantedSansMedium",
-    color: "#7A5751",
-  },
-
   weekRow: {
     width: 335,
     flexDirection: "row",

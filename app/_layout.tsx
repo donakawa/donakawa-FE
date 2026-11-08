@@ -20,6 +20,8 @@ export default function Layout() {
     Galmuri: require("@/assets/fonts/Galmuri11.ttf"),
     GalmuriBold: require("@/assets/fonts/Galmuri11-Bold.ttf"),
 
+    RobotoMedium: require("@/assets/fonts/Roboto-Medium.ttf"),
+
     WantedSansBlack: require("@/assets/fonts/WantedSans-Black.otf"),
     WantedSansBold: require("@/assets/fonts/WantedSans-Bold.otf"),
     WantedSansExtraBlack: require("@/assets/fonts/WantedSans-ExtraBlack.otf"),

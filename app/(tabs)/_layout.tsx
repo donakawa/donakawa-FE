@@ -12,12 +12,14 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: "홈" }} />
       <Tabs.Screen name="log" options={{ title: "로그" }} />
       <Tabs.Screen name="wish" options={{ title: "위시" }} />
-      <Tabs.Screen name="goal" options={{ href: null }} />
-      <Tabs.Screen name="logCalendar" options={{ href: null }} />
-      <Tabs.Screen name="attendance" options={{ href: null }} />
-      <Tabs.Screen name="hamkku" options={{ href: null }} />
+      {/* 아래 화면들은 BottomNavigation의 TAB_CONFIG에 없어서 탭 바에 그려지지 않음.
+          href: null(hidden)로 숨기면 SDK 58부터 진입 즉시 첫 탭으로 리다이렉트되므로 쓰지 않음 */}
+      <Tabs.Screen name="goal" />
+      <Tabs.Screen name="logCalendar" />
+      <Tabs.Screen name="attendance" />
+      <Tabs.Screen name="hamkku" />
       <Tabs.Screen name="mypage" options={{ title: "마이" }} />
-      <Tabs.Screen name="settings" options={{ href: null }} />
+      <Tabs.Screen name="settings" />
     </Tabs>
   );
 }

@@ -46,7 +46,7 @@ export const hamkkuStyles = StyleSheet.create({
   previewWall: {
     height: 202,
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 10,
   },
   speechBubble: {
     width: 204,
@@ -58,6 +58,9 @@ export const hamkkuStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     boxShadow: "0px 2px 4px rgba(104, 171, 110, 0.25)",
+  },
+  speechBubbleHidden: {
+    opacity: 0,
   },
   speechText: {
     fontFamily: "Galmuri9",
@@ -100,7 +103,7 @@ export const hamkkuStyles = StyleSheet.create({
   },
   hamsterWrap: {
     position: "absolute",
-    top: 168,
+    top: 148,
     left: "50%",
     width: 124,
     height: 124,
@@ -113,14 +116,6 @@ export const hamkkuStyles = StyleSheet.create({
     width: 124,
     height: 124,
     resizeMode: "contain",
-  },
-  accessoryLayer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 4,
   },
   accessoryText: {
     fontFamily: "GalmuriBold",

@@ -221,6 +221,19 @@ export const goalModalStyles = StyleSheet.create({
     fontFamily: "Galmuri9",
   },
 
+  placeholderWrap: {
+    ...StyleSheet.absoluteFill,
+    pointerEvents: "none",
+    justifyContent: "center",
+    paddingHorizontal: 13,
+  },
+
+  placeholderText: {
+    fontSize: 14,
+    color: "#2D322E",
+    fontFamily: "Galmuri9",
+  },
+
   count: {
     alignSelf: "flex-end",
     fontSize: 12,

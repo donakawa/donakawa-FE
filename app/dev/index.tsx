@@ -128,7 +128,6 @@ function DevComponentsContent() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.pageTitle}>공통 컴퍼넌트</Text>
 
-        {/* Button */}
         <Section title="Button — variant">
           <Row>
             <Button label="Primary" variant="primary" />
@@ -151,7 +150,6 @@ function DevComponentsContent() {
           </Row>
         </Section>
 
-        {/* Input */}
         <Section title="Input">
           <Input
             label="라벨 없음"
@@ -170,7 +168,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* InsetShadow */}
         <Section title="InsetShadow">
           <InsetShadow
             borderRadius={8}
@@ -180,7 +177,6 @@ function DevComponentsContent() {
           </InsetShadow>
         </Section>
 
-        {/* PixelButton */}
         <Section title="PixelButton">
           <Row>
             <PixelButton
@@ -213,7 +209,6 @@ function DevComponentsContent() {
           </Row>
         </Section>
 
-        {/* MonthSelectButton */}
         <Section title="MonthSelectButton">
           <Row>
             <MonthSelectButton
@@ -234,14 +229,12 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* DoneButton */}
         <Section title="DoneButton">
           <Row>
             <DoneButton onPress={() => {}} />
           </Row>
         </Section>
 
-        {/* IconPixelButton */}
         <Section title="IconPixelButton">
           <Row>
             <IconPixelButton
@@ -251,7 +244,6 @@ function DevComponentsContent() {
           </Row>
         </Section>
 
-        {/* LargePixelButton */}
         <Section title="LargePixelButton">
           <Row>
             <LargePixelButton
@@ -261,14 +253,12 @@ function DevComponentsContent() {
           </Row>
         </Section>
 
-        {/* ClothesButton */}
         <Section title="ClothesButton">
           <Row>
             <ClothesButton />
           </Row>
         </Section>
 
-        {/* FloatingActionButton */}
         <Section title="FloatingActionButton">
           <Row>
             <FloatingActionButton
@@ -284,7 +274,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* Toast */}
         <Section title="Toast">
           <Button
             label="Toast 표시"
@@ -299,7 +288,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* AlertModal */}
         <Section title="AlertModal">
           <Button
             label="AlertModal 열기"
@@ -313,7 +301,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* ConfirmModal */}
         <Section title="ConfirmModal">
           <Button
             label="ConfirmModal 열기"
@@ -329,7 +316,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* Modal */}
         <Section title="Modal (base)">
           <Button
             label="Modal 열기"
@@ -352,7 +338,6 @@ function DevComponentsContent() {
           </Modal>
         </Section>
 
-        {/* MenuDropdown */}
         <Section title="MenuDropdown">
           <Button
             label="MenuDropdown 열기"
@@ -368,7 +353,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* SortDropdown */}
         <Section title="SortDropdown">
           <Text style={styles.hint}>선택됨: {sortValue}</Text>
           <Button
@@ -387,7 +371,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* Wish Folder Grid */}
         <Section title="Wish Folder Grid (2x2)">
           <View style={styles.folderGrid}>
             <FolderCard
@@ -413,7 +396,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* WishAddContainer */}
         <Section title="WishAddContainer">
           <Row>
             <WishAddContainer onPress={() => setWishAddContainerVisible(true)} />
@@ -426,7 +408,6 @@ function DevComponentsContent() {
           />
         </Section>
 
-        {/* SpeechBubble */}
         <Section title="SpeechBubble — text">
           <SpeechBubble text={"위시템을 살지 말지\n고민이 되니?\n내가 한 번 봐주마"} />
         </Section>
@@ -435,7 +416,6 @@ function DevComponentsContent() {
           <SpeechBubble text="안녕하세요!" />
         </Section>
 
-        {/* WishFlowTopBar */}
         <Section title="WishFlowTopBar — rightVariant: menu">
           <View style={styles.tournamentPreview}>
             <WishFlowTopBar
@@ -456,7 +436,6 @@ function DevComponentsContent() {
           </View>
         </Section>
 
-        {/* WishFlowTitleBanner */}
         <Section title="WishFlowTitleBanner — 기본">
           <View style={styles.tournamentPreview}>
             <WishFlowTitleBanner title="후보를 선택" />
@@ -482,7 +461,6 @@ function DevComponentsContent() {
           </View>
         </Section>
 
-        {/* WishFlowBottomBar */}
         <Section title="WishFlowBottomBar — 비활성">
           <View style={styles.bottomBarPreview}>
             <WishFlowBottomBar
@@ -528,7 +506,6 @@ function DevComponentsContent() {
           </View>
         </Section>
 
-        {/* WishAddMenuDropdown */}
         <Section title="WishAddMenuDropdown">
           <Button
             label="WishAddMenuDropdown 열기"

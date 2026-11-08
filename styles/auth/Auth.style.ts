@@ -3,9 +3,9 @@ import { StyleSheet } from "react-native";
 export const loginStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FBFBF5",
+    backgroundColor: "#FBF9F5",
     alignItems: "center",
-    paddingTop: 101,
+    justifyContent: "center",
   },
   content: {
     width: 375,
@@ -17,27 +17,28 @@ export const loginStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 55,
+    marginBottom: 56,
     },
   form: {
-    width: 344,
-    gap: 4,
+    width: 323,
     alignItems: "center",
+  },
+  inputs: {
+    alignSelf: "stretch",
+    gap: 8,
   },
   findButton: {
     alignSelf: "flex-end",
-    marginTop: 2,
-    marginBottom: 26,
+    height: 48,
+    padding: 4,
+    marginBottom: 24,
+    justifyContent: "center",
   },
   findText: {
-    alignSelf: "flex-end",
-    marginTop: 8,
-    marginRight: 4,
-    marginBottom: 24,
     fontFamily: "WantedSansSemiBold",
     fontSize: 12,
     lineHeight: 18,
-    color: "#2D322E",
+    color: "#5F6460",
     textDecorationLine: "underline",
   },
   socialWrap: {
@@ -53,35 +54,42 @@ export const loginStyles = StyleSheet.create({
   },
   socialSection: {
   width: 335,
-  marginTop: 38,
+  marginTop: 56,
   alignItems: "center",
 },
 
 dividerWrap: {
   width: 335,
-  position: "relative",
+  height: 26,
   justifyContent: "center",
   alignItems: "center",
-  marginBottom: 16,
+  marginBottom: 14,
 },
 
+// 점선 테두리의 윗변 1px만 보이도록 잘라 한 줄로 표시
 divider: {
-  width: 335,
+  position: "absolute",
+  top: 12,
+  left: 0,
+  right: 0,
+  height: 1,
+  overflow: "hidden",
+},
+
+dividerLine: {
+  height: 2,
   borderStyle: "dashed",
   borderWidth: 1,
   borderColor: "#9CCCA0",
 },
 
 dividerText: {
-  position: "absolute",
-  backgroundColor: "#FFFDF8",
-  paddingHorizontal: 8,
-  paddingVertical:2,
-  top: -12,
+  backgroundColor: "#FBF9F5",
+  paddingVertical: 4,
 
-  fontFamily: "WantedSansRegular",
-  fontSize: 16,
-  lineHeight: 24,
+  fontFamily: "WantedSansSemiBold",
+  fontSize: 12,
+  lineHeight: 18,
   color: "#787D79",
 },
 
@@ -89,14 +97,19 @@ socialButtons: {
   gap: 12,
 },
 
+signupButton: {
+  height: 48,
+  padding: 4,
+  marginTop: 46,
+  justifyContent: "center",
+},
+
 signupLink: {
-  marginTop: 48,
+  fontFamily: "WantedSansMedium",
+  fontSize: 14,
+  lineHeight: 21,
 
-  fontFamily: "WantedSansRegular",
-  fontSize: 16,
-  lineHeight: 24,
-
-  color: "#1F1F1F",
+  color: "#141915",
   textDecorationLine: "underline",
 },
   

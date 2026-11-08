@@ -13,6 +13,14 @@ import type { SvgProps } from "react-native-svg";
 
 export type HamkkuCategory = "skin" | "accessory" | "wall" | "floor";
 
+// 도나 SVG(viewBox 191x240) 좌표 기준 액세서리 중심점과 크기. 머리 윗선 y≈4, 머리 중앙 x≈97, 코 (105, 88)
+export type AccessoryPlacement = {
+  centerX: number;
+  centerY: number;
+  width: number;
+  height: number;
+};
+
 export type HamkkuItem = {
   id: string;
   category: HamkkuCategory;
@@ -22,6 +30,7 @@ export type HamkkuItem = {
   Svg?: ComponentType<SvgProps>;
   skinVariant?: 1 | 2 | 3 | 4;
   color?: string;
+  placement?: AccessoryPlacement;
 };
 
 export const HAMKKU_CATEGORIES: { id: HamkkuCategory; label: string }[] = [
@@ -86,6 +95,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "새싹",
     price: 100,
     Svg: Acc1,
+    placement: { centerX: 97, centerY: -4, width: 44, height: 30 },
   },
   {
     id: "accessory-ribbon",
@@ -93,6 +103,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "리본",
     price: 100,
     Svg: Acc2,
+    placement: { centerX: 97, centerY: -2, width: 50, height: 32.7 },
   },
   {
     id: "accessory-mustache",
@@ -100,6 +111,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "콧수염",
     price: 300,
     Svg: Acc3,
+    placement: { centerX: 105, centerY: 95, width: 52, height: 13.5 },
   },
   {
     id: "accessory-seed",
@@ -107,6 +119,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "해바라기씨",
     price: 350,
     Svg: Acc4,
+    placement: { centerX: 97, centerY: -11, width: 30, height: 46.5 },
   },
   {
     id: "accessory-money",
@@ -114,6 +127,7 @@ export const HAMKKU_ITEMS: HamkkuItem[] = [
     name: "(전설) 지폐",
     price: 700,
     Svg: Acc5,
+    placement: { centerX: 97, centerY: -6, width: 64, height: 35 },
   },
   {
     id: "wall-default",

@@ -1,8 +1,7 @@
 import { getApiErrorMessage } from "@/api/types";
-import { useCrawlProduct, wishlistKeys } from "@/api/wishlist";
+import { useCrawlProduct, useMoveWishFolder } from "@/api/wishlist";
 import { Ionicons } from "@expo/vector-icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -15,22 +14,42 @@ import {
   View,
 } from "react-native";
 
+const ALL_FOLDER_ID = "all";
+
+// 쇼핑몰 앱의 공유하기로 복사하면 "[무신사] 상품명 https://..."처럼 링크 앞뒤에 글이 붙음
+const extractUrl = (text: string) => text.match(/https?:\/\/[^\s<>"']+/)?.[0] ?? text.trim();
+
 export default function WishRegisterLinkScreen() {
   const router = useRouter();
+  const { folderId } = useLocalSearchParams<{ folderId?: string }>();
   const [url, setUrl] = useState("");
-  const queryClient = useQueryClient();
   const crawlProduct = useCrawlProduct();
+  const moveFolder = useMoveWishFolder();
 
-  const canSubmit = url.trim().length > 0 && !crawlProduct.isPending;
+  const isPending = crawlProduct.isPending || moveFolder.isPending;
+  const canSubmit = url.trim().length > 0 && !isPending;
 
-  // TODO: 폴더 상세에서 진입한 경우(folderId 파라미터) 폴더 지정 미구현.
-  // 크롤링 결과의 id가 위시템 id인지 명세에서 확인되지 않아 폴더 이동 API를 호출하지 않음
   const handleSubmit = () => {
     if (!canSubmit) return;
-    crawlProduct.mutate(url.trim(), {
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
-        router.back();
+    crawlProduct.mutate(extractUrl(url), {
+      // 크롤링 결과의 id가 등록된 위시 아이템 id
+      onSuccess: ({ id }) => {
+        if (!folderId || folderId === ALL_FOLDER_ID) {
+          router.back();
+          return;
+        }
+        moveFolder.mutate(
+          { itemId: id, type: "AUTO", folderId },
+          {
+            onSuccess: () => router.back(),
+            onError: (error) =>
+              Alert.alert(
+                "폴더 이동 실패",
+                `위시는 등록됐지만 폴더 이동에 실패했어요.\n${getApiErrorMessage(error)}`,
+                [{ text: "확인", onPress: () => router.back() }],
+              ),
+          },
+        );
       },
       onError: (error) =>
         Alert.alert(
@@ -78,7 +97,7 @@ export default function WishRegisterLinkScreen() {
             activeOpacity={0.85}
           >
             <Text style={[styles.buttonText, canSubmit && styles.buttonTextActive]}>
-              {crawlProduct.isPending ? "불러오는 중..." : "등록하기"}
+              {isPending ? "불러오는 중..." : "등록하기"}
             </Text>
           </TouchableOpacity>
         </View>

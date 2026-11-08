@@ -1,4 +1,5 @@
-import { Text, TouchableOpacity } from "react-native";
+import InsetShadow from "@/components/common/InsetShadow";
+import { Text, TouchableOpacity, View } from "react-native";
 import { authButtonStyles as styles } from "@/styles/auth/Authcomponent.style";
 
 type Props = {
@@ -12,6 +13,17 @@ export default function AuthButton({
   onPress,
   variant = "primary",
 }: Props) {
+  if (variant === "primary") {
+    return (
+      <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+        <InsetShadow style={[styles.button, styles.primary]}>
+          <Text style={styles.text}>{title}</Text>
+          <View style={styles.primaryBorder} />
+        </InsetShadow>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={[styles.button, styles[variant]]}

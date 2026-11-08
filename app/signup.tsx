@@ -12,7 +12,7 @@ import Header from "@/components/common/Header";
 import { signupStyles as styles } from "@/styles/auth/Auth.style";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { type ComponentRef, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Modal,
@@ -54,7 +54,7 @@ export default function Signup() {
   const login = useLogin();
   const isSubmitting = register.isPending || login.isPending;
 
-  const codeRefs = useRef<(TextInput | null)[]>([]);
+  const codeRefs = useRef<(ComponentRef<typeof TextInput> | null)[]>([]);
 
   const progressWidth = step === 1 || step === 2 ? "33%" : step === 3 ? "66%" : "100%";
 

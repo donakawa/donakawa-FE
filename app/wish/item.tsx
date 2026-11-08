@@ -159,20 +159,18 @@ export default function WishItemDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <StatusBar style="light" />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero image */}
         <View style={[styles.hero, { height: 374 + insets.top }]}>
           <Image source={imageSource} style={styles.heroImage} resizeMode="cover" />
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.heroOverlay]} />
         </View>
 
         <View style={styles.content}>
-        {/* 담은 날짜 + 상품명 + 가격 */}
         <View style={styles.metaBlock}>
           <View style={styles.dateRow}>
             <Text style={styles.dateMuted}>담은 지</Text>
@@ -190,9 +188,7 @@ export default function WishItemDetailScreen() {
           </View>
         </View>
 
-        {/* 구매 결정 / 구매 포기 */}
         <View style={styles.actionRow}>
-          {/* 구매 결정 */}
           <View style={styles.actionBtnWrap}>
             <View style={styles.actionBtnShadow} />
             <TouchableOpacity
@@ -211,7 +207,6 @@ export default function WishItemDetailScreen() {
               <Text style={styles.actionBtnLabel}>구매 결정</Text>
             </TouchableOpacity>
           </View>
-          {/* 구매 포기 */}
           <View style={styles.actionBtnWrap}>
             <View style={styles.actionBtnShadow} />
             <TouchableOpacity
@@ -232,12 +227,10 @@ export default function WishItemDetailScreen() {
           </View>
         </View>
 
-        {/* 구분선 */}
         <View style={styles.dividerWrap}>
           <View style={styles.divider} />
         </View>
 
-        {/* 쇼핑몰 링크 */}
         <TouchableOpacity style={styles.shopLink} activeOpacity={0.8} onPress={handleOpenShop}>
           <View style={styles.shopLinkLeft}>
             <Image source={{ uri: "https://placehold.co/42x42" }} style={styles.shopAvatar} />
@@ -249,7 +242,6 @@ export default function WishItemDetailScreen() {
           <Ionicons name="caret-forward" size={12} color="#464B47" />
         </TouchableOpacity>
 
-        {/* 메모 */}
         <View style={styles.memoBox}>
           <TextInput
             style={styles.memoInput}
@@ -271,7 +263,6 @@ export default function WishItemDetailScreen() {
           </View>
         </View>
 
-        {/* CTA 배너 */}
         <TournamentBanner label="이 위시템으로 살말 추천 받기" onPress={() => {}} />
         </View>
       </ScrollView>

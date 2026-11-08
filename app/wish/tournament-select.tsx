@@ -75,7 +75,6 @@ export default function TournamentSelectScreen() {
 
       <WishFlowTitleBanner title="후보를 선택" />
 
-      {/* Folder grid */}
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.folderGrid}>
           <AllFolderCard onPress={() => goToItems(ALL_FOLDER_ID)} />

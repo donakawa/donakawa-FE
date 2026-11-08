@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
+import { tokenStorage } from "@/api/tokenStorage";
 import type { ApiSuccess } from "@/api/types";
 
 export type AuthProvider = "email" | "google" | "kakao";
@@ -136,7 +137,11 @@ export const useMe = (options?: { enabled?: boolean }) =>
 export const useLogin = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: authApi.login,
+    // 이전 소셜 로그인 토큰이 남아 있으면 이메일 로그인 쿠키보다 우선 적용되므로 제거
+    mutationFn: async (body: LoginRequest) => {
+      await tokenStorage.clear();
+      return authApi.login(body);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: authKeys.me }),
   });
 };
@@ -145,7 +150,10 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.logout,
-    onSettled: () => queryClient.clear(),
+    onSettled: async () => {
+      await tokenStorage.clear();
+      queryClient.clear();
+    },
   });
 };
 
@@ -153,7 +161,10 @@ export const useDeleteAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.deleteAccount,
-    onSuccess: () => queryClient.clear(),
+    onSuccess: async () => {
+      await tokenStorage.clear();
+      queryClient.clear();
+    },
   });
 };
 

@@ -3,12 +3,11 @@ import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { type LogCalendarDay, type LogCalendarType, useLogCalendar } from "@/api/log";
+import MonthSelector from "@/components/common/MonthSelector";
 import Calendar from "@/components/log/calendar/Calendar";
 import CalendarItemCard from "@/components/log/calendar/CalendarItemCard";
 import { logCalendarStyles as styles } from "@/styles/log/LogCalendar.style";
 
-import LeftArrowIcon from "@/assets/images/log/arrow_left_gray.svg";
-import RightArrowIcon from "@/assets/images/log/arrow_right_gray.svg";
 import BagIcon from "@/assets/images/log/bag.svg";
 import BagEmptyIcon from "@/assets/images/log/bag_empty.svg";
 import CloseIcon from "@/assets/images/log/close.svg";
@@ -75,13 +74,8 @@ export default function LogCalendarPage() {
   const currentItems =
     selectedDate !== null ? (dayMap.get(selectedDate)?.items ?? []) : [];
 
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(year, month - 2, 1));
-    setSelectedDate(null);
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(year, month, 1));
+  const handleMonthChange = (selectedYear: number, selectedMonth: number) => {
+    setCurrentDate(new Date(selectedYear, selectedMonth - 1, 1));
     setSelectedDate(null);
   };
 
@@ -120,23 +114,7 @@ export default function LogCalendarPage() {
           </Pressable>
         </View>
 
-        <View style={styles.monthControl}>
-          <Pressable style={styles.arrowButton} onPress={handlePrevMonth}>
-            <LeftArrowIcon />
-          </Pressable>
-
-          <View style={[styles.selectBox, styles.yearBox]}>
-            <Text style={styles.selectText}>{year}년</Text>
-          </View>
-
-          <View style={[styles.selectBox, styles.monthBox]}>
-            <Text style={styles.selectText}>{month}월</Text>
-          </View>
-
-          <Pressable style={styles.arrowButton} onPress={handleNextMonth}>
-            <RightArrowIcon />
-          </Pressable>
-        </View>
+        <MonthSelector year={year} month={month} onChange={handleMonthChange} />
 
         <View style={styles.weekRow}>
           {["일", "월", "화", "수", "목", "금", "토"].map((day) => (

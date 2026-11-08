@@ -6,7 +6,8 @@ import {
 import { getApiErrorMessage } from "@/api/types";
 import AttendanceIcon from "@/assets/images/attendance/attendance_1.svg";
 import RewardAttendanceIcon from "@/assets/images/attendance/attendance_2.svg";
-import AttendanceMonthPickerSheet from "@/components/attendance/AttendanceMonthPickerSheet";
+import AttendanceActionButton from "@/components/attendance/AttendanceActionButton";
+import MonthSelector from "@/components/common/MonthSelector";
 import { attendanceStyles as styles } from "@/styles/attendance/Attendance.style";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -44,7 +45,6 @@ export default function Attendance() {
   const [currentDate, setCurrentDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  const [pickerVisible, setPickerVisible] = useState(false);
   const [receivedRewardPoints, setReceivedRewardPoints] = useState<
     number | null
   >(null);
@@ -78,11 +78,6 @@ export default function Attendance() {
     isCurrentMonth && !!attendance?.canClaimReward && !claimReward.isPending;
   const canCheckIn =
     isCurrentMonth && !!attendance && !checkedInToday && !createAttendance.isPending;
-
-  const changeMonth = (amount: number) => {
-    const date = new Date(year, month - 1 + amount, 1);
-    setCurrentDate(date);
-  };
 
   const handleCheckIn = () => {
     if (!canCheckIn) return;
@@ -120,32 +115,13 @@ export default function Attendance() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.monthRow}>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={() => changeMonth(-1)}
-            accessibilityRole="button"
-            accessibilityLabel="이전 달"
-          >
-            <Ionicons name="chevron-back" size={22} color="#787D79" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.monthButton}
-            onPress={() => setPickerVisible(true)}
-            accessibilityRole="button"
-            accessibilityLabel="월 선택"
-          >
-            <Text style={styles.monthText}>{`${year}년 ${month}월`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={() => changeMonth(1)}
-            accessibilityRole="button"
-            accessibilityLabel="다음 달"
-          >
-            <Ionicons name="chevron-forward" size={22} color="#787D79" />
-          </TouchableOpacity>
-        </View>
+        <MonthSelector
+          year={year}
+          month={month}
+          onChange={(selectedYear, selectedMonth) =>
+            setCurrentDate(new Date(selectedYear, selectedMonth - 1, 1))
+          }
+        />
 
         <View style={styles.weekRow}>
           {WEEKDAYS.map((weekday) => (
@@ -247,46 +223,20 @@ export default function Attendance() {
             !isCurrentMonth && styles.hiddenActionRow,
           ]}
         >
-          <TouchableOpacity
-            style={[
-              styles.pixelButton,
-              styles.rewardButton,
-              !canClaimReward && styles.disabledButton,
-            ]}
+          <AttendanceActionButton
+            title="받기!"
+            variant="pink"
             disabled={!canClaimReward}
             onPress={handleReward}
-            accessibilityRole="button"
             accessibilityLabel="출석 보상 받기"
-          >
-            <Text
-              style={[
-                styles.pixelButtonText,
-                !canClaimReward && styles.disabledButtonText,
-              ]}
-            >
-              받기!
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.pixelButton,
-              styles.checkButton,
-              !canCheckIn && styles.disabledButton,
-            ]}
+          />
+          <AttendanceActionButton
+            title="출석!"
+            variant="green"
             disabled={!canCheckIn}
             onPress={handleCheckIn}
-            accessibilityRole="button"
             accessibilityLabel="출석하기"
-          >
-            <Text
-              style={[
-                styles.pixelButtonText,
-                !canCheckIn && styles.disabledButtonText,
-              ]}
-            >
-              출석!
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
       </View>
 
@@ -298,16 +248,6 @@ export default function Attendance() {
           </Text>
         </View>
       )}
-
-      <AttendanceMonthPickerSheet
-        visible={pickerVisible}
-        year={year}
-        month={month}
-        onClose={() => setPickerVisible(false)}
-        onSelect={(selectedYear, selectedMonth) => {
-          setCurrentDate(new Date(selectedYear, selectedMonth - 1, 1));
-        }}
-      />
     </View>
   );
 }
