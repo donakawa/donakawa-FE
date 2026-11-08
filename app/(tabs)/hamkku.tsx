@@ -316,12 +316,15 @@ export default function Hamkku() {
 
       <View style={styles.preview}>
         <View style={[styles.previewWall, { backgroundColor: previewItems.wall?.color }]}>
-          {showIntroSpeech ? (
-            <View style={styles.speechBubble}>
-              <Text style={styles.speechText}>예쁘게 꾸며주세요!!!</Text>
-              <View style={styles.speechTail} />
-            </View>
-          ) : null}
+          {/* 말풍선이 사라져도 닉네임이 햄스터 위에 머물도록 자리는 유지 */}
+          <View
+            style={[styles.speechBubble, !showIntroSpeech && styles.speechBubbleHidden]}
+            accessibilityElementsHidden={!showIntroSpeech}
+            importantForAccessibility={showIntroSpeech ? "auto" : "no-hide-descendants"}
+          >
+            <Text style={styles.speechText}>예쁘게 꾸며주세요!!!</Text>
+            <View style={styles.speechTail} />
+          </View>
 
           <TouchableOpacity
             style={styles.nameButton}
