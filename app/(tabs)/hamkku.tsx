@@ -12,6 +12,7 @@ import CheckIcon from "@/assets/images/hamkku/check.svg";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import DoneButton from "@/components/common/DoneButton";
 import Toast from "@/components/common/Toast";
+import HamkkuAccessory from "@/components/home/HamkkuAccessory";
 import {
   API_CATEGORY,
   EQUIPPED_FIELD,
@@ -41,6 +42,9 @@ import {
 } from "react-native";
 
 const styles = hamkkuStyles as Record<keyof typeof hamkkuStyles, any>;
+
+// styles.hamsterWrap의 width/height와 같아야 함
+const PREVIEW_DONA_SIZE = 124;
 
 type ShopItem = CharacterItem & {
   category: HamkkuCategory;
@@ -225,17 +229,6 @@ export default function Hamkku() {
     });
   };
 
-  const renderAccessory = (item?: HamkkuItem) => {
-    const AccessorySvg = item?.Svg;
-    if (!AccessorySvg) return null;
-
-    return (
-      <View style={styles.accessoryLayer}>
-        <AccessorySvg width={34} height={34} />
-      </View>
-    );
-  };
-
   const renderItemPreview = (item: ShopItem) => {
     const local = item.local;
 
@@ -350,8 +343,8 @@ export default function Hamkku() {
         <View style={[styles.previewFloor, { backgroundColor: previewItems.floor?.color }]} />
 
         <View style={styles.hamsterWrap}>
-          <PreviewDonaSvg width={124} height={124} />
-          {renderAccessory(previewItems.accessory)}
+          <PreviewDonaSvg width={PREVIEW_DONA_SIZE} height={PREVIEW_DONA_SIZE} />
+          <HamkkuAccessory item={previewItems.accessory} size={PREVIEW_DONA_SIZE} />
         </View>
 
         {!isApplyMode && (

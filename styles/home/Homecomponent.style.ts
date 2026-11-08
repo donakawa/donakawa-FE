@@ -93,14 +93,6 @@ export const characterStyles = StyleSheet.create({
     resizeMode: "contain",
   },
 
-  accessoryLayer: {
-    position: "absolute",
-    top: -2,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 4,
-  },
 
   accessoryText: {
     fontFamily: "GalmuriBold",

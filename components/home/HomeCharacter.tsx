@@ -3,11 +3,15 @@ import PawIcon from "@/assets/images/home/Union.svg";
 import RibbonIcon from "@/assets/images/home/Union_2.svg";
 import { useMe } from "@/api/auth";
 import { useCharacterComment } from "@/api/character";
+import HamkkuAccessory from "@/components/home/HamkkuAccessory";
 import { useHamkkuAppearance } from "@/components/home/hamkkuAppearance";
 import { getDonaSvg, type DonaExpression } from "@/constants/dona";
 import { characterStyles as styles } from "@/styles/home/Homecomponent.style";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
+
+// styles.donaWrap의 width/height와 같아야 함
+const DONA_SIZE = 120;
 
 interface HomeCharacterProps {
   hasBudget: boolean;
@@ -30,7 +34,6 @@ export default function HomeCharacter({
     floor: appliedFloor,
   } = useHamkkuAppearance();
   const { data: comment } = useCharacterComment();
-  const AppliedAccessorySvg = appliedAccessory?.Svg;
 
   const getDonaExpression = (): DonaExpression => {
     if (!hasBudget) return 5;
@@ -39,16 +42,6 @@ export default function HomeCharacter({
   };
 
   const DonaSvg = getDonaSvg(appliedSkin?.skinVariant, getDonaExpression());
-
-  const renderAccessory = () => {
-    if (!AppliedAccessorySvg) return null;
-
-    return (
-      <View style={styles.accessoryLayer}>
-        <AppliedAccessorySvg width={34} height={34} />
-      </View>
-    );
-  };
 
   const renderMessage = () => {
     if (comment?.message) {
@@ -93,8 +86,8 @@ export default function HomeCharacter({
       </View>
 
       <View style={styles.donaWrap}>
-        <DonaSvg width={120} height={120} />
-        {renderAccessory()}
+        <DonaSvg width={DONA_SIZE} height={DONA_SIZE} />
+        <HamkkuAccessory item={appliedAccessory} size={DONA_SIZE} />
       </View>
 
       <View style={styles.sideButtons}>

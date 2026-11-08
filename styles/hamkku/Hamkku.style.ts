@@ -114,14 +114,6 @@ export const hamkkuStyles = StyleSheet.create({
     height: 124,
     resizeMode: "contain",
   },
-  accessoryLayer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 4,
-  },
   accessoryText: {
     fontFamily: "GalmuriBold",
     fontSize: 24,
