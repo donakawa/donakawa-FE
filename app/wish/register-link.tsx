@@ -16,6 +16,9 @@ import {
 
 const ALL_FOLDER_ID = "all";
 
+// 쇼핑몰 앱의 공유하기로 복사하면 "[무신사] 상품명 https://..."처럼 링크 앞뒤에 글이 붙음
+const extractUrl = (text: string) => text.match(/https?:\/\/[^\s<>"']+/)?.[0] ?? text.trim();
+
 export default function WishRegisterLinkScreen() {
   const router = useRouter();
   const { folderId } = useLocalSearchParams<{ folderId?: string }>();
@@ -28,7 +31,7 @@ export default function WishRegisterLinkScreen() {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    crawlProduct.mutate(url.trim(), {
+    crawlProduct.mutate(extractUrl(url), {
       // 크롤링 결과의 id가 등록된 위시 아이템 id
       onSuccess: ({ id }) => {
         if (!folderId || folderId === ALL_FOLDER_ID) {

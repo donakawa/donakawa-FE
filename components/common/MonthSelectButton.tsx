@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
   pill: {
     alignSelf: "stretch",
     height: 35,
-    paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: "#F0FFE5",
     borderRadius: 5,

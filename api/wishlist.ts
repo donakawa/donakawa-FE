@@ -299,6 +299,40 @@ export const subscribeCrawlEvents = (jobId: string, handlers: CrawlEventHandlers
   };
 };
 
+const SUPPORTED_SHOP_HOST = /(^|\.)(musinsa\.com|29cm\.co\.kr)$/i;
+const SHOP_URL_IN_TEXT = /https?:\/\/[\w.-]*(?:musinsa\.com|29cm\.co\.kr)\/[^\s"'<>\\?#]*/i;
+const URL_PARTS = /^(https?:\/\/([^/?#:]+)(?::\d+)?)([^?#]*)/i;
+const SHORT_LINK_TIMEOUT_MS = 8_000;
+
+// 공유 링크에 붙는 추적 값(무신사 계정 아이디 포함)은 크롤링에 필요 없어 상품 경로만 남김
+const toShopProductUrl = (url: string) => {
+  const match = url.match(URL_PARTS);
+  if (!match || !SUPPORTED_SHOP_HOST.test(match[2])) return null;
+  return `${match[1]}${match[3]}`;
+};
+
+// 서버는 musinsa.onelink.me 같은 앱 공유용 짧은 링크를 따라가지 않으므로 앱에서 실제 상품 주소를 찾아 보냄
+const resolveShopProductUrl = async (url: string) => {
+  const direct = toShopProductUrl(url);
+  if (direct) return direct;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SHORT_LINK_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    const redirected = toShopProductUrl(response.url);
+    if (redirected) return redirected;
+
+    // 브라우저로 판단되면 리다이렉트 대신 상품 주소가 담긴 HTML을 내려줌
+    const linkInPage = (await response.text()).match(SHOP_URL_IN_TEXT)?.[0];
+    return (linkInPage && toShopProductUrl(linkInPage)) || url;
+  } catch {
+    return url;
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 export const crawlApi = {
   requestCrawl: async (url: string) =>
     (await apiClient.post<ApiSuccess<CrawlTaskResponse>>(ENDPOINTS.wishlist.crawlTasks, { url }))
@@ -310,7 +344,7 @@ export const crawlApi = {
 
   // 서버 대기 시간이 최대 2분이라 그보다 먼저 포기하지 않도록 여유를 둠
   crawlProduct: async (url: string, timeoutMs = 130_000): Promise<CrawlResult> => {
-    const { jobId } = await crawlApi.requestCrawl(url);
+    const { jobId } = await crawlApi.requestCrawl(await resolveShopProductUrl(url));
     const dataId = await new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => {
         unsubscribe();
