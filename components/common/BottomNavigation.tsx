@@ -1,6 +1,5 @@
 import type { BottomTabBarProps } from "expo-router/tabs";
 import { Image, ImageSourcePropType, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ACTIVE_COLOR = "#0B4112";
 const INACTIVE_COLOR = "#AAAFAB";
@@ -17,10 +16,9 @@ export default function BottomNavigation({
   emitter,
   navigateToTab,
 }: BottomTabBarProps) {
-  const insets = useSafeAreaInsets();
-
+  // 하단 안전 영역은 app/_layout.tsx의 SafeAreaView가 이미 비워주므로 여기서 더하지 않음
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom || 16 }]}>
+    <View style={styles.container}>
       {state.routes.map((route, index) => {
         const activeRoute = state.routes[state.index]?.name;
         const isFocused =
@@ -69,6 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#FBFBF5",
     paddingTop: 10,
+    paddingBottom: 8,
     paddingHorizontal: 37,
   },
   tab: {
